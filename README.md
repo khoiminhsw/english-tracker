@@ -1,4 +1,5 @@
-# 🚀 English Tracker: Lộ Trình Học Tiếng Anh 48 Ngày
+# 🚀 English Tracker: Nền tảng học Tiếng Anh hiệu quả
+<img width="2142" height="1479" alt="image" src="https://github.com/user-attachments/assets/ffde4c2b-3caf-4c44-baf1-ce692ad07b32" />
 
 ## 🎯 Mục tiêu dự án
 Cá nhân hóa lộ trình học tiếng Anh trong 48 ngày với liên kết video YouTube và bài tập kèm theo. Dự án hướng tới việc xây dựng thói quen học tập kỷ luật thông qua các cơ chế kiểm tra từ vựng ngắt quãng, quản lý thời gian học khắt khe và hệ thống điểm thưởng/phạt rõ ràng.
