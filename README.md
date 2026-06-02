@@ -1,49 +1,69 @@
 # 🚀 English Tracker: Website Cá Nhân Hóa Tự Học Tiếng Anh 
-<img width="2121" height="1172" alt="image" src="https://github.com/user-attachments/assets/50fadb71-a879-4d64-a6ec-70d7dbda9c7b" />
+
+<img width="2336" height="1296" alt="image" src="https://github.com/user-attachments/assets/099f4eb0-51bc-4587-bbbd-96b0375b4ed2" />
+
 
 ## 🎯 Mục tiêu
-Cá nhân hóa lộ trình học tiếng Anh trong 48 ngày với liên kết video YouTube và bài tập kèm theo. Dự án hướng tới việc xây dựng thói quen học tập kỷ luật thông qua các cơ chế kiểm tra từ vựng ngắt quãng, quản lý thời gian học khắt khe và hệ thống điểm thưởng/phạt rõ ràng.
+Cá nhân hóa lộ trình học tiếng Anh trong 48 ngày với liên kết video YouTube và bài tập tương tác kèm theo. Dự án hướng tới việc xây dựng thói quen học tập kỷ luật thông qua các cơ chế kiểm tra từ vựng ngắt quãng, quản lý thời gian học khắt khe, hệ thống điểm thưởng/phạt rõ ràng và ứng dụng **Gamification** (Trò chơi hóa) để ôn tập kiến thức.
 
 ## 🔗 Cách truy cập
-1. Truy cập trực tiếp vào đường dẫn trang web: https://english-tracker-sigma.vercel.app/.
+1. Truy cập trực tiếp vào đường dẫn trang web: https://english-tracker-sigma.vercel.app/
 2. Tại màn hình chính, nhấp vào nút **Đăng nhập bằng Google**.
 3. Sử dụng bất kỳ tài khoản Gmail nào để đăng nhập. Hệ thống sẽ tự động khởi tạo hồ sơ học tập và lưu trữ tiến độ của bạn trên Đám mây.
 
-## ✨ Các tính năng
-* **Lộ trình học tập tích hợp:** Mỗi ngày học bao gồm một video bài giảng (nhúng từ YouTube) và bộ bài tập tương ứng (Trắc nghiệm, Đọc hiểu, Viết câu).
-* **Kỷ luật thời gian (Time-gating):** Học viên thiết lập cam kết lịch học hàng tuần. Bài học mới chỉ được mở khóa vào đúng ngày có lịch trình đã đăng ký.
-* **Lặp lại ngắt quãng (Spaced Repetition):** Bắt buộc gõ đúng danh sách từ vựng của bài ngày hôm trước (Trạm kiểm tra khởi động) trước khi mở khóa nội dung bài mới.
-* **Hệ thống Điểm số & Chuỗi ngày (Gamification):**
-  * Khởi đầu với **100 điểm** và đếm chuỗi ngày học liên tục (Streak).
-  * 🎁 **Thưởng (+5 điểm):** Trả lời đúng 100% bài tập ngay trong lần nộp đầu tiên (One-shot).
-  * ⚔️ **Phạt (-5 điểm):** Vắng mặt vào ngày có lịch học hoặc có hành vi gian lận (xem bên dưới).
-  * ⚔️ **Phạt (-2 điểm):** Gõ sai từ vựng ngày cũ quá 3 lần hoặc nộp sai bài tập quá 3 lần.
-* **Giám thị tự động (Anti-Cheat):** Hệ thống khóa trình duyệt trong lúc làm bài. Nếu học viên chuyển Tab, thu nhỏ cửa sổ, hoặc bấm quay lại/tải lại trang khi chưa nộp bài, hệ thống lập tức hủy bài và phạt 5 điểm.
-* **Sổ tay quy tắc:** Tích hợp bảng thông tin (Modal) minh bạch hóa toàn bộ luật cộng/trừ điểm để người học nắm rõ.
+## ✨ Các tính năng nổi bật
+
+### 📚 1. Lộ trình & Kỷ luật thép (Time-gating)
+* **Khóa bài thông minh:** Học viên thiết lập cam kết lịch học hàng tuần. Hệ thống đối chiếu **Lịch trình** và **Ngày hoàn thành bài gần nhất** để đảm bảo: Đúng ngày có lịch mới được mở bài, và **tuyệt đối chỉ được học 1 bài/ngày**.
+* **Nội dung đa dạng:** Mỗi ngày học bao gồm video bài giảng và bộ bài tập (Trắc nghiệm, Đọc hiểu, Viết câu).
+* **Khóa bài & Hiện đáp án (3-Strikes-Out):** Nếu nộp sai bài tập quá 3 lần, hệ thống lập tức khóa bài, trừ điểm và hiển thị đáp án đúng/sai chi tiết để ép học viên phải xem lại lỗi sai thay vì chọn bừa.
+
+### 🧠 2. Spaced Repetition & Sổ tay cá nhân
+* **Trạm kiểm tra đầu giờ:** Bốc ngẫu nhiên **5 từ vựng** của bài học trước đó. Học viên phải gõ chính xác nghĩa tiếng Anh để được vào bài mới.
+* **Sổ tay từ vựng (Personal Notebook):** Khi gõ sai từ ở trạm kiểm tra, học viên có thể bấm "Thêm vào sổ tay". Một danh sách sổ tay cá nhân được lưu trên Cloud để học viên có thể mở ra ôn tập bất cứ lúc nào ngay từ màn hình chính.
+
+### 🎮 3. Game Hub Ôn Tập (Tối đa 3 lượt/ngày)
+<img width="1854" height="1151" alt="image" src="https://github.com/user-attachments/assets/fc631f5d-7473-4bd2-9223-19cc1f040780" />
+
+Khu vực trò chơi giúp ôn lại toàn bộ từ vựng đã học ở các bài trước:
+* **Memory Match (Trí nhớ không gian):** Lật 10 thẻ để tìm 5 cặp từ tiếng Anh - tiếng Việt tương ứng. Ràng buộc khắt khe tối đa **15 bước lật**, quá số bước sẽ thua cuộc.
+
+<img width="1907" height="1048" alt="image" src="https://github.com/user-attachments/assets/7d4eed7a-2ca5-46ca-80b8-6fc9b3c4ab19" />
+
+
+* **Zombie Survival (Phản xạ nhạy bén):** Trả lời trắc nghiệm MCQ thật nhanh để tiêu diệt Zombie đang lao về căn cứ. Áp lực thời gian thực với tốc độ Zombie tăng dần. Tiêu diệt 5 Zombie để thắng.
+
+<img width="1888" height="1332" alt="image" src="https://github.com/user-attachments/assets/7e095a8b-01ad-437a-95df-312746599824" />
+
+
+### 🏆 4. Hệ thống Điểm số (Gamification) & Giám thị (Anti-Cheat)
+* Khởi đầu với **100 điểm** và đếm chuỗi ngày học liên tục (Streak).
+* 🎁 **Thưởng:** `+5 điểm` nếu làm đúng 100% bài tập ngay lần đầu tiên. `+1 điểm` khi thắng Mini-game ôn tập.
+* ⚔️ **Phạt:** `-5 điểm` nếu vắng mặt vào ngày có lịch học. `-2 điểm` nếu sai từ vựng hoặc sai bài tập quá 3 lần.
+* 🚨 **Giám thị tự động:** Chống gian lận bằng Page Visibility API. Chuyển Tab, thu nhỏ cửa sổ hoặc tải lại trang khi đang làm bài sẽ lập tức bị hủy bài và phạt `-5 điểm`.
+* **Sổ tay quy tắc:** Nút (i) trên Header giúp minh bạch hóa toàn bộ luật chơi.
 
 ## 💻 Công nghệ
-* **Frontend:** React.js, Vite, Tailwind CSS (Tùy chỉnh giao diện UI), Lucide React (Icons).
-* **Backend (BaaS):** Firebase Authentication (Xác thực người dùng), Cloud Firestore (Cơ sở dữ liệu NoSQL lưu tiến độ theo thời gian thực).
-* **Deployment:** Vercel kết hợp với GitHub (Tự động cập nhật code CI/CD).
+* **Frontend:** React.js, Vite, Tailwind CSS, Lucide React (Icons).
+* **Backend (BaaS):** Firebase Authentication (Xác thực người dùng), Cloud Firestore (Cơ sở dữ liệu NoSQL lưu tiến độ, sổ tay, lượt chơi game theo thời gian thực).
+* **Deployment:** Vercel tích hợp CI/CD với GitHub.
 
-## ⚙️ Quy trình
-1. **Đăng nhập:** Người dùng xác thực thông qua Google Account.
-2. **Thiết lập & Tải dữ liệu:** Nếu là người dùng mới, hệ thống yêu cầu ký cam kết lịch học và cấp 100 điểm. Nếu là người dùng cũ, tải toàn bộ dữ liệu (Điểm, Streak, Lộ trình) từ Cloud. Hệ thống đồng thời quét lịch sử để trừ điểm vắng mặt nếu có.
-3. **Trạm kiểm tra (Vocab Check):** Vượt qua bài kiểm tra gợi nhớ từ vựng của ngày hôm trước.
-4. **Học kiến thức mới:** Xem video (xác nhận đã xem) và làm bộ bài tập dưới sự giám sát của hệ thống Anti-cheat.
-5. **Cập nhật tiến độ:** Khi nộp bài, hệ thống tính toán điểm thưởng/phạt, cập nhật trạng thái khóa bài và đồng bộ toàn bộ dữ liệu ngược lên Firestore.
+## ⚙️ Quy trình cốt lõi
+1. **Đăng nhập & Thiết lập:** Xác thực Google, ký cam kết lịch học. Tải dữ liệu từ Firestore và quét trừ điểm nếu vắng mặt.
+2. **Khởi động:** Vượt qua kiểm tra từ vựng ngẫu nhiên. Bấm lưu từ khó vào Sổ tay.
+3. **Học & Làm bài:** Xem video, hoàn thành bài tập dưới sự giám sát của Anti-Cheat. Nộp bài cẩn thận để săn điểm thưởng One-shot hoặc tránh bị phạt.
+4. **Giải trí & Ôn tập:** Sử dụng điểm thưởng và thời gian rảnh để cày thêm điểm ở Khu vực Game (Tối đa 3 ván mỗi ngày).
 
-## 📁 Kiến trúc
+## 📁 Kiến trúc dự án
 ```text
 english-tracker/
 ├── src/
-│   ├── App.jsx         # Component cốt lõi: Auth, Lịch học, Gamification, Time-gating, Anti-cheat xử phạt.
-│   ├── Lesson.jsx      # Component bài học: Hiển thị Video, Bài tập, Chấm điểm, Cảm biến Giám thị (Window/Tab tracking).
-│   ├── data.js         # CSDL tĩnh: Câu hỏi, Từ vựng, Link YouTube.
-│   ├── firebase.js     # Cấu hình kết nối Backend Firebase (Auth & Firestore).
-│   ├── index.css       # Cấu hình Tailwind CSS.
-│   └── main.jsx        # Điểm neo (Entry point) của React app.
-├── .gitignore          # Cấu hình bỏ qua file rác.
-├── package.json        # Quản lý metadata và các dependencies.
-├── tailwind.config.js  # Tùy chỉnh giao diện.
-└── vite.config.js      # Cấu hình biên dịch dự án Vite.
+│   ├── App.jsx              # Cốt lõi: Lịch học, State quản lý Điểm/Streak, Modal Quy tắc, Admin Mode.
+│   ├── Lesson.jsx           # Màn hình Bài học: Check từ vựng random, Sổ tay, Khóa 3-strikes, Anti-cheat.
+│   ├── VocabularyReview.jsx # Game Hub: Tích hợp logic Memory Match và Zombie Survival.
+│   ├── data.js              # CSDL tĩnh: Các câu hỏi, từ vựng, link YouTube 48 ngày.
+│   ├── firebase.js          # Kết nối Backend (Firebase Auth & Firestore).
+│   ├── index.css            # Cấu hình Tailwind CSS.
+│   └── main.jsx             # Entry point của React.
+├── package.json             # Quản lý metadata và dependencies.
+└── tailwind.config.js       # Tùy chỉnh hệ thống giao diện.
