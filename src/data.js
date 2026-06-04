@@ -86,7 +86,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 2) {
       // Từ vựng trích xuất từ nội dung học và bài tập ngày 2
-      dayData.videoUrl = "https://www.youtube.com/embed/ChXLQKru_XE?si=FoFaUH9E5AKQVFu_";
+      dayData.videoUrl = "https://www.youtube.com/embed/pALsZb6uCtE?si=AkrwNzW3yDQni6jy";
       dayData.vocabulary = [
         { word: "uncle", meaning: "chú/bác" },
         { word: "aunt", meaning: "cô/dì" },
@@ -144,7 +144,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 3) {
       // Từ vựng trích xuất từ nội dung học và bài tập ngày 3
-      dayData.videoUrl = "https://www.youtube.com/embed/4ibddhkh-U4?si=YULPD3StexQ7o2VE";
+      dayData.videoUrl = "https://www.youtube.com/embed/u-wWCqfW-w8?si=n72CvRUrNQC8NhQX";
       dayData.vocabulary = [
         { word: "grandfather", meaning: "ông" },
         { word: "grandmother", meaning: "bà" },
@@ -209,7 +209,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 4) {
       // Từ vựng trích xuất từ nội dung học và bài tập ngày 4 [cite: 400]
-      dayData.videoUrl = "https://www.youtube.com/embed/RQovZcwJWgA?si=uPvlf85CmuYrcvMF";
+      dayData.videoUrl = "https://www.youtube.com/embed/iedYwTprM0w?si=ZjSt1oUSR_w6Fa0V";
       dayData.vocabulary = [
         { word: "park", meaning: "công viên" }, // [cite: 402]
         { word: "garden", meaning: "khu vườn" }, // [cite: 402]
@@ -271,7 +271,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 5) {
       // Từ vựng trích xuất từ nội dung học và bài tập ngày 5
-      dayData.videoUrl = "https://www.youtube.com/embed/pax_Csu1iJs?si=lpQ7VZ2dr2762-J2";
+      dayData.videoUrl = "https://www.youtube.com/embed/T7ymp6PKdwA?si=OJc_ufptECzhL4sS";
       dayData.vocabulary = [
         { word: "play", meaning: "chơi" },
         { word: "watch", meaning: "xem" },
