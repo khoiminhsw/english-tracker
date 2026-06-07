@@ -1,9 +1,16 @@
 // src/Lesson.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import ReactPlayer from 'react-player'; // QUAY LẠI IMPORT GỐC, XÓA CHỮ /lazy
 import { db, auth } from './firebase';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { CheckCircle2, XCircle, BookPlus, Wrench, AlertOctagon, Lightbulb, Ticket, PlayCircle, HelpCircle } from 'lucide-react';
+
+// Hàm tự động nhận diện ID của YouTube
+const getYouTubeID = (url) => {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+};
 
 export default function Lesson({ dayData, prevDayData, onComplete, onBack, onCheat, isAdmin, inventory, consumeItem }) {
   const initialStep = (prevDayData && prevDayData.vocabulary && prevDayData.vocabulary.length > 0) ? 'vocab-check' : (dayData.videoUrl ? 'video-learning' : 'exercises');
@@ -16,14 +23,20 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
   const [vocabErrors, setVocabErrors] = useState({}); 
   const [savedToNotebook, setSavedToNotebook] = useState({}); 
 
-  // TRẠNG THÁI VIDEO & QUIZ
-  const playerRef = useRef(null);
-  const [videoProgress, setVideoProgress] = useState(0);
+  // ==========================================
+  // HỆ THỐNG XỬ LÝ VIDEO NGUYÊN BẢN (KHÔNG DÙNG THƯ VIỆN NGOÀI)
+  // ==========================================
+  const rawUrl = dayData.videoUrl || '';
+  const ytId = getYouTubeID(rawUrl);
+  const isYouTube = !!ytId; // Nếu lấy được ID thì là YouTube, ngược lại là Video Máy tính
+
+  const localVideoRef = useRef(null);
+  const [videoProgress, setVideoProgress] = useState(0); // Dùng cho video máy tính
   const [lastPlayedFraction, setLastPlayedFraction] = useState(0); 
+  const [ytWatchTime, setYtWatchTime] = useState(0); // Bộ đếm thời gian thật cho YouTube
   const [isVideoWatched, setIsVideoWatched] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
   
-  // Quiz giữa video
+  // Quiz chặn giữa video
   const [showVideoQuiz, setShowVideoQuiz] = useState(false);
   const [currentVideoQuiz, setCurrentVideoQuiz] = useState(null);
   const [videoQuizAnswer, setVideoQuizAnswer] = useState('');
@@ -34,8 +47,6 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
-  const cleanVideoUrl = dayData.videoUrl ? dayData.videoUrl.split('&list=')[0] : '';
-
   useEffect(() => {
     if (prevDayData && prevDayData.vocabulary && prevDayData.vocabulary.length > 0) {
       const shuffled = [...prevDayData.vocabulary].sort(() => 0.5 - Math.random());
@@ -43,7 +54,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     }
   }, [prevDayData]);
 
-  // HỆ THỐNG ANTI-CHEAT
+  // HỆ THỐNG ANTI-CHEAT CHUNG
   useEffect(() => {
     if (isAdmin) return;
     const handleVisibilityChange = () => {
@@ -91,7 +102,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     });
 
     if (isAllCorrect) {
-      setStep(cleanVideoUrl ? 'video-learning' : 'exercises');
+      setStep(rawUrl ? 'video-learning' : 'exercises');
       setVocabErrors({});
     } else {
       setVocabFailCount(prev => prev + 1);
@@ -103,9 +114,9 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     const success = await consumeItem('skips');
     if (success) {
       alert("🎟️ Đã dùng 1 thẻ Skip! Bỏ qua kiểm tra từ vựng.");
-      setStep(cleanVideoUrl ? 'video-learning' : 'exercises');
+      setStep(rawUrl ? 'video-learning' : 'exercises');
     } else {
-      alert("Bạn không đủ thẻ Skip! Hãy mua trong Cửa hàng bằng Coins.");
+      alert("Bạn không đủ thẻ Skip! Hãy mua trong Cửa hàng.");
     }
   };
 
@@ -121,22 +132,48 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
   };
 
   // ==========================================
-  // THUẬT TOÁN VIDEO & ANTI-SEEK SIÊU SẠCH
+  // THUẬT TOÁN CHẶN QUIZ DÀNH RIÊNG CHO YOUTUBE
   // ==========================================
   useEffect(() => {
-    if (showVideoQuiz) setIsPlaying(false);
-  }, [showVideoQuiz]);
+    // Nếu là Admin, hoặc không phải YouTube, hoặc đang bận trả lời Quiz thì dừng bộ đếm
+    if (isAdmin || step !== 'video-learning' || !isYouTube || showVideoQuiz || isVideoWatched) return;
 
-  const handleVideoProgress = (state) => {
-    if (isAdmin || showVideoQuiz || isVideoWatched) return;
-
-    const currentFraction = state.played;
-
-    // Chống Tua Nhanh: Giới hạn bước nhảy 5%
-    if (currentFraction > lastPlayedFraction + 0.05) {
-      if (playerRef.current) {
-        playerRef.current.seekTo(lastPlayedFraction, 'fraction');
+    const timer = setInterval(() => {
+      // CHỈ ĐẾM THỜI GIAN KHI HỌC SINH ĐANG MỞ TAB NÀY (Chống treo máy lấy điểm)
+      if (!document.hidden) {
+        setYtWatchTime(prev => {
+          const newTime = prev + 1;
+          
+          // Mốc 1: Bật Quiz sau 20 giây xem
+          if (newTime === 20 && !passedQuizzes.includes('quiz1')) {
+            triggerVideoQuiz('quiz1');
+          } 
+          // Mốc 2: Bật Quiz sau 40 giây xem
+          else if (newTime === 40 && !passedQuizzes.includes('quiz2')) {
+            triggerVideoQuiz('quiz2');
+          } 
+          // Mở khóa bài tập sau 60 giây
+          else if (newTime >= 60 && passedQuizzes.length === 2) {
+            setIsVideoWatched(true);
+          }
+          return newTime;
+        });
       }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isAdmin, step, isYouTube, showVideoQuiz, isVideoWatched, passedQuizzes]);
+
+  // ==========================================
+  // THUẬT TOÁN CHỐNG TUA & CHẶN QUIZ CHO VIDEO MÁY TÍNH
+  // ==========================================
+  const handleLocalTimeUpdate = (e) => {
+    if (isAdmin || showVideoQuiz || isVideoWatched) return;
+    const currentFraction = e.target.currentTime / e.target.duration;
+
+    // Chống tua nhanh: Bấm nhảy quá 5% video sẽ bị kéo giật lùi về chỗ cũ
+    if (currentFraction > lastPlayedFraction + 0.05) {
+      e.target.currentTime = lastPlayedFraction * e.target.duration;
       alert("⚠️ Chống Tua Nhanh: Bạn phải xem từ từ để không bỏ lỡ kiến thức!");
       return;
     }
@@ -144,11 +181,21 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     setLastPlayedFraction(currentFraction);
     setVideoProgress(currentFraction);
 
-    if (currentFraction >= 0.3 && !passedQuizzes.includes('quiz1')) triggerVideoQuiz('quiz1');
-    else if (currentFraction >= 0.8 && !passedQuizzes.includes('quiz2')) triggerVideoQuiz('quiz2');
-    else if (currentFraction >= 0.95 && passedQuizzes.length === 2) setIsVideoWatched(true);
+    // Mốc 30% và 80% thời lượng cho Video máy tính
+    if (currentFraction >= 0.3 && !passedQuizzes.includes('quiz1')) {
+      e.target.pause(); // Tự động dừng video
+      triggerVideoQuiz('quiz1');
+    } else if (currentFraction >= 0.8 && !passedQuizzes.includes('quiz2')) {
+      e.target.pause();
+      triggerVideoQuiz('quiz2');
+    } else if (currentFraction >= 0.95 && passedQuizzes.length === 2) {
+      setIsVideoWatched(true);
+    }
   };
 
+  // ==========================================
+  // HIỂN THỊ VÀ CHẤM ĐIỂM QUIZ
+  // ==========================================
   const triggerVideoQuiz = (quizId) => {
     setShowVideoQuiz(true); 
     const availableEx = dayData.exercises.filter(ex => ex.type === 'mcq' || ex.type === 'reading');
@@ -174,11 +221,11 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     setShowVideoQuiz(false);
     setCurrentVideoQuiz(null);
     setVideoQuizError(false);
-    setIsPlaying(true); 
-  };
-
-  const handleVideoError = () => {
-    alert("🚨 LỖI TẢI VIDEO:\nTrình duyệt không thể phát được video này.\nHãy chắc chắn file nằm đúng ở public/videos/ và tên file chính xác.");
+    
+    // Nếu là video máy tính thì tự động ấn phát tiếp sau khi trả lời xong
+    if (!isYouTube && localVideoRef.current) {
+      localVideoRef.current.play();
+    }
   };
 
   // ==========================================
@@ -201,7 +248,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
       if (hintApplied) alert("💡 Đã dùng 1 Hint! Hệ thống vừa điền giúp bạn 1 đáp án đúng.");
       else alert("Bạn đã điền đúng hết rồi, không cần Hint nữa!");
     } else {
-      alert("Bạn không đủ Hint! Hãy mua trong Cửa hàng bằng Coins.");
+      alert("Bạn không đủ Hint! Hãy mua trong Cửa hàng.");
     }
   };
 
@@ -266,7 +313,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
             ))}
           </div>
           <button onClick={handleVocabCheck} className="w-full bg-yellow-500 text-white py-3 rounded-lg font-bold hover:bg-yellow-600 shadow transition">Xác nhận</button>
-          {isAdmin && <button onClick={() => setStep(cleanVideoUrl ? 'video-learning' : 'exercises')} className="mt-4 w-full bg-gray-800 text-white py-2 rounded-lg font-bold hover:bg-black flex items-center justify-center gap-2"><Wrench size={18} /> [Admin] Bỏ qua kiểm tra</button>}
+          {isAdmin && <button onClick={() => setStep(rawUrl ? 'video-learning' : 'exercises')} className="mt-4 w-full bg-gray-800 text-white py-2 rounded-lg font-bold hover:bg-black flex items-center justify-center gap-2"><Wrench size={18} /> [Admin] Bỏ qua kiểm tra</button>}
         </div>
       )}
 
@@ -277,23 +324,35 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
             {isAdmin && <span className="text-sm font-bold text-purple-600 bg-purple-100 px-3 py-1 rounded">Admin Mode: Xem tự do</span>}
           </div>
 
-          <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-md relative group">
-            {/* ĐÃ LOẠI BỎ onDuration VÀ onSeek ĐỂ TRÁNH LỖI CONSOLE */}
-            <ReactPlayer 
-              ref={playerRef}
-              url={cleanVideoUrl} 
-              width="100%" 
-              height="100%" 
-              className="absolute top-0 left-0"
-              controls={true}
-              playing={isPlaying}
-              onPlay={() => setIsPlaying(true)}
-              onPause={() => setIsPlaying(false)}
-              onProgress={handleVideoProgress}
-              onError={handleVideoError}
-              config={{ youtube: { playerVars: { disablekb: 1, modestbranding: 1, rel: 0 } } }}
-            />
+          <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-md relative group flex items-center justify-center">
+            
+            {/* RENDER DỰA THEO NỀN TẢNG - KHÔNG DÙNG THƯ VIỆN */}
+            {isYouTube ? (
+              <iframe 
+                width="100%" 
+                height="100%" 
+                src={`https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1`} 
+                title="YouTube video player" 
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowFullScreen
+                className="absolute top-0 left-0"
+              ></iframe>
+            ) : rawUrl ? (
+              <video 
+                ref={localVideoRef}
+                src={rawUrl}
+                controls={!showVideoQuiz}
+                width="100%"
+                height="100%"
+                className="absolute top-0 left-0"
+                onTimeUpdate={handleLocalTimeUpdate}
+              />
+            ) : (
+              <span className="text-red-500 font-bold">Lỗi: Không tìm thấy đường dẫn Video.</span>
+            )}
 
+            {/* POPUP QUIZ CHẶN GIỮA MÀN HÌNH */}
             {showVideoQuiz && currentVideoQuiz && (
               <div className="absolute inset-0 bg-black/95 z-20 flex items-center justify-center p-4">
                 <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl animate-in zoom-in duration-300">
@@ -327,8 +386,9 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
             )}
           </div>
 
-          <div className="mt-4 bg-gray-200 h-2 rounded-full overflow-hidden">
-            <div className={`h-full transition-all duration-300 ${isVideoWatched ? 'bg-green-500' : 'bg-blue-500'}`} style={{ width: `${videoProgress * 100}%` }}></div>
+          {/* THANH TIẾN ĐỘ THỜI GIAN THỰC */}
+          <div className="mt-4 bg-gray-200 h-2 rounded-full overflow-hidden relative">
+             <div className={`h-full transition-all duration-300 ${isVideoWatched ? 'bg-green-500' : 'bg-blue-500'}`} style={{ width: `${isYouTube ? Math.min((ytWatchTime / 60) * 100, 100) : videoProgress * 100}%` }}></div>
           </div>
           
           <div className="mt-6 text-center">
