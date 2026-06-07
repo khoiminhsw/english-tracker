@@ -25,7 +25,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 1) {
       // Từ vựng trích xuất từ chính bài tập ngày 1 để ngày 2 kiểm tra
-      dayData.videoUrl = "https://www.youtube.com/embed/v6eyfVYgNT8?si=fFMmrIFX7a4mJJit";
+      dayData.videoUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
       dayData.vocabulary = [
         { word: "principal", meaning: "hiệu trưởng" },
         { word: "laboratory", meaning: "phòng thí nghiệm" },
@@ -86,7 +86,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 2) {
       // Từ vựng trích xuất từ nội dung học và bài tập ngày 2
-      dayData.videoUrl = "https://www.youtube.com/embed/pALsZb6uCtE?si=AkrwNzW3yDQni6jy";
+      dayData.videoUrl = "https://youtu.be/dQw4w9WgXcQ?si=KaT5QUWkQvjUunI3";
       dayData.vocabulary = [
         { word: "uncle", meaning: "chú/bác" },
         { word: "aunt", meaning: "cô/dì" },
@@ -144,7 +144,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 3) {
       // Từ vựng trích xuất từ nội dung học và bài tập ngày 3
-      dayData.videoUrl = "https://www.youtube.com/embed/u-wWCqfW-w8?si=n72CvRUrNQC8NhQX";
+      dayData.videoUrl = "https://www.youtube.com/watch?v=u-wWCqfW-w8";
       dayData.vocabulary = [
         { word: "grandfather", meaning: "ông" },
         { word: "grandmother", meaning: "bà" },
@@ -209,7 +209,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 4) {
       // Từ vựng trích xuất từ nội dung học và bài tập ngày 4 [cite: 400]
-      dayData.videoUrl = "https://www.youtube.com/embed/iedYwTprM0w?si=ZjSt1oUSR_w6Fa0V";
+      dayData.videoUrl = "https://www.youtube.com/watch?v=iedYwTprM0w";
       dayData.vocabulary = [
         { word: "park", meaning: "công viên" }, // [cite: 402]
         { word: "garden", meaning: "khu vườn" }, // [cite: 402]
@@ -271,7 +271,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 5) {
       // Từ vựng trích xuất từ nội dung học và bài tập ngày 5
-      dayData.videoUrl = "https://www.youtube.com/embed/T7ymp6PKdwA?si=OJc_ufptECzhL4sS";
+      dayData.videoUrl = "https://www.youtube.com/watch?v=T7ymp6PKdwA";
       dayData.vocabulary = [
         { word: "play", meaning: "chơi" },
         { word: "watch", meaning: "xem" },

@@ -2,9 +2,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CheckCircle2, Trophy, BrainCircuit, Skull, ShieldAlert, Crosshair, Swords, HeartCrack, HelpCircle, Play } from 'lucide-react';
 
-// ==========================================
-// 1. GAME: MEMORY MATCH (Đã thêm luật 15 bước + Màn hình hướng dẫn)
-// ==========================================
 function MemoryMatchGame({ learnedVocab, lastPlayedWords, onCompleteGame }) {
   const [showRules, setShowRules] = useState(() => !localStorage.getItem('hideMemoryRules'));
   const [dontShowAgain, setDontShowAgain] = useState(false);
@@ -15,7 +12,7 @@ function MemoryMatchGame({ learnedVocab, lastPlayedWords, onCompleteGame }) {
   const [matchedIds, setMatchedIds] = useState([]);
   const [isLocked, setIsLocked] = useState(false);
   const [moves, setMoves] = useState(0);
-  const [gameState, setGameState] = useState('playing'); // playing, won, lost
+  const [gameState, setGameState] = useState('playing'); 
 
   useEffect(() => {
     if (showRules) return;
@@ -78,7 +75,6 @@ function MemoryMatchGame({ learnedVocab, lastPlayedWords, onCompleteGame }) {
     }
   };
 
-  // NẾU CHƯA ĐỌC LUẬT -> HIỂN THỊ CÀI ĐẶT LUẬT
   if (showRules) {
     return (
       <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg border max-w-md mx-auto animate-in fade-in zoom-in duration-300">
@@ -149,7 +145,7 @@ function MemoryMatchGame({ learnedVocab, lastPlayedWords, onCompleteGame }) {
           <div className="inline-block p-6 bg-yellow-100 rounded-full mb-6"><Trophy size={80} className="text-yellow-500" /></div>
           <h2 className="text-3xl font-black text-yellow-600 mb-2">Chiến thắng Tuyệt đối!</h2>
           <p className="text-gray-600 font-bold mb-6 text-lg">Hoàn thành xuất sắc thử thách lật thẻ trong <span className="text-indigo-600">{moves}</span> bước.</p>
-          <p className="text-green-600 font-black text-xl mb-8">⭐ Bạn được cộng +1 điểm thưởng!</p>
+          <p className="text-green-600 font-black text-xl mb-8">⭐ Bạn được cộng +1 Điểm thưởng!</p>
           <button onClick={() => onCompleteGame(true, gameWords.map(w => w.word))} className="bg-indigo-600 text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-indigo-700 shadow-xl hover:-translate-y-1 transition-transform">Nhận thưởng & Kết thúc</button>
         </div>
       )}
@@ -157,10 +153,6 @@ function MemoryMatchGame({ learnedVocab, lastPlayedWords, onCompleteGame }) {
   );
 }
 
-
-// ==========================================
-// 2. GAME: ZOMBIE SURVIVAL (Đã thêm màn hình hướng dẫn)
-// ==========================================
 function ZombieSurvivalGame({ learnedVocab, onCompleteGame }) {
   const [showRules, setShowRules] = useState(() => !localStorage.getItem('hideZombieRules'));
   const [dontShowAgain, setDontShowAgain] = useState(false);
@@ -258,7 +250,6 @@ function ZombieSurvivalGame({ learnedVocab, onCompleteGame }) {
     }
   };
 
-  // NẾU CHƯA ĐỌC LUẬT -> HIỂN THỊ CÀI ĐẶT LUẬT
   if (showRules) {
     return (
       <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg border max-w-md mx-auto animate-in fade-in zoom-in duration-300">
@@ -340,7 +331,7 @@ function ZombieSurvivalGame({ learnedVocab, onCompleteGame }) {
           <div className="inline-block p-6 bg-yellow-100 rounded-full mb-6"><Trophy size={80} className="text-yellow-500" /></div>
           <h2 className="text-3xl font-black text-yellow-600 mb-2">Bảo vệ thành công!</h2>
           <p className="text-gray-600 font-bold mb-6 text-lg">Phản xạ từ vựng của bạn cực kỳ xuất sắc.</p>
-          <p className="text-green-600 font-black text-xl mb-8">⭐ Bạn được cộng +1 điểm thưởng!</p>
+          <p className="text-green-600 font-black text-xl mb-8">⭐ Bạn được cộng +1 Điểm thưởng!</p>
           <button onClick={() => onCompleteGame(true, playedWordsRef.current)} className="bg-red-600 text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-red-700 shadow-xl transition-colors">Nhận thưởng & Kết thúc</button>
         </div>
       )}
@@ -348,11 +339,10 @@ function ZombieSurvivalGame({ learnedVocab, onCompleteGame }) {
   );
 }
 
-
 // ==========================================
-// 3. COMPONENT CHÍNH: MENU HUB
+// 3. COMPONENT CHÍNH: MENU HUB (Thêm Hiển thị Lượt)
 // ==========================================
-export default function VocabularyReview({ learnedVocab, onBack, onCompleteGame, lastPlayedWords }) {
+export default function VocabularyReview({ learnedVocab, onBack, onCompleteGame, lastPlayedWords, dailyGamesPlayed, isAdmin }) {
   const [selectedGame, setSelectedGame] = useState(null);
 
   if (learnedVocab.length < 5) {
@@ -367,12 +357,18 @@ export default function VocabularyReview({ learnedVocab, onBack, onCompleteGame,
 
   if (!selectedGame) {
     return (
-      <div className="max-w-4xl mx-auto p-4 sm:p-6">
+      <div className="max-w-4xl mx-auto p-4 sm:p-6 animate-in fade-in duration-300">
         <button onClick={onBack} className="mb-6 text-blue-500 hover:underline font-bold">← Quay lại Dashboard</button>
+        
         <div className="text-center mb-10">
           <h2 className="text-3xl font-black text-gray-800">Khu Vực Ôn Tập Kỹ Năng 🎮</h2>
           <p className="text-gray-500 font-medium mt-2">Chiến thắng bất kỳ trò chơi nào cũng mang lại cho bạn +1 điểm.</p>
+          
+          <div className="inline-block mt-5 bg-indigo-100 text-indigo-700 font-black px-6 py-3 rounded-full border-2 border-indigo-200 shadow-inner">
+            Lượt chơi còn lại hôm nay: {isAdmin ? 'Vô hạn (Admin Mode)' : `${3 - dailyGamesPlayed}/3`}
+          </div>
         </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <button onClick={() => setSelectedGame('memory')} className="group bg-white p-6 sm:p-8 rounded-2xl shadow-sm border-2 border-transparent hover:border-indigo-400 hover:shadow-xl transition-all text-left flex flex-col justify-between">
             <div>
@@ -381,6 +377,7 @@ export default function VocabularyReview({ learnedVocab, onBack, onCompleteGame,
               <p className="text-gray-600 font-medium leading-relaxed">Rèn luyện <span className="font-bold text-indigo-500">Trí nhớ không gian</span>. Lật thẻ và ghép 5 cặp từ với số bước giới hạn nghiêm ngặt <b>(Tối đa 15 bước)</b>.</p>
             </div>
           </button>
+          
           <button onClick={() => setSelectedGame('zombie')} className="group bg-white p-6 sm:p-8 rounded-2xl shadow-sm border-2 border-transparent hover:border-red-400 hover:shadow-xl transition-all text-left flex flex-col justify-between relative overflow-hidden">
             <div className="relative z-10">
               <div className="bg-red-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><Swords size={32} className="text-red-600" /></div>
