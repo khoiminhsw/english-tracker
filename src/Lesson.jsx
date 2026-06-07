@@ -2,9 +2,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db, auth } from './firebase';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { CheckCircle2, XCircle, BookPlus, Wrench, AlertOctagon, Lightbulb, Ticket, PlayCircle, HelpCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, BookPlus, Wrench, AlertOctagon, Lightbulb, Ticket, PlayCircle, Clock } from 'lucide-react';
 
-// Hàm tự động nhận diện ID của YouTube
 const getYouTubeID = (url) => {
   if (!url) return null;
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -24,26 +23,18 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
   const [savedToNotebook, setSavedToNotebook] = useState({}); 
 
   // ==========================================
-  // HỆ THỐNG XỬ LÝ VIDEO NGUYÊN BẢN (KHÔNG DÙNG THƯ VIỆN NGOÀI)
+  // TRẠNG THÁI VIDEO & BỘ ĐẾM GIỜ (ẨN)
   // ==========================================
   const rawUrl = dayData.videoUrl || '';
   const ytId = getYouTubeID(rawUrl);
-  const isYouTube = !!ytId; // Nếu lấy được ID thì là YouTube, ngược lại là Video Máy tính
+  const isYouTube = !!ytId; 
 
-  const localVideoRef = useRef(null);
-  const [videoProgress, setVideoProgress] = useState(0); // Dùng cho video máy tính
-  const [lastPlayedFraction, setLastPlayedFraction] = useState(0); 
-  const [ytWatchTime, setYtWatchTime] = useState(0); // Bộ đếm thời gian thật cho YouTube
-  const [isVideoWatched, setIsVideoWatched] = useState(false);
-  
-  // Quiz chặn giữa video
-  const [showVideoQuiz, setShowVideoQuiz] = useState(false);
-  const [currentVideoQuiz, setCurrentVideoQuiz] = useState(null);
-  const [videoQuizAnswer, setVideoQuizAnswer] = useState('');
-  const [videoQuizError, setVideoQuizError] = useState(false);
-  const [passedQuizzes, setPassedQuizzes] = useState([]); 
+  const REQUIRED_TIME = 900; // 15 phút = 900 giây
+  const [watchTime, setWatchTime] = useState(0); // Bộ đếm thời gian xem thực tế ngầm
+  const [isVideoWatched, setIsVideoWatched] = useState(false); // Trạng thái mở khóa Checkpoint
 
   const [answers, setAnswers] = useState({});
+  const [hintedQuestions, setHintedQuestions] = useState([]); // LƯU VẾT CÁC CÂU ĐÃ DÙNG HINT
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
@@ -132,28 +123,16 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
   };
 
   // ==========================================
-  // THUẬT TOÁN CHẶN QUIZ DÀNH RIÊNG CHO YOUTUBE
+  // THUẬT TOÁN ĐẾM GIỜ XEM VIDEO NGẦM (15 PHÚT)
   // ==========================================
   useEffect(() => {
-    // Nếu là Admin, hoặc không phải YouTube, hoặc đang bận trả lời Quiz thì dừng bộ đếm
-    if (isAdmin || step !== 'video-learning' || !isYouTube || showVideoQuiz || isVideoWatched) return;
+    if (isAdmin || step !== 'video-learning' || isVideoWatched) return;
 
     const timer = setInterval(() => {
-      // CHỈ ĐẾM THỜI GIAN KHI HỌC SINH ĐANG MỞ TAB NÀY (Chống treo máy lấy điểm)
       if (!document.hidden) {
-        setYtWatchTime(prev => {
+        setWatchTime(prev => {
           const newTime = prev + 1;
-          
-          // Mốc 1: Bật Quiz sau 20 giây xem
-          if (newTime === 20 && !passedQuizzes.includes('quiz1')) {
-            triggerVideoQuiz('quiz1');
-          } 
-          // Mốc 2: Bật Quiz sau 40 giây xem
-          else if (newTime === 40 && !passedQuizzes.includes('quiz2')) {
-            triggerVideoQuiz('quiz2');
-          } 
-          // Mở khóa bài tập sau 60 giây
-          else if (newTime >= 60 && passedQuizzes.length === 2) {
+          if (newTime >= REQUIRED_TIME) {
             setIsVideoWatched(true);
           }
           return newTime;
@@ -162,91 +141,47 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isAdmin, step, isYouTube, showVideoQuiz, isVideoWatched, passedQuizzes]);
+  }, [isAdmin, step, isVideoWatched]);
+
 
   // ==========================================
-  // THUẬT TOÁN CHỐNG TUA & CHẶN QUIZ CHO VIDEO MÁY TÍNH
-  // ==========================================
-  const handleLocalTimeUpdate = (e) => {
-    if (isAdmin || showVideoQuiz || isVideoWatched) return;
-    const currentFraction = e.target.currentTime / e.target.duration;
-
-    // Chống tua nhanh: Bấm nhảy quá 5% video sẽ bị kéo giật lùi về chỗ cũ
-    if (currentFraction > lastPlayedFraction + 0.05) {
-      e.target.currentTime = lastPlayedFraction * e.target.duration;
-      alert("⚠️ Chống Tua Nhanh: Bạn phải xem từ từ để không bỏ lỡ kiến thức!");
-      return;
-    }
-
-    setLastPlayedFraction(currentFraction);
-    setVideoProgress(currentFraction);
-
-    // Mốc 30% và 80% thời lượng cho Video máy tính
-    if (currentFraction >= 0.3 && !passedQuizzes.includes('quiz1')) {
-      e.target.pause(); // Tự động dừng video
-      triggerVideoQuiz('quiz1');
-    } else if (currentFraction >= 0.8 && !passedQuizzes.includes('quiz2')) {
-      e.target.pause();
-      triggerVideoQuiz('quiz2');
-    } else if (currentFraction >= 0.95 && passedQuizzes.length === 2) {
-      setIsVideoWatched(true);
-    }
-  };
-
-  // ==========================================
-  // HIỂN THỊ VÀ CHẤM ĐIỂM QUIZ
-  // ==========================================
-  const triggerVideoQuiz = (quizId) => {
-    setShowVideoQuiz(true); 
-    const availableEx = dayData.exercises.filter(ex => ex.type === 'mcq' || ex.type === 'reading');
-    const randomEx = availableEx.length > 0 ? availableEx[Math.floor(Math.random() * availableEx.length)] : null;
-    
-    setCurrentVideoQuiz({ id: quizId, questionData: randomEx });
-    setVideoQuizAnswer('');
-    setVideoQuizError(false);
-  };
-
-  const handleSubmitVideoQuiz = () => {
-    if (!currentVideoQuiz || !currentVideoQuiz.questionData) return handlePassVideoQuiz();
-    
-    const correctAns = currentVideoQuiz.questionData.correct.toString().trim().toLowerCase();
-    const userAns = videoQuizAnswer.toString().trim().toLowerCase();
-
-    if (userAns === correctAns) handlePassVideoQuiz();
-    else setVideoQuizError(true);
-  };
-
-  const handlePassVideoQuiz = () => {
-    setPassedQuizzes(prev => [...prev, currentVideoQuiz.id]);
-    setShowVideoQuiz(false);
-    setCurrentVideoQuiz(null);
-    setVideoQuizError(false);
-    
-    // Nếu là video máy tính thì tự động ấn phát tiếp sau khi trả lời xong
-    if (!isYouTube && localVideoRef.current) {
-      localVideoRef.current.play();
-    }
-  };
-
-  // ==========================================
-  // BÀI TẬP VÀ NỘP BÀI
+  // BÀI TẬP & TÍNH NĂNG HINT THÔNG MINH
   // ==========================================
   const handleUseHint = async () => {
+    // 1. Quét tìm câu hỏi sai hoặc chưa làm
+    let targetIdx = -1;
+    for (let i = 0; i < dayData.exercises.length; i++) {
+      const ex = dayData.exercises[i];
+      const currentAns = (answers[i] || '').toString().trim().toLowerCase();
+      const correctAns = ex.correct.toString().trim().toLowerCase();
+      
+      // Nếu câu này chưa được Hint và đang bị sai/chưa làm -> Chọn câu này
+      if (currentAns !== correctAns && !hintedQuestions.includes(i)) {
+        targetIdx = i;
+        break;
+      }
+    }
+
+    if (targetIdx === -1) {
+      alert("Bạn đã điền đúng hết rồi, không cần Hint nữa!");
+      return; // Dừng lại, không trừ vật phẩm
+    }
+
+    // 2. Tiến hành trừ Hint trong túi đồ
     const success = await consumeItem('hints');
     if (success) {
-      let hintApplied = false;
-      dayData.exercises.forEach((ex, idx) => {
-        if (!hintApplied) {
-          const currentAns = (answers[idx] || '').toString().trim().toLowerCase();
-          const correctAns = ex.correct.toString().trim().toLowerCase();
-          if (currentAns !== correctAns) {
-            setAnswers(prev => ({ ...prev, [idx]: ex.correct }));
-            hintApplied = true;
-          }
-        }
-      });
-      if (hintApplied) alert("💡 Đã dùng 1 Hint! Hệ thống vừa điền giúp bạn 1 đáp án đúng.");
-      else alert("Bạn đã điền đúng hết rồi, không cần Hint nữa!");
+      const correctAns = dayData.exercises[targetIdx].correct;
+      
+      // Cập nhật đáp án và lưu vết câu được Hint
+      setAnswers(prev => ({ ...prev, [targetIdx]: correctAns }));
+      setHintedQuestions(prev => [...prev, targetIdx]);
+      
+      // Cuộn màn hình mượt mà tới đúng câu đó
+      const element = document.getElementById(`exercise-${targetIdx}`);
+      if(element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
     } else {
       alert("Bạn không đủ Hint! Hãy mua trong Cửa hàng.");
     }
@@ -324,9 +259,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
             {isAdmin && <span className="text-sm font-bold text-purple-600 bg-purple-100 px-3 py-1 rounded">Admin Mode: Xem tự do</span>}
           </div>
 
-          <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-md relative group flex items-center justify-center">
-            
-            {/* RENDER DỰA THEO NỀN TẢNG - KHÔNG DÙNG THƯ VIỆN */}
+          <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-md relative flex items-center justify-center">
             {isYouTube ? (
               <iframe 
                 width="100%" 
@@ -340,64 +273,31 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
               ></iframe>
             ) : rawUrl ? (
               <video 
-                ref={localVideoRef}
                 src={rawUrl}
-                controls={!showVideoQuiz}
+                controls
                 width="100%"
                 height="100%"
                 className="absolute top-0 left-0"
-                onTimeUpdate={handleLocalTimeUpdate}
+                onEnded={() => setIsVideoWatched(true)} 
               />
             ) : (
               <span className="text-red-500 font-bold">Lỗi: Không tìm thấy đường dẫn Video.</span>
             )}
-
-            {/* POPUP QUIZ CHẶN GIỮA MÀN HÌNH */}
-            {showVideoQuiz && currentVideoQuiz && (
-              <div className="absolute inset-0 bg-black/95 z-20 flex items-center justify-center p-4">
-                <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl animate-in zoom-in duration-300">
-                  <div className="flex items-center gap-2 mb-4 text-blue-600">
-                    <HelpCircle size={24}/>
-                    <h3 className="text-xl font-black">Kiểm tra mức độ tập trung</h3>
-                  </div>
-                  
-                  {currentVideoQuiz.questionData ? (
-                    <>
-                      <p className="text-gray-800 font-medium mb-4">{currentVideoQuiz.questionData.question}</p>
-                      <div className="space-y-2 mb-6">
-                        {currentVideoQuiz.questionData.options.map(opt => (
-                          <label key={opt} className={`flex items-center space-x-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${videoQuizAnswer === opt ? 'bg-blue-50 border-blue-400' : 'hover:bg-gray-50 border-gray-200'}`}>
-                            <input type="radio" name="video-quiz" value={opt} onChange={(e) => setVideoQuizAnswer(e.target.value)} checked={videoQuizAnswer === opt} className="w-4 h-4 text-blue-600"/>
-                            <span className="text-gray-700">{opt}</span>
-                          </label>
-                        ))}
-                      </div>
-                      {videoQuizError && <p className="text-red-500 text-sm font-bold mb-3 flex items-center gap-1"><AlertOctagon size={16}/> Sai rồi! Bạn hãy xem kỹ lại nhé.</p>}
-                    </>
-                  ) : (
-                    <p className="text-gray-600 italic mb-6">Video đang tạm dừng để đảm bảo bạn không ngủ gật...</p>
-                  )}
-                  
-                  <button onClick={handleSubmitVideoQuiz} disabled={!videoQuizAnswer && currentVideoQuiz.questionData} className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50">
-                    {currentVideoQuiz.questionData ? 'Trả lời & Tiếp tục' : 'Tiếp tục xem'}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* THANH TIẾN ĐỘ THỜI GIAN THỰC */}
-          <div className="mt-4 bg-gray-200 h-2 rounded-full overflow-hidden relative">
-             <div className={`h-full transition-all duration-300 ${isVideoWatched ? 'bg-green-500' : 'bg-blue-500'}`} style={{ width: `${isYouTube ? Math.min((ytWatchTime / 60) * 100, 100) : videoProgress * 100}%` }}></div>
           </div>
           
-          <div className="mt-6 text-center">
+          <div className="mt-8 text-center min-h-[80px] flex flex-col justify-center items-center">
             {isVideoWatched || isAdmin ? (
-              <button onClick={() => setStep('exercises')} className="bg-green-600 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-green-700 shadow-xl hover:-translate-y-1 transition-transform animate-bounce">
-                Tiến vào Bài Tập 🚀
+              <button onClick={() => setStep('exercises')} className="bg-green-600 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-green-700 shadow-xl hover:-translate-y-1 transition-transform animate-bounce flex items-center justify-center gap-2">
+                <CheckCircle2 size={24} /> Tiến vào Bài Tập
               </button>
             ) : (
-              <p className="text-gray-500 font-medium flex items-center justify-center gap-2"><AlertOctagon size={18}/> Bạn cần xem hết Video và vượt qua câu hỏi chặn ngang để làm bài tập.</p>
+              <div className="flex flex-col items-center gap-2 bg-gray-50 p-4 rounded-xl border border-gray-200 border-dashed w-full sm:w-auto">
+                <p className="text-gray-600 font-bold flex items-center justify-center gap-2 text-sm sm:text-base">
+                  <Clock size={20} className="text-blue-500 animate-pulse"/>
+                  Hệ thống đang theo dõi sự tập trung của bạn...
+                </p>
+                <p className="text-gray-500 text-xs sm:text-sm font-medium">Hoàn thành bài học để mở khóa bài tập.</p>
+              </div>
             )}
           </div>
         </div>
@@ -408,20 +308,44 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
           {dayData.exercises.map((ex, idx) => {
             const isWritingError = isExerciseLocked && (answers[idx] || '').toString().trim().toLowerCase() !== ex.correct.toString().trim().toLowerCase();
             const isWritingCorrect = isExerciseLocked && !isWritingError;
+            
+            // XÁC ĐỊNH CÂU NÀY CÓ ĐƯỢC DÙNG HINT KHÔNG ĐỂ ĐỔI GIAO DIỆN
+            const isHinted = hintedQuestions.includes(idx);
+
+            // Tự động phân luồng CSS: Ưu tiên Sai -> Khóa -> Hint -> Mặc định
+            let cardClass = `p-4 border-2 rounded-xl relative transition-all duration-500 ease-out `;
+            if (isWritingError) cardClass += 'bg-red-50 border-red-200 shadow-sm';
+            else if (isExerciseLocked) cardClass += 'bg-green-50 border-green-200 shadow-sm';
+            else if (isHinted) cardClass += 'bg-green-50 border-green-400 ring-4 ring-green-100 shadow-lg scale-[1.02]';
+            else cardClass += 'bg-white border-gray-200 shadow-sm hover:shadow-md';
+
             return (
-              <div key={idx} className={`p-4 border-2 rounded-lg shadow-sm relative ${isWritingError ? 'bg-red-50 border-red-200' : isExerciseLocked ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`}>
-                <h3 className="font-semibold mb-2 text-gray-700">Câu {idx + 1}: {ex.type.toUpperCase()}</h3>
+              <div key={idx} id={`exercise-${idx}`} className={cardClass}>
+                <h3 className="font-semibold mb-3 text-gray-700 flex items-center gap-2 text-lg">
+                  Câu {idx + 1}: {ex.type.toUpperCase()}
+                  {/* BADGE HINTED NỔI BẬT */}
+                  {isHinted && <span className="text-xs bg-green-500 text-white px-2.5 py-1 rounded-full font-bold flex items-center gap-1 animate-pulse"><Lightbulb size={14}/> Hinted</span>}
+                </h3>
+                
                 {ex.image && <img src={ex.image} alt="Minh họa" className="w-48 rounded-lg mb-4 shadow-sm" />}
                 {ex.type === 'reading' && <div className="p-3 bg-gray-100 rounded mb-3 italic text-sm border">{ex.text}</div>}
-                <p className="mb-3 font-medium text-lg text-gray-900">{ex.question}</p>
+                <p className="mb-4 font-medium text-lg text-gray-900">{ex.question}</p>
                 
                 {(ex.type === 'mcq' || ex.type === 'reading') && (
                   <div className="space-y-2">
                     {ex.options.map(opt => {
                       const isCorrectChoice = opt.toString().trim().toLowerCase() === ex.correct.toString().trim().toLowerCase();
                       const isUserChoice = (answers[idx] || '').toString().trim().toLowerCase() === opt.toString().trim().toLowerCase();
+                      
+                      let optionClass = `flex items-center space-x-3 p-3 rounded-lg border-2 transition-all `;
+                      if (isExerciseLocked && isCorrectChoice) optionClass += 'bg-green-100 border-green-400';
+                      else if (isExerciseLocked && isUserChoice && !isCorrectChoice) optionClass += 'bg-red-100 border-red-400';
+                      else if (isExerciseLocked) optionClass += 'bg-white opacity-50 border-transparent';
+                      else if (isHinted && isCorrectChoice) optionClass += 'bg-green-100 border-green-500 shadow-inner font-bold'; // Highlight đáp án Hint
+                      else optionClass += 'bg-gray-50 border-transparent hover:border-blue-200 cursor-pointer';
+
                       return (
-                        <label key={opt} className={`flex items-center space-x-3 p-3 rounded-lg border-2 transition-all ${isExerciseLocked && isCorrectChoice ? 'bg-green-100 border-green-400' : isExerciseLocked && isUserChoice && !isCorrectChoice ? 'bg-red-100 border-red-400' : isExerciseLocked ? 'bg-white opacity-50 border-transparent' : 'bg-gray-50 border-transparent hover:border-blue-200 cursor-pointer'}`}>
+                        <label key={opt} className={optionClass}>
                           <input 
                             type="radio" 
                             name={`question-${idx}`} 
@@ -431,8 +355,8 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
                             disabled={submitted && (score === dayData.requiredScore || isExerciseLocked)} 
                             className="w-4 h-4 text-blue-600"
                           />
-                          <span className={`text-base ${isExerciseLocked && isCorrectChoice ? 'text-green-700 font-bold' : isExerciseLocked && isUserChoice && !isCorrectChoice ? 'text-red-500 line-through' : 'text-gray-700'}`}>{opt}</span>
-                          {isExerciseLocked && isCorrectChoice && <CheckCircle2 size={20} className="text-green-600 ml-auto" />}
+                          <span className={`text-base ${(isExerciseLocked || isHinted) && isCorrectChoice ? 'text-green-700 font-bold' : isExerciseLocked && isUserChoice && !isCorrectChoice ? 'text-red-500 line-through' : 'text-gray-700'}`}>{opt}</span>
+                          {(isExerciseLocked || isHinted) && isCorrectChoice && <CheckCircle2 size={20} className="text-green-600 ml-auto" />}
                           {isExerciseLocked && isUserChoice && !isCorrectChoice && <XCircle size={20} className="text-red-500 ml-auto" />}
                         </label>
                       )
@@ -441,7 +365,14 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
                 )}
                 {ex.type === 'writing' && (
                   <div>
-                    <input type="text" className={`w-full border-2 p-3 rounded-lg outline-none font-medium ${isWritingError ? 'bg-white border-red-400 text-red-600 line-through' : isWritingCorrect ? 'bg-white border-green-400 text-green-700' : 'bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'}`} value={answers[idx] || ''} onChange={(e) => setAnswers({ ...answers, [idx]: e.target.value })} disabled={submitted && (score === dayData.requiredScore || isExerciseLocked)} placeholder="Nhập câu trả lời..."/>
+                    <input 
+                      type="text" 
+                      className={`w-full border-2 p-3 rounded-lg outline-none font-medium transition-all ${isWritingError ? 'bg-white border-red-400 text-red-600 line-through' : isWritingCorrect || isHinted ? 'bg-white border-green-500 text-green-700 ring-2 ring-green-100' : 'bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'}`} 
+                      value={answers[idx] || ''} 
+                      onChange={(e) => setAnswers({ ...answers, [idx]: e.target.value })} 
+                      disabled={submitted && (score === dayData.requiredScore || isExerciseLocked)} 
+                      placeholder="Nhập câu trả lời..."
+                    />
                     {isWritingError && <div className="mt-3 bg-green-100 border border-green-300 text-green-800 p-3 rounded-lg flex items-center gap-2 font-bold text-sm shadow-inner"><CheckCircle2 size={20} /> Đáp án đúng: {ex.correct}</div>}
                   </div>
                 )}
@@ -458,7 +389,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
                   {score !== dayData.requiredScore && ` (Sai ${exerciseFailCount}/3)`}
                 </p>
               ) : (
-                <button onClick={handleUseHint} className="text-yellow-600 bg-yellow-50 px-4 py-2 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-yellow-100 transition-colors border border-yellow-200 w-full md:w-auto">
+                <button onClick={handleUseHint} className="text-yellow-600 bg-yellow-50 px-4 py-2 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-yellow-100 transition-colors border border-yellow-300 shadow-sm w-full md:w-auto active:scale-95">
                   <Lightbulb size={18}/> Dùng Hint ({inventory?.hints || 0})
                 </button>
               )}

@@ -362,7 +362,7 @@ export default function VocabularyReview({ learnedVocab, onBack, onCompleteGame,
         
         <div className="text-center mb-10">
           <h2 className="text-3xl font-black text-gray-800">Khu Vực Ôn Tập Kỹ Năng 🎮</h2>
-          <p className="text-gray-500 font-medium mt-2">Chiến thắng bất kỳ trò chơi nào cũng mang lại cho bạn +1 điểm.</p>
+          <p className="text-gray-500 font-medium mt-2">Chiến thắng bất kỳ trò chơi nào cũng mang lại cho bạn +1 điểm và +2 coins.</p>
           
           <div className="inline-block mt-5 bg-indigo-100 text-indigo-700 font-black px-6 py-3 rounded-full border-2 border-indigo-200 shadow-inner">
             Lượt chơi còn lại hôm nay: {isAdmin ? 'Vô hạn (Admin Mode)' : `${3 - dailyGamesPlayed}/3`}

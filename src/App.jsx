@@ -389,7 +389,7 @@ export default function App() {
       if (rand < 0.25) { newInv.skips += 1; prize = "🎟️ 1 Thẻ Skip"; }
       else if (rand < 0.5) { newInv.hints += 1; prize = "💡 1 Gợi ý (Hint)"; }
       else if (rand < 0.75) { newInv.tickets += 1; prize = "🎟️ 1 Vé Mini-game"; }
-      else { newScore += 5; prize = "🎯 TẶNG HOÀN LẠI 5 ĐIỂM HỌC LỰC!"; } 
+      else { newScore += 5; prize = "🎯 TẶNG 5 ĐIỂM HỌC LỰC!"; } 
       alert(`🎁 BẠN MỞ HỘP VÀ NHẬN ĐƯỢC: ${prize}`);
     } else {
       newInv[key] += 1;
@@ -666,7 +666,7 @@ export default function App() {
                 <div>
                   <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-3"><PackageOpen size={24}/></div>
                   <h4 className="text-xl font-bold text-purple-900 mb-1">Hộp Quà Bí Ẩn</h4>
-                  <p className="text-sm text-purple-700 font-medium mb-4">Mở ngẫu nhiên: Thẻ Skip, Hint, Vé Mini-game hoặc Tặng hoàn lại 5 Điểm học lực!</p>
+                  <p className="text-sm text-purple-700 font-medium mb-4">Mở ngẫu nhiên: Thẻ Skip, Hint, Vé Mini-game hoặc Tặng 5 Điểm học lực!</p>
                 </div>
                 <button onClick={() => buyItem("Hộp Quà Bí Ẩn", 40, 'box')} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 rounded-xl hover:opacity-90 transition-transform active:scale-95 flex justify-center gap-2"><Coins size={20}/> 40 Coins</button>
               </div>
