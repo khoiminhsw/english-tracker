@@ -13,3 +13,5 @@ dist-ssr/
 # File cấu hình bảo mật cá nhân (nếu có sau này)
 .env
 .env.local
+
+public/videos/

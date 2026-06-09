@@ -11,7 +11,7 @@ const getYouTubeID = (url) => {
   return (match && match[2].length === 11) ? match[2] : null;
 };
 
-export default function Lesson({ dayData, prevDayData, onComplete, onBack, onCheat, isAdmin, inventory, consumeItem }) {
+export default function Lesson({ dayData, prevDayData, onComplete, onBack, onCheat, isAdmin, inventory, consumeItem, onUpdateWordProgress }) {
   const initialStep = (prevDayData && prevDayData.vocabulary && prevDayData.vocabulary.length > 0) ? 'vocab-check' : (dayData.videoUrl ? 'video-learning' : 'exercises');
   const [step, setStep] = useState(initialStep);
 
@@ -21,20 +21,18 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
   const [vocabAnswers, setVocabAnswers] = useState({});
   const [vocabErrors, setVocabErrors] = useState({}); 
   const [savedToNotebook, setSavedToNotebook] = useState({}); 
+  const [hasPassedVocab, setHasPassedVocab] = useState(false); // Ngăn việc cộng điểm từ vựng nhiều lần
 
-  // ==========================================
-  // TRẠNG THÁI VIDEO & BỘ ĐẾM GIỜ (ẨN)
-  // ==========================================
   const rawUrl = dayData.videoUrl || '';
   const ytId = getYouTubeID(rawUrl);
   const isYouTube = !!ytId; 
 
-  const REQUIRED_TIME = 900; // 15 phút = 900 giây
-  const [watchTime, setWatchTime] = useState(0); // Bộ đếm thời gian xem thực tế ngầm
-  const [isVideoWatched, setIsVideoWatched] = useState(false); // Trạng thái mở khóa Checkpoint
+  const REQUIRED_TIME = 900; 
+  const [watchTime, setWatchTime] = useState(0); 
+  const [isVideoWatched, setIsVideoWatched] = useState(false); 
 
   const [answers, setAnswers] = useState({});
-  const [hintedQuestions, setHintedQuestions] = useState([]); // LƯU VẾT CÁC CÂU ĐÃ DÙNG HINT
+  const [hintedQuestions, setHintedQuestions] = useState([]); 
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
@@ -45,7 +43,6 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     }
   }, [prevDayData]);
 
-  // HỆ THỐNG ANTI-CHEAT CHUNG
   useEffect(() => {
     if (isAdmin) return;
     const handleVisibilityChange = () => {
@@ -93,6 +90,11 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     });
 
     if (isAllCorrect) {
+      // Ghi nhận tiến độ từ vựng (Chỉ chạy 1 lần khi qua bài kiểm tra mà không dùng Skip)
+      if (!hasPassedVocab && onUpdateWordProgress) {
+        onUpdateWordProgress(selectedCheckVocab.map(v => v.word));
+        setHasPassedVocab(true);
+      }
       setStep(rawUrl ? 'video-learning' : 'exercises');
       setVocabErrors({});
     } else {
@@ -104,7 +106,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
   const handleUseSkip = async () => {
     const success = await consumeItem('skips');
     if (success) {
-      alert("🎟️ Đã dùng 1 thẻ Skip! Bỏ qua kiểm tra từ vựng.");
+      alert("🎟️ Đã dùng 1 thẻ Skip! Bỏ qua kiểm tra từ vựng (Sẽ không được tính tiến độ Master).");
       setStep(rawUrl ? 'video-learning' : 'exercises');
     } else {
       alert("Bạn không đủ thẻ Skip! Hãy mua trong Cửa hàng.");
@@ -122,9 +124,6 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     } catch (error) {}
   };
 
-  // ==========================================
-  // THUẬT TOÁN ĐẾM GIỜ XEM VIDEO NGẦM (15 PHÚT)
-  // ==========================================
   useEffect(() => {
     if (isAdmin || step !== 'video-learning' || isVideoWatched) return;
 
@@ -143,19 +142,13 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     return () => clearInterval(timer);
   }, [isAdmin, step, isVideoWatched]);
 
-
-  // ==========================================
-  // BÀI TẬP & TÍNH NĂNG HINT THÔNG MINH
-  // ==========================================
   const handleUseHint = async () => {
-    // 1. Quét tìm câu hỏi sai hoặc chưa làm
     let targetIdx = -1;
     for (let i = 0; i < dayData.exercises.length; i++) {
       const ex = dayData.exercises[i];
       const currentAns = (answers[i] || '').toString().trim().toLowerCase();
       const correctAns = ex.correct.toString().trim().toLowerCase();
       
-      // Nếu câu này chưa được Hint và đang bị sai/chưa làm -> Chọn câu này
       if (currentAns !== correctAns && !hintedQuestions.includes(i)) {
         targetIdx = i;
         break;
@@ -164,24 +157,19 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
 
     if (targetIdx === -1) {
       alert("Bạn đã điền đúng hết rồi, không cần Hint nữa!");
-      return; // Dừng lại, không trừ vật phẩm
+      return; 
     }
 
-    // 2. Tiến hành trừ Hint trong túi đồ
     const success = await consumeItem('hints');
     if (success) {
       const correctAns = dayData.exercises[targetIdx].correct;
-      
-      // Cập nhật đáp án và lưu vết câu được Hint
       setAnswers(prev => ({ ...prev, [targetIdx]: correctAns }));
       setHintedQuestions(prev => [...prev, targetIdx]);
       
-      // Cuộn màn hình mượt mà tới đúng câu đó
       const element = document.getElementById(`exercise-${targetIdx}`);
       if(element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-
     } else {
       alert("Bạn không đủ Hint! Hãy mua trong Cửa hàng.");
     }
@@ -256,7 +244,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
         <div className="bg-white p-6 rounded-xl shadow-lg border relative">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-bold flex items-center gap-2"><PlayCircle className="text-blue-600"/> Video Bài Giảng</h3>
-            {isAdmin && <span className="text-sm font-bold text-purple-600 bg-purple-100 px-3 py-1 rounded">Admin Mode: Xem tự do</span>}
+            {isAdmin && <span className="text-sm font-bold text-purple-600 bg-purple-100 px-3 py-1 rounded">Admin Mode: Đã tự động mở Checkpoint</span>}
           </div>
 
           <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-md relative flex items-center justify-center">
@@ -288,7 +276,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
           <div className="mt-8 text-center min-h-[80px] flex flex-col justify-center items-center">
             {isVideoWatched || isAdmin ? (
               <button onClick={() => setStep('exercises')} className="bg-green-600 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-green-700 shadow-xl hover:-translate-y-1 transition-transform animate-bounce flex items-center justify-center gap-2">
-                <CheckCircle2 size={24} /> Tiến vào Bài Tập
+                <CheckCircle2 size={24} /> CHECKPOINT: Tiến vào Bài Tập
               </button>
             ) : (
               <div className="flex flex-col items-center gap-2 bg-gray-50 p-4 rounded-xl border border-gray-200 border-dashed w-full sm:w-auto">
@@ -296,7 +284,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
                   <Clock size={20} className="text-blue-500 animate-pulse"/>
                   Hệ thống đang theo dõi sự tập trung của bạn...
                 </p>
-                <p className="text-gray-500 text-xs sm:text-sm font-medium">Hoàn thành bài học để mở khóa bài tập.</p>
+                <p className="text-gray-500 text-xs sm:text-sm font-medium">Giữ tab này và xem video nghiêm túc trong ít nhất 15 phút để mở khóa bài tập.</p>
               </div>
             )}
           </div>
@@ -309,10 +297,8 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
             const isWritingError = isExerciseLocked && (answers[idx] || '').toString().trim().toLowerCase() !== ex.correct.toString().trim().toLowerCase();
             const isWritingCorrect = isExerciseLocked && !isWritingError;
             
-            // XÁC ĐỊNH CÂU NÀY CÓ ĐƯỢC DÙNG HINT KHÔNG ĐỂ ĐỔI GIAO DIỆN
             const isHinted = hintedQuestions.includes(idx);
 
-            // Tự động phân luồng CSS: Ưu tiên Sai -> Khóa -> Hint -> Mặc định
             let cardClass = `p-4 border-2 rounded-xl relative transition-all duration-500 ease-out `;
             if (isWritingError) cardClass += 'bg-red-50 border-red-200 shadow-sm';
             else if (isExerciseLocked) cardClass += 'bg-green-50 border-green-200 shadow-sm';
@@ -323,7 +309,6 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
               <div key={idx} id={`exercise-${idx}`} className={cardClass}>
                 <h3 className="font-semibold mb-3 text-gray-700 flex items-center gap-2 text-lg">
                   Câu {idx + 1}: {ex.type.toUpperCase()}
-                  {/* BADGE HINTED NỔI BẬT */}
                   {isHinted && <span className="text-xs bg-green-500 text-white px-2.5 py-1 rounded-full font-bold flex items-center gap-1 animate-pulse"><Lightbulb size={14}/> Hinted</span>}
                 </h3>
                 
@@ -341,7 +326,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
                       if (isExerciseLocked && isCorrectChoice) optionClass += 'bg-green-100 border-green-400';
                       else if (isExerciseLocked && isUserChoice && !isCorrectChoice) optionClass += 'bg-red-100 border-red-400';
                       else if (isExerciseLocked) optionClass += 'bg-white opacity-50 border-transparent';
-                      else if (isHinted && isCorrectChoice) optionClass += 'bg-green-100 border-green-500 shadow-inner font-bold'; // Highlight đáp án Hint
+                      else if (isHinted && isCorrectChoice) optionClass += 'bg-green-100 border-green-500 shadow-inner font-bold'; 
                       else optionClass += 'bg-gray-50 border-transparent hover:border-blue-200 cursor-pointer';
 
                       return (

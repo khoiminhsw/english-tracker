@@ -209,7 +209,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 4) {
       // Từ vựng trích xuất từ nội dung học và bài tập ngày 4 [cite: 400]
-      dayData.videoUrl = "https://www.youtube.com/watch?v=iedYwTprM0w";
+      dayData.videoUrl = "https://www.youtube.com/watch?v=g_dz9fe66pA";
       dayData.vocabulary = [
         { word: "park", meaning: "công viên" }, // [cite: 402]
         { word: "garden", meaning: "khu vườn" }, // [cite: 402]
@@ -271,7 +271,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 5) {
       // Từ vựng trích xuất từ nội dung học và bài tập ngày 5
-      dayData.videoUrl = "https://www.youtube.com/watch?v=T7ymp6PKdwA";
+      dayData.videoUrl = "https://www.youtube.com/watch?v=enqtsTVYJLY";
       dayData.vocabulary = [
         { word: "play", meaning: "chơi" },
         { word: "watch", meaning: "xem" },

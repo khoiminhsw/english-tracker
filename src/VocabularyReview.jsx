@@ -75,6 +75,15 @@ function MemoryMatchGame({ learnedVocab, lastPlayedWords, onCompleteGame }) {
     }
   };
 
+  const handleFinish = (isWin) => {
+    if (isWin) {
+      onCompleteGame(true, gameWords.map(w => w.word));
+    } else {
+      const matchedWords = gameWords.filter((w, idx) => matchedIds.includes(idx)).map(w => w.word);
+      onCompleteGame(false, matchedWords);
+    }
+  };
+
   if (showRules) {
     return (
       <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg border max-w-md mx-auto animate-in fade-in zoom-in duration-300">
@@ -84,8 +93,9 @@ function MemoryMatchGame({ learnedVocab, lastPlayedWords, onCompleteGame }) {
         </div>
         <ul className="text-sm text-gray-600 space-y-3 list-disc list-inside mb-6 font-medium">
           <li>Hệ thống ẩn 5 từ vựng ngẫu nhiên sau 10 ô chữ.</li>
-          <li>Lật tuần tự các thẻ Tiếng Anh và Nghĩa Tiếng Việt tương ứng để ghép cặp.</li>
-          <li>⚠️ <span className="text-red-600 font-bold">RÀNG BUỘC KỶ LUẬT:</span> Bạn chỉ có tối đa <span className="font-bold text-red-600">15 bước lật thẻ</span>. Quá 15 bước chưa hoàn thành sẽ bị xử <b>Thua</b>.</li>
+          <li>Lật tuần tự thẻ Tiếng Anh và Nghĩa Tiếng Việt tương ứng để ghép cặp.</li>
+          <li>⚠️ <span className="text-red-600 font-bold">RÀNG BUỘC KỶ LUẬT:</span> Tối đa <span className="font-bold text-red-600">15 bước lật thẻ</span>. Quá giới hạn sẽ bị xử <b>Thua</b>.</li>
+          <li>💡 Những từ bạn đã ghép trúng vẫn sẽ được cộng vào hệ thống điểm Master.</li>
         </ul>
         <div className="flex items-center gap-2 mb-6 border-t pt-4">
           <input type="checkbox" id="hideRules" checked={dontShowAgain} onChange={(e) => setDontShowAgain(e.target.checked)} className="w-4 h-4 text-indigo-600 rounded cursor-pointer"/>
@@ -136,7 +146,7 @@ function MemoryMatchGame({ learnedVocab, lastPlayedWords, onCompleteGame }) {
           <div className="inline-block p-6 bg-red-100 rounded-full mb-6"><HeartCrack size={80} className="text-red-600" /></div>
           <h2 className="text-3xl font-black text-red-600 mb-2">Cạn kiệt năng lượng!</h2>
           <p className="text-gray-600 font-bold mb-8 text-lg">Bạn đã vượt quá giới hạn <span className="text-red-600">15 bước đi</span> cho phép.</p>
-          <button onClick={() => onCompleteGame(false, gameWords.map(w => w.word))} className="bg-gray-800 text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-black shadow-xl transition-transform">Kết thúc (0 điểm)</button>
+          <button onClick={() => handleFinish(false)} className="bg-gray-800 text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-black shadow-xl transition-transform">Kết thúc (Lưu từ đúng)</button>
         </div>
       )}
 
@@ -146,7 +156,7 @@ function MemoryMatchGame({ learnedVocab, lastPlayedWords, onCompleteGame }) {
           <h2 className="text-3xl font-black text-yellow-600 mb-2">Chiến thắng Tuyệt đối!</h2>
           <p className="text-gray-600 font-bold mb-6 text-lg">Hoàn thành xuất sắc thử thách lật thẻ trong <span className="text-indigo-600">{moves}</span> bước.</p>
           <p className="text-green-600 font-black text-xl mb-8">⭐ Bạn được cộng +1 Điểm thưởng!</p>
-          <button onClick={() => onCompleteGame(true, gameWords.map(w => w.word))} className="bg-indigo-600 text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-indigo-700 shadow-xl hover:-translate-y-1 transition-transform">Nhận thưởng & Kết thúc</button>
+          <button onClick={() => handleFinish(true)} className="bg-indigo-600 text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-indigo-700 shadow-xl hover:-translate-y-1 transition-transform">Nhận thưởng & Kết thúc</button>
         </div>
       )}
     </div>
@@ -159,6 +169,7 @@ function ZombieSurvivalGame({ learnedVocab, onCompleteGame }) {
 
   const [gameState, setGameState] = useState('playing'); 
   const [killed, setKilled] = useState(0);
+  const [wrongCount, setWrongCount] = useState(0); // LỖI TỐI ĐA LÀ 10
   const [question, setQuestion] = useState(null);
   
   const [tick, setTick] = useState(0); 
@@ -168,12 +179,16 @@ function ZombieSurvivalGame({ learnedVocab, onCompleteGame }) {
   const zombiesRef = useRef([{ id: Date.now(), pos: 0, speed: 0.15 }]);
   const timeRef = useRef(0);
   const spawnTimer = useRef(0);
-  const playedWordsRef = useRef([]);
+  
+  // CHỈ LƯU NHỮNG TỪ ĐÁNH ĐÚNG ĐỂ TĂNG TIẾN ĐỘ MASTER
+  const correctWordsRef = useRef(new Set()); 
+  
+  // HỆ SỐ NHÂN TỐC ĐỘ: GẤP ĐÔI (x2) MỖI KHI TRẢ LỜI SAI
+  const speedMultiplierRef = useRef(1); 
 
   const generateQuestion = () => {
     const pool = [...learnedVocab];
     const correctWord = pool[Math.floor(Math.random() * pool.length)];
-    playedWordsRef.current.push(correctWord.word);
 
     const others = pool.filter(w => w.word !== correctWord.word).sort(() => 0.5 - Math.random());
     const distractors = others.slice(0, 3).map(w => w.meaning);
@@ -190,7 +205,8 @@ function ZombieSurvivalGame({ learnedVocab, onCompleteGame }) {
       timeRef.current += 50;
       spawnTimer.current += 50;
 
-      const currentSpeedLevel = 1 + Math.floor(timeRef.current / 8000) * 0.3;
+      // CÔNG THỨC KHẮC NGHIỆT: (Gốc + Tốc độ theo thời gian) * HỆ SỐ NHÂN PHẠT (Gấp đôi khi sai)
+      const currentSpeedLevel = (1 + Math.floor(timeRef.current / 8000) * 0.3) * speedMultiplierRef.current;
       setSpeedLevel(currentSpeedLevel.toFixed(1));
 
       let isLost = false;
@@ -225,6 +241,9 @@ function ZombieSurvivalGame({ learnedVocab, onCompleteGame }) {
 
   const handleAnswer = (ans) => {
     if (ans === question.correctMeaning) {
+      // 1. CHỈ CỘNG NHỮNG TỪ ĐÚNG VÀO DANH SÁCH MASTER
+      correctWordsRef.current.add(question.word);
+
       if (zombiesRef.current.length > 0) {
         let maxPosIdx = 0;
         for (let i = 1; i < zombiesRef.current.length; i++) {
@@ -244,10 +263,28 @@ function ZombieSurvivalGame({ learnedVocab, onCompleteGame }) {
         generateQuestion(); 
       }
     } else {
-      setIsWrongFlash(true);
-      setTimeout(() => setIsWrongFlash(false), 300);
-      generateQuestion();
+      // 2. TRỪNG PHẠT KHI TRẢ LỜI SAI
+      const newWrongCount = wrongCount + 1;
+      setWrongCount(newWrongCount);
+      
+      // X2 TỐC ĐỘ DI CHUYỂN CỦA ZOMBIE MỖI LẦN SAI
+      speedMultiplierRef.current *= 2; 
+
+      // QUÁ 10 LỖI LÀ THUA NGAY LẬP TỨC
+      if (newWrongCount >= 10) {
+        setGameState('lost');
+      } else {
+        setIsWrongFlash(true);
+        setTimeout(() => setIsWrongFlash(false), 300);
+        generateQuestion();
+      }
     }
+  };
+
+  const handleFinish = (isWin) => {
+    // Trả về Array chứa những từ đã bắn rụng chính xác
+    const correctWordsArray = Array.from(correctWordsRef.current);
+    onCompleteGame(isWin, correctWordsArray);
   };
 
   if (showRules) {
@@ -259,9 +296,9 @@ function ZombieSurvivalGame({ learnedVocab, onCompleteGame }) {
         </div>
         <ul className="text-sm text-gray-600 space-y-3 list-disc list-inside mb-6 font-medium">
           <li>Đàn Zombie liên tục di chuyển áp sát về phía căn cứ (🏠).</li>
-          <li>Chọn đúng đáp án nghĩa Tiếng Việt tương ứng của từ vựng hệ thống chỉ định để kích hoạt tháp pháo bắn hạ Zombie.</li>
-          <li>⏱️ <span className="text-orange-600 font-bold">KỊCH TÍNH TĂNG DẦN:</span> Cứ mỗi 8 giây Zombie sẽ chạy nhanh hơn.</li>
-          <li>🏆 <b>Thắng:</b> Hạ gục đủ 5 Zombie. ❌ <b>Thua:</b> Để bất cứ Zombie nào lọt vào căn cứ.</li>
+          <li>Chọn đúng nghĩa Tiếng Việt để kích hoạt tháp pháo.</li>
+          <li>💀 <span className="text-red-600 font-bold">TRỪNG PHẠT TÀN KHỐC:</span> Nếu bạn chọn sai đáp án, lũ Zombie sẽ lập tức <b>TĂNG TỐC ĐỘ GẤP ĐÔI (x2)</b>. Sai tối đa 10 lần.</li>
+          <li>💡 Những từ bạn đã bắn rụng chính xác sẽ được cộng vào hệ thống điểm Master.</li>
         </ul>
         <div className="flex items-center gap-2 mb-6 border-t pt-4">
           <input type="checkbox" id="hideZombieRules" checked={dontShowAgain} onChange={(e) => setDontShowAgain(e.target.checked)} className="w-4 h-4 text-red-600 rounded cursor-pointer"/>
@@ -279,12 +316,17 @@ function ZombieSurvivalGame({ learnedVocab, onCompleteGame }) {
           <h2 className="text-2xl font-black text-red-700 flex items-center gap-2"><Skull size={28} /> Zombie Survival</h2>
           <p className="font-bold text-gray-500 mt-1">Bảo vệ khung thành, tiêu diệt 5 Zombie!</p>
         </div>
-        <div className="text-right">
-          <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg font-black text-xl mb-2 flex items-center justify-end gap-2">
+        <div className="text-right flex flex-col items-end">
+          <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg font-black text-xl mb-2 flex items-center gap-2 w-fit">
             <Crosshair size={20}/> Kills: {killed}/5
           </div>
-          <div className="text-xs sm:text-sm font-bold text-orange-600 flex items-center gap-1 justify-end">
-            <ShieldAlert size={16}/> Tốc độ: x{speedLevel}
+          <div className="flex items-center gap-3">
+            <div className={`text-sm font-bold flex items-center gap-1 ${speedMultiplierRef.current > 1 ? 'text-red-600 animate-pulse' : 'text-orange-600'}`}>
+              <ShieldAlert size={16}/> Tốc độ: x{speedLevel}
+            </div>
+            <div className="text-sm font-bold text-gray-600 bg-gray-100 px-2 py-1 rounded">
+              Lỗi: {wrongCount}/10
+            </div>
           </div>
         </div>
       </div>
@@ -321,8 +363,8 @@ function ZombieSurvivalGame({ learnedVocab, onCompleteGame }) {
         <div className="text-center animate-in fade-in zoom-in py-10">
           <div className="inline-block p-6 bg-red-100 rounded-full mb-6"><HeartCrack size={80} className="text-red-600" /></div>
           <h2 className="text-3xl font-black text-red-600 mb-2">Căn cứ đã thất thủ!</h2>
-          <p className="text-gray-600 font-bold mb-8 text-lg">Zombie đã tràn vào căn cứ vì phản xạ chưa kịp thời.</p>
-          <button onClick={() => onCompleteGame(false, playedWordsRef.current)} className="bg-gray-800 text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-black shadow-xl transition-colors">Kết thúc (0 điểm)</button>
+          <p className="text-gray-600 font-bold mb-8 text-lg">Bạn đã mắc {wrongCount} lỗi hoặc Zombie đã tràn vào căn cứ.</p>
+          <button onClick={() => handleFinish(false)} className="bg-gray-800 text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-black shadow-xl transition-colors">Kết thúc (Lưu từ đúng)</button>
         </div>
       )}
 
@@ -332,7 +374,7 @@ function ZombieSurvivalGame({ learnedVocab, onCompleteGame }) {
           <h2 className="text-3xl font-black text-yellow-600 mb-2">Bảo vệ thành công!</h2>
           <p className="text-gray-600 font-bold mb-6 text-lg">Phản xạ từ vựng của bạn cực kỳ xuất sắc.</p>
           <p className="text-green-600 font-black text-xl mb-8">⭐ Bạn được cộng +1 Điểm thưởng!</p>
-          <button onClick={() => onCompleteGame(true, playedWordsRef.current)} className="bg-red-600 text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-red-700 shadow-xl transition-colors">Nhận thưởng & Kết thúc</button>
+          <button onClick={() => handleFinish(true)} className="bg-red-600 text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-red-700 shadow-xl transition-colors">Nhận thưởng & Kết thúc</button>
         </div>
       )}
     </div>
@@ -340,7 +382,7 @@ function ZombieSurvivalGame({ learnedVocab, onCompleteGame }) {
 }
 
 // ==========================================
-// 3. COMPONENT CHÍNH: MENU HUB (Thêm Hiển thị Lượt)
+// COMPONENT CHÍNH: MENU HUB
 // ==========================================
 export default function VocabularyReview({ learnedVocab, onBack, onCompleteGame, lastPlayedWords, dailyGamesPlayed, isAdmin }) {
   const [selectedGame, setSelectedGame] = useState(null);
@@ -362,7 +404,7 @@ export default function VocabularyReview({ learnedVocab, onBack, onCompleteGame,
         
         <div className="text-center mb-10">
           <h2 className="text-3xl font-black text-gray-800">Khu Vực Ôn Tập Kỹ Năng 🎮</h2>
-          <p className="text-gray-500 font-medium mt-2">Chiến thắng bất kỳ trò chơi nào cũng mang lại cho bạn +1 điểm và +2 coins.</p>
+          <p className="text-gray-500 font-medium mt-2">Chiến thắng bất kỳ trò chơi nào cũng mang lại cho bạn +1 điểm.</p>
           
           <div className="inline-block mt-5 bg-indigo-100 text-indigo-700 font-black px-6 py-3 rounded-full border-2 border-indigo-200 shadow-inner">
             Lượt chơi còn lại hôm nay: {isAdmin ? 'Vô hạn (Admin Mode)' : `${3 - dailyGamesPlayed}/3`}
