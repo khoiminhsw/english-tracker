@@ -25,7 +25,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 1) {
       // Từ vựng trích xuất từ chính bài tập ngày 1 để ngày 2 kiểm tra
-      dayData.videoUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+      dayData.videoUrl = "https://drive.google.com/file/d/1aLdi-Y04zpfD15emgjRZ7j6VKOkzMtOG/view?usp=sharing";
       dayData.vocabulary = [
         { word: "principal", meaning: "hiệu trưởng" },
         { word: "laboratory", meaning: "phòng thí nghiệm" },
@@ -86,7 +86,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 2) {
       // Từ vựng trích xuất từ nội dung học và bài tập ngày 2
-      dayData.videoUrl = "https://youtu.be/dQw4w9WgXcQ?si=KaT5QUWkQvjUunI3";
+      dayData.videoUrl = "https://drive.google.com/file/d/1NlX55dfjA4HUTiwCTJxdzQLfJWJJ-G9J/view?usp=sharing";
       dayData.vocabulary = [
         { word: "uncle", meaning: "chú/bác" },
         { word: "aunt", meaning: "cô/dì" },
@@ -144,7 +144,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 3) {
       // Từ vựng trích xuất từ nội dung học và bài tập ngày 3
-      dayData.videoUrl = "https://www.youtube.com/watch?v=u-wWCqfW-w8";
+      dayData.videoUrl = "https://drive.google.com/file/d/11lygOYmRb4nMp_BjwkR9uf2ASpqLtIo8/view?usp=drive_link";
       dayData.vocabulary = [
         { word: "grandfather", meaning: "ông" },
         { word: "grandmother", meaning: "bà" },
@@ -209,7 +209,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 4) {
       // Từ vựng trích xuất từ nội dung học và bài tập ngày 4 [cite: 400]
-      dayData.videoUrl = "https://www.youtube.com/watch?v=g_dz9fe66pA";
+      dayData.videoUrl = "https://drive.google.com/file/d/1KR1Hdw2wvsH-MyyVtJBRDesXh5z-4aLg/view?usp=drive_link";
       dayData.vocabulary = [
         { word: "park", meaning: "công viên" }, // [cite: 402]
         { word: "garden", meaning: "khu vườn" }, // [cite: 402]
@@ -271,7 +271,7 @@ export const generateCourseData = () => {
     // ==========================================
     if (i === 5) {
       // Từ vựng trích xuất từ nội dung học và bài tập ngày 5
-      dayData.videoUrl = "https://www.youtube.com/watch?v=enqtsTVYJLY";
+      dayData.videoUrl = "https://drive.google.com/file/d/1ZIu8U6S-S_dVWiL-R8fdJB6dS215UhZY/view?usp=sharing";
       dayData.vocabulary = [
         { word: "play", meaning: "chơi" },
         { word: "watch", meaning: "xem" },
@@ -331,13 +331,84 @@ export const generateCourseData = () => {
     }
 
     // ==========================================
+// ==========================================
     // MẪU CHO BÀI TEST (NGÀY 6)
     // ==========================================
     if (i === 6) {
+      dayData.isTest = true;
+      dayData.videoUrl = null; 
+      dayData.requiredScore = 40; // Đề thi thực tế có 40 câu [cite: 3]
       dayData.vocabulary = []; 
+
+      // Dữ liệu văn bản chung [cite: 154, 155, 156, 157, 158, 159, 160, 208, 209, 210, 211, 212, 213]
+      const readingLinda = "My name is Linda. I am fourteen years old. I live in a big house with my family. There are five people in my extended family: my grandfather, my parents, my older brother, and me. My grandfather is seventy years old, and he is very kind. My father is a doctor; he works in a large hospital and is always busy. My mother is an English teacher. My brother, Peter, is eighteen years old and he is a college student. On weekends, my family often goes to the park or cooks meals in the kitchen together. We are a very happy family.";
+      
+      const clozeText = "Mark is a 9th-grade student. His lifestyle is very healthy. He is a member of the school sports club. His favorite sport (33) ___ swimming. It is a great exercise for the whole body. Mark's parents are also active. Their morning routine is walking (34) ___ the park. Fast food and sweet drinks are not in (35) ___ daily meals. An apple or a banana is Mark's favorite snack. They (36) ___ full of energy. Mark usually (37) ___ to school after breakfast.";
+
       dayData.exercises = [
-        sampleMCQ, sampleMCQ, sampleWriting
-        // Bạn sẽ điền đủ 50 câu vào đây
+        // I. BIỂN BÁO & THÔNG BÁO [cite: 9]
+        { type: 'reading', text: "LIBRARY RULES\n- Please be quiet.\n- Students are studying.", question: "1. What does the sign say?", options: ["You can make noise in the library.", "You must keep silent in the library.", "You do not have to be quiet here.", "The library is a place for listening to loud music."], correct: "You must keep silent in the library." }, // [cite: 10, 11, 12, 13, 14]
+        { type: 'reading', text: "ENGLISH CLUB MEETING\n- Friday afternoon at 2:30 PM\n- Room 15", question: "2. What does this notice say?", options: ["The club meets on Monday morning.", "You can join the club at 2:30 AM in Room 15.", "The English club meeting is on Friday afternoon.", "The meeting is in Room 2 and starts at 15:00."], correct: "The English club meeting is on Friday afternoon." }, // [cite: 15, 16, 17, 18]
+
+        // II. NGỮ ÂM [cite: 19]
+        { type: 'mcq', question: "3. Choose the word whose underlined part differs in pronunciation (ending -s/-es):", options: ["watches", "goes", "studies", "plays"], correct: "watches" }, // [cite: 20, 22, 23, 24]
+        { type: 'mcq', question: "4. Choose the word whose underlined part differs in pronunciation (vowel 'a'):", options: ["bag", "hat", "park", "cat"], correct: "park" }, // [cite: 21, 22, 23, 25]
+
+        // III. SẮP XẾP ĐOẠN VĂN [cite: 26]
+        { type: 'reading', text: "a. In the afternoon, I often play football with my classmates.\nb. My name is Tom and I am a 9th-grade student.\nc. I have a very healthy lifestyle.\nd. In the morning, I always walk to school.\ne. On weekends, I go to the park with my family.", question: "5. Choose the correct arrangement to make a meaningful paragraph:", options: ["b - c - d - a - e", "c - b - a - d - e", "b - d - a - c - e", "c - d - a - e - b"], correct: "b - c - d - a - e" }, // [cite: 27, 28, 29, 30, 31, 32, 33, 35, 36, 37]
+        { type: 'reading', text: "Dear Anna,\na. My new school is very big and beautiful.\nb. I hope you are doing well.\nc. Please write back to me soon.\nd. I study many subjects, but my favorite is English.\ne. I am writing to tell you about my new school.", question: "6. Choose the correct arrangement to make a meaningful letter:", options: ["a - e - d - b - c", "b - e - a - d - c", "b - a - d - e - c", "e - b - d - a - c"], correct: "b - e - a - d - c" }, // [cite: 34, 38, 39, 40, 41, 42, 43, 44, 45]
+
+        // IV. NGỮ PHÁP & TỪ VỰNG [cite: 46, 47]
+        { type: 'mcq', question: "7. My grandfather ___ a retired teacher.", options: ["am", "is", "are", "be"], correct: "is" }, // [cite: 48, 49, 50, 51, 52, 53]
+        { type: 'mcq', question: "8. She is ___ excellent student in my class.", options: ["a", "an", "the", "Ø (no article)"], correct: "an" }, // [cite: 54, 55, 57, 58, 60, 61]
+        { type: 'mcq', question: "9. I want to communicate with ___ from other countries.", options: ["foreigners", "subjects", "homework", "projects"], correct: "foreigners" }, // [cite: 59, 62, 63, 64, 65, 66]
+        { type: 'mcq', question: "10. There are four ___ working in the school kitchen.", options: ["woman", "womans", "women", "womens"], correct: "women" }, // [cite: 67, 68, 69, 70, 71, 72]
+        { type: 'mcq', question: "11. ___ is your math exam? - It is on Monday.", options: ["Where", "When", "What", "Who"], correct: "When" }, // [cite: 73, 74, 75, 76, 77, 78, 79]
+        { type: 'mcq', question: "12. The students usually read books ___ the library.", options: ["in", "on", "at", "for"], correct: "in" }, // [cite: 80, 81, 82, 83, 84, 85]
+        { type: 'mcq', question: "13. ___ are my parents. They are very kind.", options: ["This", "That", "These", "It"], correct: "These" }, // [cite: 86, 87, 88, 89, 90, 91]
+        { type: 'mcq', question: "14. He ___ to school by bus every day.", options: ["go", "going", "goes", "went"], correct: "goes" }, // [cite: 92, 93, 94, 95, 96, 97]
+        { type: 'mcq', question: "15. My sister ___ chemistry in the laboratory twice a week.", options: ["studies", "study", "studyes", "studying"], correct: "studies" }, // [cite: 98, 99, 100, 101, 102, 103]
+        { type: 'mcq', question: "16. What are those? - ___ are my grandfather's pillows.", options: ["It", "They", "This", "That"], correct: "They" }, // [cite: 104, 105, 106, 107, 108]
+        { type: 'mcq', question: "17. They play football in the ___ during recess.", options: ["wardrobe", "schoolyard", "airport", "kitchen"], correct: "schoolyard" }, // [cite: 109, 110, 111, 112, 113, 114]
+        { type: 'mcq', question: "18. My father's brother is my ___", options: ["cousin", "uncle", "aunt", "nephew"], correct: "uncle" }, // [cite: 115, 116, 117, 118, 119]
+
+        // V. SẮP XẾP TỪ THÀNH CÂU [cite: 120, 121]
+        { type: 'mcq', question: "19. Choose the correct sentence arranged from: often / helps / My / with / me / brother / homework / my /.", options: ["My brother often helps me with my homework.", "My brother helps often me with my homework.", "My homework often helps me with my brother.", "My brother often helps my homework with me."], correct: "My brother often helps me with my homework." }, // [cite: 122, 123, 124, 125, 126]
+        { type: 'mcq', question: "20. Choose the correct sentence arranged from: students / The / are / the / classroom / in /.", options: ["The classroom are in the students.", "The students in the classroom are.", "The students are in the classroom.", "Are the students in the classroom."], correct: "The students are in the classroom." }, // [cite: 127, 128, 129, 130, 131]
+
+        // VI. TÌNH HUỐNG GIAO TIẾP [cite: 132, 133]
+        { type: 'reading', text: "Mary and Jane are looking for their classmates.\nJane: \"Where are our classmates?\"\nMary: \"___\"", question: "21. Choose the best response:", options: ["Yes, they are.", "They are in the gymnasium.", "It is on the table.", "He is a doctor."], correct: "They are in the gymnasium." }, // [cite: 134, 135, 136, 139, 140, 141]
+
+        // VII. VIẾT CÂU TỪ TỪ GỢI Ý [cite: 142, 143]
+        { type: 'mcq', question: "22. Make a sentence from: Our / English / class / start / 7:15 AM /.", options: ["Our English class starts on 7:15 AM.", "Our English class starts in 7:15 AM.", "Our English class start at 7:15 AM.", "Our English class starts at 7:15 AM."], correct: "Our English class starts at 7:15 AM." }, // [cite: 144, 145, 146, 147, 148]
+        { type: 'mcq', question: "23. Make a sentence from: She / have / two / brother / and / one / sister /.", options: ["She have two brothers and one sister.", "She has two brothers and one sister.", "She has two brother and one sister.", "She has two brothers and one sisters."], correct: "She has two brothers and one sister." }, // [cite: 149, 150, 151, 152]
+
+        // VIII. ĐỌC HIỂU [cite: 153]
+        { type: 'reading', text: readingLinda, question: "24. How many people are there in Linda's family?", options: ["Four", "Five", "Six", "Seven"], correct: "Five" }, // [cite: 161, 162, 163, 164, 165]
+        { type: 'reading', text: readingLinda, question: "25. Who is seventy years old?", options: ["Linda", "Her father", "Her grandfather", "Peter"], correct: "Her grandfather" }, // [cite: 166, 167, 168, 169, 170]
+        { type: 'reading', text: readingLinda, question: "26. What is Linda's mother's job?", options: ["A doctor", "A student", "A nurse", "A teacher"], correct: "A teacher" }, // [cite: 171, 172, 173, 174, 175]
+        { type: 'reading', text: readingLinda, question: "27. What do they often do on weekends?", options: ["Go to the hospital", "Read books in the library", "Go to the park or cook together", "Visit their aunt and uncle"], correct: "Go to the park or cook together" }, // [cite: 176, 177, 178, 179, 180]
+        { type: 'reading', text: readingLinda, question: "28. Which of the following is NOT true about Peter?", options: ["He is older than Linda.", "He is eighteen years old.", "He is a doctor.", "He is a student."], correct: "He is a doctor." }, // [cite: 181, 182, 183, 184, 185]
+
+        // IX. TÌM CÂU ĐỒNG NGHĨA [cite: 186, 187]
+        { type: 'mcq', question: "29. \"There are five people in my extended family.\" is closest in meaning to:", options: ["My extended family have five people.", "My extended family has five people.", "Five people is in my extended family.", "My extended family are five people."], correct: "My extended family has five people." }, // [cite: 188, 189, 190, 192]
+        { type: 'mcq', question: "30. \"The garden is behind the house.\" is closest in meaning to:", options: ["The house is in front of the garden.", "The house is next to the garden.", "The garden is in front of the house.", "The house is under the garden."], correct: "The house is in front of the garden." }, // [cite: 193, 194, 195, 196]
+        { type: 'mcq', question: "31. \"Peter rides his bike to school.\" is closest in meaning to:", options: ["Peter goes to school on bike.", "Peter travels to school by his bike.", "Peter goes to school by bike.", "Peter goes to school with bike."], correct: "Peter goes to school by bike." }, // [cite: 197, 198, 199, 200, 201]
+        { type: 'mcq', question: "32. \"The English class starts at 8:00 AM.\" is closest in meaning to:", options: ["It is 8:00 AM. The English class ends.", "It is 8:00 AM when the English class starts.", "The English class is in 8:00 AM.", "We start the English class on 8:00 AM."], correct: "It is 8:00 AM when the English class starts." }, // [cite: 202, 203, 204, 205, 206]
+
+        // X. ĐỌC ĐIỀN TỪ [cite: 207]
+        { type: 'reading', text: clozeText, question: "33. Choose the best word for blank (33):", options: ["am", "is", "are", "be"], correct: "is" }, // [cite: 214, 220, 221, 230]
+        { type: 'reading', text: clozeText, question: "34. Choose the best word for blank (34):", options: ["at", "on", "in", "during"], correct: "in" }, // [cite: 215, 222, 223, 231]
+        { type: 'reading', text: clozeText, question: "35. Choose the best word for blank (35):", options: ["his", "their", "our", "your"], correct: "their" }, // [cite: 216, 224, 225, 232]
+        { type: 'reading', text: clozeText, question: "36. Choose the best word for blank (36):", options: ["is", "are", "do", "has"], correct: "are" }, // [cite: 217, 226, 227, 233]
+        { type: 'reading', text: clozeText, question: "37. Choose the best word for blank (37):", options: ["walk", "walks", "walking", "to walk"], correct: "walks" }, // [cite: 218, 228, 229, 234]
+
+        // XI. TRỌNG ÂM [cite: 235]
+        { type: 'mcq', question: "38. Choose the word that differs from the other three in the position of primary stress:", options: ["doctor", "uncle", "guitar", "sister"], correct: "guitar" }, // [cite: 236, 238, 240, 242]
+        { type: 'mcq', question: "39. Choose the word that differs from the other three in the position of primary stress:", options: ["afternoon", "badminton", "basketball", "volleyball"], correct: "afternoon" }, // [cite: 237, 239, 241, 243]
+
+        // XII. SẮP XẾP HỘI THOẠI [cite: 244, 245]
+        { type: 'reading', text: "a. Receptionist: Yes, the school library is on the second floor.\nb. Student: Hello. Where is the school library?\nc. Student: Thank you very much!", question: "40. Choose the correct arrangement to make a meaningful exchange:", options: ["b - a - c", "a - b - c", "b - c - a", "c - a - b"], correct: "b - a - c" } // [cite: 246, 247, 248, 249, 250, 251, 252, 253]
       ];
     }
 

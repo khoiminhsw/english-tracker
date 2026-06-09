@@ -4,11 +4,21 @@ import { db, auth } from './firebase';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { CheckCircle2, XCircle, BookPlus, Wrench, AlertOctagon, Lightbulb, Ticket, PlayCircle, Clock } from 'lucide-react';
 
+// Hàm tự động nhận diện ID của YouTube
 const getYouTubeID = (url) => {
   if (!url) return null;
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
   const match = url.match(regExp);
   return (match && match[2].length === 11) ? match[2] : null;
+};
+
+// TÍNH NĂNG MỚI: Tự động bóc tách ID của file video từ Google Drive
+const getGoogleDriveID = (url) => {
+  if (!url) return null;
+  // Hỗ trợ link chia sẻ dạng /file/d/ID/view hoặc uc?id=ID hoặc open?id=ID
+  const regExp = /(?:drive\.google\.com\/(?:file\/d\/|open\?id=)|docs\.google\.com\/uc\?id=)([a-zA-Z0-9_-]{25,35})/;
+  const match = url.match(regExp);
+  return match ? match[1] : null;
 };
 
 export default function Lesson({ dayData, prevDayData, onComplete, onBack, onCheat, isAdmin, inventory, consumeItem, onUpdateWordProgress }) {
@@ -21,13 +31,19 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
   const [vocabAnswers, setVocabAnswers] = useState({});
   const [vocabErrors, setVocabErrors] = useState({}); 
   const [savedToNotebook, setSavedToNotebook] = useState({}); 
-  const [hasPassedVocab, setHasPassedVocab] = useState(false); // Ngăn việc cộng điểm từ vựng nhiều lần
+  const [hasPassedVocab, setHasPassedVocab] = useState(false);
 
+  // ==========================================
+  // HỆ THỐNG XỬ LÝ VIDEO ĐA NỀN TẢNG (YOUTUBE / DRIVE / LOCAL)
+  // ==========================================
   const rawUrl = dayData.videoUrl || '';
   const ytId = getYouTubeID(rawUrl);
+  const driveId = getGoogleDriveID(rawUrl);
+  
   const isYouTube = !!ytId; 
+  const isDrive = !!driveId; // Xác định nếu là link Google Drive
 
-  const REQUIRED_TIME = 900; 
+  const REQUIRED_TIME = 900; // 15 phút = 900 giây học tập nghiêm túc
   const [watchTime, setWatchTime] = useState(0); 
   const [isVideoWatched, setIsVideoWatched] = useState(false); 
 
@@ -43,6 +59,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     }
   }, [prevDayData]);
 
+  // HỆ THỐNG ANTI-CHEAT GIAN LẬN
   useEffect(() => {
     if (isAdmin) return;
     const handleVisibilityChange = () => {
@@ -90,7 +107,6 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     });
 
     if (isAllCorrect) {
-      // Ghi nhận tiến độ từ vựng (Chỉ chạy 1 lần khi qua bài kiểm tra mà không dùng Skip)
       if (!hasPassedVocab && onUpdateWordProgress) {
         onUpdateWordProgress(selectedCheckVocab.map(v => v.word));
         setHasPassedVocab(true);
@@ -106,7 +122,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
   const handleUseSkip = async () => {
     const success = await consumeItem('skips');
     if (success) {
-      alert("🎟️ Đã dùng 1 thẻ Skip! Bỏ qua kiểm tra từ vựng (Sẽ không được tính tiến độ Master).");
+      alert("🎟️ Đã dùng 1 thẻ Skip! Bỏ qua kiểm tra từ vựng.");
       setStep(rawUrl ? 'video-learning' : 'exercises');
     } else {
       alert("Bạn không đủ thẻ Skip! Hãy mua trong Cửa hàng.");
@@ -124,10 +140,14 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     } catch (error) {}
   };
 
+  // ==========================================
+  // THUẬT TOÁN ĐẾM GIỜ XEM VIDEO NGẦM (15 PHÚT)
+  // ==========================================
   useEffect(() => {
     if (isAdmin || step !== 'video-learning' || isVideoWatched) return;
 
     const timer = setInterval(() => {
+      // Chỉ đếm thời gian khi học viên mở tab này (Chống mở tab nền để treo máy)
       if (!document.hidden) {
         setWatchTime(prev => {
           const newTime = prev + 1;
@@ -244,10 +264,12 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
         <div className="bg-white p-6 rounded-xl shadow-lg border relative">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-bold flex items-center gap-2"><PlayCircle className="text-blue-600"/> Video Bài Giảng</h3>
-            {isAdmin && <span className="text-sm font-bold text-purple-600 bg-purple-100 px-3 py-1 rounded">Admin Mode: Đã tự động mở Checkpoint</span>}
+            {isAdmin && <span className="text-sm font-bold text-purple-600 bg-purple-100 px-3 py-1 rounded">Admin Mode: Xem tự do</span>}
           </div>
 
           <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-md relative flex items-center justify-center">
+            
+            {/* TỰ ĐỘNG PHÂN LUỒNG TRÌNH PHÁT THEO ĐƯỜNG DẪN INPUT */}
             {isYouTube ? (
               <iframe 
                 width="100%" 
@@ -259,6 +281,18 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
                 allowFullScreen
                 className="absolute top-0 left-0"
               ></iframe>
+            ) : isDrive ? (
+              /* NẾU LÀ DRIVE: Nhúng trực tiếp bằng Iframe dạng Preview bảo mật của Google */
+              <iframe
+                width="100%"
+                height="100%"
+                src={`https://drive.google.com/file/d/${driveId}/preview`}
+                title="Google Drive video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute top-0 left-0"
+              ></iframe>
             ) : rawUrl ? (
               <video 
                 src={rawUrl}
@@ -266,17 +300,17 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
                 width="100%"
                 height="100%"
                 className="absolute top-0 left-0"
-                onEnded={() => setIsVideoWatched(true)} 
               />
             ) : (
               <span className="text-red-500 font-bold">Lỗi: Không tìm thấy đường dẫn Video.</span>
             )}
           </div>
           
+          {/* ẨN THANH CHẠY VÀ ĐẾM NGƯỢC - THEO DÕI NGẦM 15 PHÚT */}
           <div className="mt-8 text-center min-h-[80px] flex flex-col justify-center items-center">
             {isVideoWatched || isAdmin ? (
               <button onClick={() => setStep('exercises')} className="bg-green-600 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-green-700 shadow-xl hover:-translate-y-1 transition-transform animate-bounce flex items-center justify-center gap-2">
-                <CheckCircle2 size={24} /> CHECKPOINT: Tiến vào Bài Tập
+                <CheckCircle2 size={24} /> Tiến vào Bài Tập
               </button>
             ) : (
               <div className="flex flex-col items-center gap-2 bg-gray-50 p-4 rounded-xl border border-gray-200 border-dashed w-full sm:w-auto">
@@ -284,7 +318,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
                   <Clock size={20} className="text-blue-500 animate-pulse"/>
                   Hệ thống đang theo dõi sự tập trung của bạn...
                 </p>
-                <p className="text-gray-500 text-xs sm:text-sm font-medium">Giữ tab này và xem video nghiêm túc trong ít nhất 15 phút để mở khóa bài tập.</p>
+                <p className="text-gray-500 text-xs sm:text-sm font-medium">Tập trung hoàn thành bài học !!!</p>
               </div>
             )}
           </div>
