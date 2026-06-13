@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { courseData } from './data';
 import Lesson from './Lesson';
 import VocabularyReview from './VocabularyReview';
-import { Flame, Lock, CheckCircle2, Calendar, Target, LogOut, Info, X, Gamepad2, BookOpen, Crown, Medal, Award, Coins, Store, Shield, Ticket, Lightbulb, PackageOpen, BrainCircuit, Dices, ShieldAlert } from 'lucide-react';
+import { Flame, Lock, CheckCircle2, Calendar, Target, LogOut, Info, X, Gamepad2, BookOpen, Crown, Medal, Award, Coins, Store, Shield, Ticket, Lightbulb, PackageOpen, BrainCircuit, Dices, ShieldAlert, PieChart, TrendingUp, AlertTriangle } from 'lucide-react';
 
 import { auth, provider, db } from './firebase'; 
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
@@ -27,8 +27,10 @@ export default function App() {
   const [inventory, setInventory] = useState({ shields: 0, skips: 0, hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 });
   const [shopStats, setShopStats] = useState({ immortalBoughtCount: 0 });
   
+  const [lessonScores, setLessonScores] = useState({});
+  const [learningStats, setLearningStats] = useState({ totalVocabFails: 0, totalExerciseFails: 0 });
+  
   const [checkinState, setCheckinState] = useState({ day: 0, show: false });
-
   const [showSetup, setShowSetup] = useState(false);
   const [tempSchedule, setTempSchedule] = useState([]);
   const [streak, setStreak] = useState(0);
@@ -41,6 +43,10 @@ export default function App() {
   const [showProfile, setShowProfile] = useState(false); 
   const [showShop, setShowShop] = useState(false); 
   const [showGachaModal, setShowGachaModal] = useState(false); 
+  const [showAnalytics, setShowAnalytics] = useState(false); 
+  
+  // STATE MỚI: QUẢN LÝ POP-UP NHẮC HỌC BÀI
+  const [showDailyReminder, setShowDailyReminder] = useState(false);
 
   const [notebook, setNotebook] = useState([]);
   const [dailyGamesPlayed, setDailyGamesPlayed] = useState(0);
@@ -82,6 +88,9 @@ export default function App() {
         
         setInventory(data.inventory || { shields: 0, skips: 0, hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 });
         setShopStats(data.shopStats || { immortalBoughtCount: 0 });
+        
+        setLessonScores(data.lessonScores || {});
+        setLearningStats(data.learningStats || { totalVocabFails: 0, totalExerciseFails: 0 });
 
         let cDay = data.checkin?.day || 0;
         let cDate = data.checkin?.lastDate || null;
@@ -130,6 +139,8 @@ export default function App() {
           wordProgress: {},
           inventory: { shields: 0, skips: 0, hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 },
           shopStats: { immortalBoughtCount: 0 },
+          lessonScores: {},
+          learningStats: { totalVocabFails: 0, totalExerciseFails: 0 },
           checkin: { lastDate: null, day: 0 },
           claimedAchievements: [],
           streak: 1,
@@ -150,6 +161,8 @@ export default function App() {
         setWordProgress({});
         setInventory(newProfile.inventory);
         setShopStats(newProfile.shopStats);
+        setLessonScores({});
+        setLearningStats(newProfile.learningStats);
         setCheckinState({ day: 1, show: true });
         setStartDateStr(todayStr);
         setActivityLog([todayStr]);
@@ -210,10 +223,8 @@ export default function App() {
           
           newScore -= pointPenalty;
           newCoins -= coinPenalty;
-          
           if (newScore < 0) newScore = 0;
           if (newCoins < 0) newCoins = 0;
-          
           alert(`CẢNH BÁO BỎ HỌC!\nBạn đã vắng mặt ${missedDaysCount} buổi.\nPhạt ${pointPenalty} Điểm Kỷ Luật và ${coinPenalty} Coins!`);
           needsUpdate = true;
         } else {
@@ -297,23 +308,34 @@ export default function App() {
     alert(`🎁 Điểm danh Ngày ${checkinState.day} thành công!\nPhần thưởng: ${msg}`);
   };
 
+  // LOGIC HIỂN THỊ POP-UP NHẮC HỌC BÀI
+  useEffect(() => {
+    if (schedule && !loading && user && !checkinState.show) {
+        const todayStr = new Date().toDateString();
+        const currentDayOfWeek = new Date().getDay();
+        const isScheduledToday = schedule.includes(currentDayOfWeek);
+        const hasNotStudiedToday = lastCompletedDate !== todayStr;
+        
+        if (isScheduledToday && hasNotStudiedToday && !sessionStorage.getItem('dailyReminderShown') && unlockedDay <= 48) {
+            setShowDailyReminder(true);
+            sessionStorage.setItem('dailyReminderShown', 'true');
+        }
+    }
+  }, [schedule, loading, user, lastCompletedDate, checkinState.show, unlockedDay]);
+
   const handleUpdateWordProgress = async (wordsArray) => {
     if (!wordsArray || wordsArray.length === 0) return;
     const newProgress = { ...(wordProgress || {}) }; 
-    
     wordsArray.forEach(w => {
       const wordLower = w.toLowerCase();
       if (!newProgress[wordLower]) newProgress[wordLower] = 0;
-      if (newProgress[wordLower] < 3) {
-        newProgress[wordLower] += 1;
-      }
+      if (newProgress[wordLower] < 3) newProgress[wordLower] += 1;
     });
-
     setWordProgress(newProgress);
     await updateDoc(doc(db, 'users', user.uid), { wordProgress: newProgress });
   };
 
-  const handleCompleteLesson = async (dayId, vocabFailCount, exerciseFailCount) => {
+  const handleCompleteLesson = async (dayId, vocabFailCount, exerciseFailCount, actualScore = 0, totalQuestions = 0) => {
     let pointPenalty = 0;
     let coinPenalty = 0;
     let pointBonus = 0;
@@ -321,18 +343,31 @@ export default function App() {
     let message = "📊 TỔNG KẾT BÀI HỌC CỦA BẠN:\n\n";
 
     const isTestDay = courseData.find(d => d.id === dayId)?.isTest;
-    const maxExFailsAllowed = isTestDay ? 5 : 3; 
+    const isMajorTestPass = isTestDay && actualScore >= 36; 
+    const isLazyTest = isTestDay && actualScore < 10;       
+    const isLazyNormal = !isTestDay && actualScore < 5;     
+    
+    const scale10 = totalQuestions > 0 ? ((actualScore / totalQuestions) * 10).toFixed(2) : 10.00;
 
-    if (vocabFailCount > 3) { 
-      pointPenalty += 2; coinPenalty += 4; 
-      message += `❌ PHẠT: -2 Điểm & -4 Coins (Sai từ vựng đầu giờ).\n`; 
-    }
-
-    if (exerciseFailCount >= maxExFailsAllowed) { 
-      pointPenalty += 2; coinPenalty += 4; 
-      message += `❌ PHẠT: -2 Điểm & -4 Coins (Làm sai bài tập vượt quá số lần cho phép).\n`; 
-    } else if (exerciseFailCount > 0 && exerciseFailCount < maxExFailsAllowed) {
-      message += `✅ HOÀN THÀNH BÀI TẬP.\n⚠️ Lưu ý: Vì có lỗi sai nên bạn không được cộng phần thưởng Tuyệt Đối.\n`;
+    if (isLazyTest) {
+       pointPenalty += 20; coinPenalty += 40;
+       message += `🚨 PHẠT LƯỜI BIẾNG (TEST): -20 Điểm & -40 Coins (Bạn chỉ đúng ${actualScore}/${totalQuestions} câu. Hãy làm bài nghiêm túc!).\n`;
+    } else if (isLazyNormal) {
+       pointPenalty += 10; coinPenalty += 20;
+       message += `🚨 PHẠT LƯỜI BIẾNG (BÀI TẬP): -10 Điểm & -20 Coins (Bạn chỉ đúng ${actualScore}/${totalQuestions} câu. Hãy học hành đàng hoàng!).\n`;
+    } else if (isMajorTestPass) {
+       message += `🏆 XUẤT SẮC! BẠN ĐÃ ĐẠT CHUẨN (${actualScore}/${totalQuestions} câu) TRONG BÀI TEST LỚN. MIỄN TOÀN BỘ PHẠT!\n`;
+    } else {
+       if (vocabFailCount > 3) { 
+         pointPenalty += 2; coinPenalty += 4; 
+         message += `❌ PHẠT: -2 Điểm & -4 Coins (Sai từ vựng đầu giờ).\n`; 
+       }
+       if (exerciseFailCount >= (isTestDay ? 5 : 3)) { 
+         pointPenalty += 2; coinPenalty += 4; 
+         message += `❌ PHẠT: -2 Điểm & -4 Coins (Làm sai bài tập vượt số lần cho phép).\n`; 
+       } else if (exerciseFailCount > 0) {
+         message += `✅ HOÀN THÀNH BÀI TẬP.\n⚠️ Lưu ý: Vì có lỗi sai nên bạn không được cộng phần thưởng Tuyệt Đối.\n`;
+       }
     }
 
     const currentUnlocked = Number(unlockedDay);
@@ -340,10 +375,12 @@ export default function App() {
     const isFirstTime = currentDayId >= currentUnlocked;
 
     if (isFirstTime) {
-      if (exerciseFailCount === 0) { 
-        pointBonus = 5; 
-        coinBonus = 10;
-        message += `⭐ XUẤT SẮC: +5 Điểm & +10 Coins (Làm đúng 100% lần đầu!).\n`; 
+      if (!isLazyNormal && !isLazyTest) {
+         if (exerciseFailCount === 0 || isMajorTestPass) { 
+           pointBonus = 5; 
+           coinBonus = 10;
+           if(!isMajorTestPass) message += `⭐ XUẤT SẮC: +5 Điểm & +10 Coins (Hoàn hảo!).\n`; 
+         }
       }
     } else {
       coinBonus += 2; 
@@ -352,9 +389,21 @@ export default function App() {
 
     let newScore = Number(totalScore) - pointPenalty + pointBonus;
     let newCoins = Number(coins) - coinPenalty + coinBonus; 
-    
     if (newScore < 0) newScore = 0;
     if (newCoins < 0) newCoins = 0;
+
+    const newLessonScores = { ...lessonScores };
+    newLessonScores[dayId] = {
+        score: actualScore,
+        total: totalQuestions,
+        scale10: Number(scale10),
+        isTest: !!isTestDay,
+        date: new Date().toLocaleDateString('vi-VN')
+    };
+
+    const newStats = { ...learningStats };
+    newStats.totalVocabFails += vocabFailCount;
+    newStats.totalExerciseFails += exerciseFailCount;
 
     const nextDay = (currentDayId === currentUnlocked && currentDayId < 48) ? currentDayId + 1 : currentUnlocked;
     const todayStr = new Date().toDateString();
@@ -366,7 +415,9 @@ export default function App() {
       coins: newCoins,
       unlockedDay: nextDay,
       lastCompletedDate: todayStr,
-      activityLog: newActivityLog
+      activityLog: newActivityLog,
+      lessonScores: newLessonScores,
+      learningStats: newStats
     });
 
     setTotalScore(newScore);
@@ -374,18 +425,19 @@ export default function App() {
     setUnlockedDay(nextDay);
     setLastCompletedDate(todayStr);
     setActivityLog(newActivityLog);
+    setLessonScores(newLessonScores);
+    setLearningStats(newStats);
     setActiveLesson(null);
 
     alert(message);
   };
 
-  const handleGameComplete = async (isWin, correctlyAnsweredWords) => {
+  const handleGameComplete = async (isWin, correctlyAnsweredWords, gameType) => {
     const todayStr = new Date().toDateString();
     let newScore = Number(totalScore);
     let newCoins = Number(coins);
     let newDailyGames = dailyGamesPlayed + 1;
     let newTotalGames = totalGamesPlayed + 1;
-
     let earnedScore = 0;
     let rewardCoins = 0;
 
@@ -401,7 +453,6 @@ export default function App() {
     }
 
     const newActivityLog = activityLog.includes(todayStr) ? activityLog : [...activityLog, todayStr];
-
     const userRef = doc(db, 'users', user.uid);
     await updateDoc(userRef, { 
       score: newScore,
@@ -421,11 +472,8 @@ export default function App() {
     setActivityLog(newActivityLog);
     setIsPlayingVocab(false); 
     
-    if (isWin) {
-      alert(`🎮 Chiến thắng! Bạn nhận được +${earnedScore} Điểm, +${rewardCoins} Coins.\nTiến độ những từ bạn đánh ĐÚNG đã được lưu lại.`);
-    } else {
-      alert(`💀 Game Over!\nTuy nhiên, những từ bạn đã trả lời ĐÚNG vẫn được lưu tiến độ Master.`);
-    }
+    if (isWin) alert(`🎮 Chiến thắng! Bạn nhận được +${earnedScore} Điểm, +${rewardCoins} Coins.\nTiến độ những từ bạn đánh ĐÚNG đã được lưu lại.`);
+    else alert(`💀 Game Over!\nTuy nhiên, những từ bạn đã trả lời ĐÚNG vẫn được tính tiến độ.`);
   };
 
   const getLearnedVocab = () => {
@@ -437,9 +485,17 @@ export default function App() {
   };
 
   const completedLessons = unlockedDay > 1 ? unlockedDay - 1 : 0;
-  const safeWordProgress = wordProgress || {};
-  const wordsMasteredCount = Object.values(safeWordProgress).filter(count => typeof count === 'number' && count >= 3).length;
-  const masteredWordsList = Object.entries(safeWordProgress).filter(([word, count]) => typeof count === 'number' && count >= 3);
+  
+  // SAFE TRY-CATCH CHO WORD PROGRESS (FIX LỖI TRẮNG MÀN HÌNH TẠI MASTERED VOCAB)
+  let wordsMasteredCount = 0;
+  let masteredWordsList = [];
+  try {
+     const safeWP = (wordProgress && typeof wordProgress === 'object' && !Array.isArray(wordProgress)) ? wordProgress : {};
+     masteredWordsList = Object.entries(safeWP).filter(([w, c]) => typeof c === 'number' && c >= 3);
+     wordsMasteredCount = masteredWordsList.length;
+  } catch (err) {
+     console.error("Lỗi parse wordProgress: ", err);
+  }
 
   const achievementsList = [
     { id: "streak_7", title: "Khởi động", desc: "Đăng nhập liên tục 7 ngày", achieved: streak >= 7, rewardCoins: 20, icon: "🔥", color: "text-orange-500", bg: "bg-orange-100" },
@@ -496,7 +552,6 @@ export default function App() {
     let cost = baseCost;
     let newShopStats = { ...shopStats };
     
-    // TÍNH GIÁ THẺ BẤT TỬ THEO CẤP SỐ NHÂN: 20 * 2^n
     if (key === 'immortals') {
        cost = 20 * Math.pow(2, shopStats.immortalBoughtCount || 0);
     }
@@ -537,11 +592,8 @@ export default function App() {
     let newCoins = Number(coins);
     let newInv = { ...inventory };
 
-    if (useTicket) {
-       newInv.gachaTickets -= 1;
-    } else {
-       newCoins -= 25;
-    }
+    if (useTicket) newInv.gachaTickets -= 1;
+    else newCoins -= 25;
 
     setCoins(newCoins);
     setInventory(newInv);
@@ -556,7 +608,6 @@ export default function App() {
     else prizeKey = 'jackpot'; 
 
     const targetIndex = gachaItems.findIndex(i => i.id === prizeKey);
-
     const baseSpins = 32; 
     const stepsToTarget = (targetIndex - currentSpinIndex + 4) % 4;
     const totalSpins = baseSpins + stepsToTarget;
@@ -604,8 +655,34 @@ export default function App() {
     setShowNotebook(true);
   };
 
-  // Tính giá Thẻ Bất Tử hiển thị: 20 nhân lũy thừa cơ số 2 
   const currentImmortalPrice = 20 * Math.pow(2, shopStats?.immortalBoughtCount || 0);
+
+  const getAnalyticsData = () => {
+    const scoresArray = Object.values(lessonScores || {});
+    if (scoresArray.length === 0) return { avgEx: 0, avgTest: 0, advice: "Bạn chưa làm bài nào. Hãy bắt đầu ngay!", scoresArray: [] };
+
+    const exScores = scoresArray.filter(s => !s.isTest);
+    const testScores = scoresArray.filter(s => s.isTest);
+
+    const avgEx = exScores.length > 0 ? (exScores.reduce((a, b) => a + b.scale10, 0) / exScores.length).toFixed(2) : 0;
+    const avgTest = testScores.length > 0 ? (testScores.reduce((a, b) => a + b.scale10, 0) / testScores.length).toFixed(2) : 0;
+
+    let advice = "";
+    const { totalVocabFails = 0, totalExerciseFails = 0 } = learningStats || {};
+    
+    if (totalVocabFails > totalExerciseFails * 1.5) {
+      advice = "⚠️ Kỹ năng Từ vựng (Vocabulary): Bạn thường xuyên sai ở trạm kiểm tra từ vựng đầu giờ. Hãy dành thêm thời gian chơi Mini-game để cải thiện bộ nhớ từ vựng nhé!";
+    } else if (totalExerciseFails > totalVocabFails * 1.5) {
+      advice = "⚠️ Kỹ năng Ngữ pháp & Đọc hiểu (Grammar/Reading): Bạn mắc khá nhiều lỗi trong lúc làm bài tập. Cần cẩn thận hơn và ghi chép lại các cấu trúc đã sai.";
+    } else if (avgEx >= 8 && avgTest >= 8) {
+      advice = "🌟 Tuyệt vời! Bạn đang phát triển rất cân bằng và vững chắc cả về Từ vựng lẫn Ngữ pháp. Hãy tiếp tục giữ vững phong độ này!";
+    } else {
+      advice = "📝 Phong độ của bạn đang ở mức trung bình. Hãy phân bổ thời gian đều đặn mỗi ngày để ôn tập lại bài cũ và không được lạm dụng Thẻ Hint nhé.";
+    }
+
+    const sortedScores = Object.entries(lessonScores || {}).map(([day, data]) => ({ day, ...data })).sort((a,b) => Number(a.day) - Number(b.day));
+    return { avgEx, avgTest, advice, scoresArray: sortedScores };
+  };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-2xl font-bold">Đang tải dữ liệu...</div>;
   if (!user) return (
@@ -647,6 +724,27 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 relative">
+      
+      {/* SIÊU POP-UP NHẮC NHỞ HỌC BÀI ĐẦU NGÀY */}
+      {showDailyReminder && (
+         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[120] p-4 backdrop-blur-sm">
+           <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center animate-in zoom-in duration-500 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-b-[50%]"></div>
+              <div className="relative z-10">
+                 <div className="w-24 h-24 bg-white rounded-full mx-auto border-4 border-indigo-100 flex items-center justify-center text-5xl mb-4 shadow-lg animate-bounce">
+                   🚀
+                 </div>
+                 <h2 className="text-2xl font-black text-gray-800 mb-2">Đến giờ học rồi!</h2>
+                 <p className="text-gray-600 font-medium mb-6">Hôm nay bạn có lịch chinh phục <b className="text-indigo-600">Ngày {unlockedDay}</b>. Đừng để lỡ chuỗi Streak rực lửa nhé!</p>
+                 <button onClick={() => { setShowDailyReminder(false); setActiveLesson(unlockedDay); }} className="w-full bg-indigo-600 text-white py-4 rounded-xl font-black text-lg shadow-[0_0_20px_rgba(79,70,229,0.4)] hover:bg-indigo-700 hover:scale-105 transition-all">
+                   VÀO HỌC NGAY
+                 </button>
+                 <button onClick={() => setShowDailyReminder(false)} className="mt-4 text-gray-400 font-bold hover:text-gray-600 transition-colors">Để sau</button>
+              </div>
+           </div>
+         </div>
+      )}
+
       <div className="max-w-5xl mx-auto space-y-6 mb-8">
         
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex justify-between items-center">
@@ -662,16 +760,19 @@ export default function App() {
            <button onClick={logout} className="text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 p-3 rounded-xl transition-colors"><LogOut size={20} /></button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-          <div className="flex items-center justify-center gap-2 bg-orange-50 text-orange-600 px-6 py-3 rounded-xl font-black border border-orange-100 flex-1">
-            <Flame size={24} /> <span className="text-lg">Streak: {streak}</span>
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+          <div className="flex items-center justify-center gap-2 bg-orange-50 text-orange-600 px-4 sm:px-6 py-3 rounded-xl font-black border border-orange-100 flex-1">
+            <Flame size={20} /> <span className="text-sm sm:text-lg">Streak: {streak}</span>
           </div>
-          <div className="flex items-center justify-center gap-2 bg-yellow-50 text-yellow-600 px-6 py-3 rounded-xl font-black border border-yellow-100 flex-1">
-            <Coins size={24} /> <span className="text-lg">Coin: {coins}</span>
+          <div className="flex items-center justify-center gap-2 bg-yellow-50 text-yellow-600 px-4 sm:px-6 py-3 rounded-xl font-black border border-yellow-100 flex-1">
+            <Coins size={20} /> <span className="text-sm sm:text-lg">Coin: {coins}</span>
           </div>
-          <div className="flex items-center justify-center gap-2 bg-blue-50 text-blue-600 px-6 py-3 rounded-xl font-black border border-blue-100 flex-1 relative">
-            <Target size={24} /> <span className="text-lg">Điểm: {totalScore}</span>
-            <button onClick={() => setShowRules(true)} className="absolute right-3 text-blue-300 hover:text-blue-600 transition-transform hover:scale-110"><Info size={20} /></button>
+          <button onClick={() => setShowAnalytics(true)} className="flex items-center justify-center gap-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors px-4 sm:px-6 py-3 rounded-xl font-black border border-indigo-200 flex-1 shadow-sm">
+            <PieChart size={20} /> <span className="text-sm sm:text-lg">Theo dõi học tập</span>
+          </button>
+          <div className="flex items-center justify-center gap-2 bg-blue-50 text-blue-600 px-4 sm:px-6 py-3 rounded-xl font-black border border-blue-100 flex-1 relative">
+            <Target size={20} /> <span className="text-sm sm:text-lg">Điểm: {totalScore}</span>
+            <button onClick={() => setShowRules(true)} className="absolute right-3 text-blue-300 hover:text-blue-600 transition-transform hover:scale-110 hidden sm:block"><Info size={20} /></button>
           </div>
         </div>
 
@@ -692,7 +793,7 @@ export default function App() {
             <BookOpen size={20} /> Library
           </button>
           <button onClick={() => setShowVocabMastery(true)} className="flex-1 flex justify-center items-center gap-2 px-4 py-4 rounded-xl font-bold text-white bg-fuchsia-500 hover:bg-fuchsia-600 transition-colors shadow-sm whitespace-nowrap">
-            <BrainCircuit size={20} /> Mastered Vocab
+            <BrainCircuit size={20} /> Mastered
           </button>
           <button onClick={() => setShowProfile(true)} className="flex-1 flex justify-center items-center gap-2 px-4 py-4 rounded-xl font-bold text-white bg-blue-500 hover:bg-blue-600 transition-colors shadow-sm whitespace-nowrap">
             <Medal size={20} /> Thành Tựu
@@ -738,6 +839,73 @@ export default function App() {
       {/* ============================================================== */}
       {/* CÁC MODAL CỦA HỆ THỐNG */}
       {/* ============================================================== */}
+
+      {showAnalytics && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-gray-50 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in duration-300">
+            <div className="bg-gradient-to-r from-indigo-600 to-blue-600 p-6 flex justify-between items-center text-white shrink-0">
+              <div className="flex items-center gap-3">
+                <PieChart size={28}/>
+                <h3 className="text-2xl font-black">Bảng Theo Dõi Học Tập</h3>
+              </div>
+              <button onClick={() => setShowAnalytics(false)} className="hover:bg-black/20 p-2 rounded-full transition-colors"><X size={24} /></button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto flex-1">
+               {(() => {
+                  const data = getAnalyticsData();
+                  return (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-indigo-100 flex flex-col items-center justify-center text-center">
+                            <span className="text-indigo-400 font-bold uppercase tracking-wider mb-2 text-sm flex items-center gap-2"><TrendingUp size={16}/> Trung bình Bài tập</span>
+                            <span className="text-5xl font-black text-indigo-600">{data.avgEx}</span>
+                         </div>
+                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-purple-100 flex flex-col items-center justify-center text-center">
+                            <span className="text-purple-400 font-bold uppercase tracking-wider mb-2 text-sm flex items-center gap-2"><Award size={16}/> Trung bình Major Test</span>
+                            <span className="text-5xl font-black text-purple-600">{data.avgTest}</span>
+                         </div>
+                      </div>
+
+                      <div className="bg-yellow-50 p-5 rounded-2xl border border-yellow-200 mb-8 shadow-sm">
+                         <h4 className="font-bold text-yellow-800 mb-2 flex items-center gap-2"><AlertTriangle size={20}/> Phân Tích Kỹ Năng (AI)</h4>
+                         <p className="text-yellow-700 font-medium leading-relaxed">{data.advice}</p>
+                      </div>
+
+                      <h4 className="font-black text-gray-800 mb-4 text-xl border-b pb-2">Lịch sử các bài đã làm</h4>
+                      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-x-auto">
+                         <table className="w-full text-left min-w-[500px]">
+                            <thead className="bg-gray-50 border-b border-gray-200">
+                               <tr>
+                                  <th className="p-4 font-bold text-gray-600">Ngày học</th>
+                                  <th className="p-4 font-bold text-gray-600">Thể loại</th>
+                                  <th className="p-4 font-bold text-gray-600">Số câu đúng</th>
+                                  <th className="p-4 font-bold text-gray-600">Thang điểm 10</th>
+                               </tr>
+                            </thead>
+                            <tbody>
+                               {data.scoresArray.length === 0 ? (
+                                  <tr><td colSpan="4" className="p-6 text-center text-gray-500 font-medium">Chưa có dữ liệu bài làm.</td></tr>
+                               ) : (
+                                  data.scoresArray.map((s, idx) => (
+                                    <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                       <td className="p-4 font-bold text-gray-800">Ngày {s.day} <span className="text-xs text-gray-400 font-normal ml-2">({s.date})</span></td>
+                                       <td className="p-4">{s.isTest ? <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm">Major Test</span> : <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm">Bài tập</span>}</td>
+                                       <td className="p-4 font-medium text-gray-700">{s.score} / {s.total}</td>
+                                       <td className="p-4 font-black text-indigo-600">{s.scale10.toFixed(2)}</td>
+                                    </tr>
+                                  ))
+                               )}
+                            </tbody>
+                         </table>
+                      </div>
+                    </>
+                  );
+               })()}
+            </div>
+          </div>
+        </div>
+      )}
 
       {checkinState.show && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[110] p-4 backdrop-blur-sm">
@@ -968,6 +1136,7 @@ export default function App() {
         </div>
       )}
 
+      {/* MODAL TỪ VỰNG ĐÃ MASTER - HOẠT ĐỘNG SIÊU AN TOÀN TRÁNH CRASH */}
       {showVocabMastery && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col overflow-hidden animate-in zoom-in duration-300">
@@ -985,12 +1154,15 @@ export default function App() {
                 <div className="text-center py-10 text-gray-500"><BrainCircuit size={48} className="mx-auto mb-4 opacity-50 text-fuchsia-600" /><p className="text-lg font-bold">Chưa có từ vựng nào đạt mốc 3 lần đúng.</p></div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {masteredWordsList.map(([word, count]) => (
-                    <div key={word} className="p-4 rounded-xl border border-green-300 shadow-sm flex justify-between items-center bg-white hover:bg-green-50 transition-colors cursor-default">
-                      <span className="font-black text-lg text-green-700 capitalize">{word}</span>
-                      <span className="text-xs font-bold bg-green-100 text-green-700 px-2 py-1 rounded-full flex items-center gap-1"><CheckCircle2 size={12}/> Mastered</span>
-                    </div>
-                  ))}
+                  {masteredWordsList.map(([word, count]) => {
+                    const displayWord = word ? word.toString().charAt(0).toUpperCase() + word.toString().slice(1) : 'Unknown';
+                    return (
+                      <div key={word} className="p-4 rounded-xl border border-green-300 shadow-sm flex justify-between items-center bg-white hover:bg-green-50 transition-colors cursor-default">
+                        <span className="font-black text-lg text-green-700">{displayWord}</span>
+                        <span className="text-xs font-bold bg-green-100 text-green-700 px-2 py-1 rounded-full flex items-center gap-1"><CheckCircle2 size={12}/> Mastered</span>
+                      </div>
+                    )
+                  })}
                 </div>
               )}
             </div>
@@ -1018,7 +1190,8 @@ export default function App() {
                 <h4 className="font-bold text-red-700 mb-2 flex items-center gap-2">⚔️ Phạt Kỷ Luật</h4>
                 <ul className="text-sm text-red-800 list-disc list-inside space-y-2 font-medium">
                   <li><span className="font-bold">-5 Điểm & -10 Coins:</span> Phạt cho mỗi 1 ngày lười vắng học.</li>
-                  <li><span className="font-bold">-2 Điểm & -4 Coins:</span> Làm sai bài tập vượt số lần cho phép, sai từ vựng đầu giờ, hoặc gian lận mở tab khác.</li>
+                  <li><span className="font-bold">-10 đến -20 Điểm:</span> Phạt nặng khi chống đối, lười biếng (số câu đúng cực thấp).</li>
+                  <li><span className="font-bold">Phạt thêm:</span> Làm sai bài tập vượt giới hạn, hoặc gian lận mở tab khác.</li>
                 </ul>
               </div>
             </div>
