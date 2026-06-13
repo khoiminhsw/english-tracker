@@ -411,7 +411,393 @@ export const generateCourseData = () => {
         { type: 'reading', text: "a. Receptionist: Yes, the school library is on the second floor.\nb. Student: Hello. Where is the school library?\nc. Student: Thank you very much!", question: "40. Choose the correct arrangement to make a meaningful exchange:", options: ["b - a - c", "a - b - c", "b - c - a", "c - a - b"], correct: "b - a - c" } // [cite: 246, 247, 248, 249, 250, 251, 252, 253]
       ];
     }
+    // ==========================================
+    // ==========================================
+    // NGÀY 7: THÌ HIỆN TẠI ĐƠN - THỂ PHỦ ĐỊNH
+    // ==========================================
+    if (i === 7) {
+      dayData.videoUrl = "https://drive.google.com/file/d/1wOUFJWmYBsIR0mjQShh4z-4F5Rm6V-Q3/view?usp=drive_link";
+      dayData.vocabulary = [
+        { word: "work", meaning: "làm việc" },
+        { word: "swim", meaning: "bơi lội" },
+        { word: "drive", meaning: "lái xe ô tô" },
+        { word: "share", meaning: "chia sẻ / dùng chung" },
+        { word: "phone", meaning: "gọi điện" },
+        { word: "get up", meaning: "thức dậy" },
+        { word: "teach", meaning: "dạy học" },
+        { word: "jog", meaning: "chạy bộ" },
+        { word: "water", meaning: "tưới nước" },
+        { word: "plant", meaning: "trồng cây / cái cây" },
+        { word: "flat", meaning: "căn hộ" },
+        { word: "do chores", meaning: "làm việc nhà" },
+        { word: "commute", meaning: "đi lại / đi làm" },
+        { word: "prepare meals", meaning: "chuẩn bị bữa ăn" },
+        { word: "take a nap", meaning: "ngủ trưa ngắn" },
+        { word: "hang out", meaning: "đi chơi (với bạn bè)" },
+        { word: "illiterate", meaning: "mù chữ" },
+        { word: "traffic jam", meaning: "tắc đường" }
+      ];
 
+      const readingTextDay7 = "Hello, I am Peter. I am a 9th-grade student. I live in a big city with my parents and my younger sister. My daily routine is quite busy. I get up at 6:00 AM, have breakfast, and take the bus to school. My school starts at 7:15 AM and finishes at 11:30 AM. I don't go home for lunch; I eat at the school canteen.\n\nIn the afternoon, I don't have classes every day. On Mondays and Thursdays, I stay at school to play football with my friends. On other days, I go to the library to read books or do my homework. I don't play video games because I think it is a waste of time. My parents work in a big hospital, so they don't come home early. I often help my sister with her homework and we prepare dinner together. We don't eat meat very often; we prefer vegetables and fish.\n\nOn the weekend, my family has more free time. We don't stay at home. We usually go to a park or visit my grandparents in the countryside. Life in the city is fast, but I enjoy my balanced lifestyle.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) ---
+        { type: 'mcq', question: "1. My best friend ___ fast food because she wants to stay healthy.", options: ["don't eat", "doesn't eats", "doesn't eat", "don't eats"], correct: "doesn't eat" },
+        { type: 'mcq', question: "2. We ___ TV in the morning. We usually read books.", options: ["doesn't watch", "aren't watch", "don't watch", "isn't watch"], correct: "don't watch" },
+        { type: 'mcq', question: "3. Anna's brother ___ up early on Sundays.", options: ["doesn't get", "don't gets", "doesn't gets", "don't get"], correct: "doesn't get" },
+        { type: 'mcq', question: "4. I ___ a lot of free time on weekdays because of my studies.", options: ["hasn't", "don't have", "doesn't have", "haven't"], correct: "don't have" },
+        { type: 'mcq', question: "5. The teacher ___ us too much homework on the weekend.", options: ["don't give", "doesn't gives", "don't gives", "doesn't give"], correct: "doesn't give" },
+        { type: 'mcq', question: "6. They ___ to the gym every day, only on Mondays and Wednesdays.", options: ["doesn't go", "aren't go", "don't go", "don't goes"], correct: "don't go" },
+        { type: 'mcq', question: "7. His daughter ___ in a hospital. She works in a clinic.", options: ["don't work", "doesn't works", "doesn't work", "isn't work"], correct: "doesn't work" },
+        { type: 'mcq', question: "8. You ___ to water these plants every day. Twice a week is enough.", options: ["doesn't need", "don't need", "not need", "aren't need"], correct: "don't need" },
+        { type: 'mcq', question: "9. My parents ___ the flat with anyone else.", options: ["don't share", "doesn't share", "don't shares", "doesn't shares"], correct: "don't share" },
+        { type: 'mcq', question: "10. The coffee machine ___ properly, so I will make tea instead.", options: ["don't work", "doesn't work", "aren't work", "isn't work"], correct: "doesn't work" },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay7, question: "11. What time does Peter get up?", options: ["7:15 AM", "6:00 AM", "11:30 AM", "6:30 AM"], correct: "6:00 AM" },
+        { type: 'reading', text: readingTextDay7, question: "12. How does Peter go to school?", options: ["By car", "By bike", "By bus", "On foot"], correct: "By bus" },
+        { type: 'reading', text: readingTextDay7, question: "13. Where does Peter have lunch?", options: ["At home", "At a restaurant", "At the school canteen", "At his grandparents' house"], correct: "At the school canteen" },
+        { type: 'reading', text: readingTextDay7, question: "14. What does Peter do on Mondays and Thursdays afternoon?", options: ["He plays football.", "He goes to the library.", "He plays video games.", "He prepares dinner."], correct: "He plays football." },
+        { type: 'reading', text: readingTextDay7, question: "15. Why doesn't Peter play video games?", options: ["Because he doesn't have a computer.", "Because his parents don't allow it.", "Because he thinks it is a waste of time.", "Because he is not good at it."], correct: "Because he thinks it is a waste of time." },
+        { type: 'reading', text: readingTextDay7, question: "16. Where do Peter's parents work?", options: ["In a school", "In a library", "In a bank", "In a hospital"], correct: "In a hospital" },
+        { type: 'reading', text: readingTextDay7, question: "17. Who helps Peter's sister with her homework?", options: ["Her parents", "Peter", "Her teacher", "Her friends"], correct: "Peter" },
+        { type: 'reading', text: readingTextDay7, question: "18. What do Peter and his sister prefer to eat?", options: ["Fast food", "Meat and potatoes", "Vegetables and fish", "Ice cream and cake"], correct: "Vegetables and fish" },
+        { type: 'reading', text: readingTextDay7, question: "19. What does Peter's family usually do on the weekend?", options: ["They stay at home and watch TV.", "They go shopping in the city center.", "They go to a park or visit grandparents.", "They go to the hospital."], correct: "They go to a park or visit grandparents." },
+        { type: 'reading', text: readingTextDay7, question: "20. Which of the following is NOT TRUE about Peter?", options: ["He is a 9th-grade student.", "He helps his sister prepare dinner.", "He has classes every afternoon.", "He enjoys his balanced lifestyle."], correct: "He has classes every afternoon." },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: "21. Sắp xếp các từ sau: the / My / don't / in / jogging / parents / go / morning / .", correct: "My parents don't go jogging in the morning." },
+        { type: 'writing', question: "22. Sắp xếp các từ sau: brother / his / computer / younger / play / games / doesn't / Her / on / .", correct: "Her younger brother doesn't play games on his computer." },
+        { type: 'writing', question: "23. Sắp xếp các từ sau: much / time / have / They / during / don't / free / the / week / .", correct: "They don't have much free time during the week." },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: coffee / doesn't / because / like / bitter / it / is / She / .", correct: "She doesn't like coffee because it is bitter." },
+        { type: 'writing', question: "25. Sắp xếp các từ sau: a / We / flat / center / share / don't / in / city / the / .", correct: "We don't share a flat in the city center." }
+      ];
+    }
+
+    // ==========================================
+    // NGÀY 8: THỂ NGHI VẤN - FOOD AND DRINK
+    // ==========================================
+    if (i === 8) {
+      dayData.videoUrl = "https://drive.google.com/file/d/1oNtZ79dlkYaKYJZH_RoU49wWoKB34c_y/view?usp=drive_link";
+      dayData.vocabulary = [
+        { word: "rain", meaning: "mưa" },
+        { word: "snow", meaning: "tuyết rơi" },
+        { word: "wear", meaning: "mặc/đội" },
+        { word: "finish", meaning: "hoàn thành" },
+        { word: "sleep", meaning: "ngủ" },
+        { word: "understand", meaning: "hiểu" },
+        { word: "rent", meaning: "thuê" },
+        { word: "clean", meaning: "lau dọn" },
+        { word: "feed", meaning: "cho ăn" },
+        { word: "fast food", meaning: "đồ ăn nhanh" },
+        { word: "beverage", meaning: "đồ uống" },
+        { word: "dessert", meaning: "món tráng miệng" },
+        { word: "ingredient", meaning: "thành phần" },
+        { word: "recipe", meaning: "công thức" },
+        { word: "nutritious", meaning: "bổ dưỡng" },
+        { word: "delicious", meaning: "ngon miệng" },
+        { word: "sour", meaning: "chua" },
+        { word: "bitter", meaning: "đắng" }
+      ];
+
+      const readingTextDay8 = "Healthy Eating Habits\nA healthy diet is essential for maintaining good health and energy levels, especially for teenagers. Nutritionists say that young people need a balanced mix of proteins, carbohydrates, vitamins, and minerals. Many teenagers today prefer fast food like hamburgers, pizzas, and fried chicken because they are tasty and convenient. However, these foods are often high in fat, sugar, and salt, which can lead to obesity and other health problems if eaten too frequently. Instead of fast food, teenagers should eat more fresh fruits and vegetables. For example, an apple or a banana is a great snack between meals. Breakfast is considered the most important meal of the day. It gives your body the energy it needs to start a new day. A good breakfast could include eggs, bread, and a glass of milk. Unfortunately, many students skip breakfast because they get up late and don't have enough time. Hydration is also very important. Teenagers should drink at least two liters of water every day. Sugary drinks like soda or commercial milk tea should be avoided because they contain too much artificial sugar. By making small changes in daily eating habits, teenagers can improve their physical and mental health significantly.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) ---
+        { type: 'mcq', question: "1. ___ your father drink coffee every morning?", options: ["Do", "Does", "Is", "Are"], correct: "Does" },
+        { type: 'mcq', question: "2. I ___ eat fast food because it is not good for my health.", options: ["doesn't", "aren't", "don't", "isn't"], correct: "don't" },
+        { type: 'mcq', question: "3. ___ they like drinking milk tea? - Yes, they ___", options: ["Do / do", "Does / does", "Are / are", "Do / don't"], correct: "Do / do" },
+        { type: 'mcq', question: "4. What ___ she often have for breakfast? She has a sandwich and an apple.", options: ["do", "doing", "is", "does"], correct: "does" },
+        { type: 'mcq', question: "5. Does your sister ___ cooking dinner for the family?", options: ["enjoys", "enjoy", "enjoying", "enjoyed"], correct: "enjoy" },
+        { type: 'mcq', question: "6. We need to buy some fresh ___ to make a salad.", options: ["vegetables", "meat", "sugar", "milk"], correct: "vegetables" },
+        { type: 'mcq', question: "7. My grandfather doesn't ___ sweet things. He prefers bitter tea.", options: ["likes", "like", "liking", "liked"], correct: "like" },
+        { type: 'mcq', question: "8. ___ David and his friends often go to the new Korean restaurant?", options: ["Does", "Do", "Are", "Is"], correct: "Do" },
+        { type: 'mcq', question: "9. Pho is a very famous traditional ___ in Vietnam.", options: ["drink", "fruit", "dish", "dessert"], correct: "dish" },
+        { type: 'mcq', question: "10. ___ it take a long time to bake this apple pie?", options: ["Do", "Is", "Does", "Has"], correct: "Does" },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) --- ĐÃ SỬA LỖI BIẾN TEXT
+        { type: 'reading', text: readingTextDay8, question: "11. What is the main idea of the passage?", options: ["How to cook fast food.", "The importance of healthy eating for teenagers.", "Why teenagers love milk tea.", "The history of Vietnamese traditional food."], correct: "The importance of healthy eating for teenagers." },
+        { type: 'reading', text: readingTextDay8, question: "12. According to nutritionists, what do young people need?", options: ["Only vitamins and minerals.", "A lot of fast food.", "A balanced mix of proteins, carbohydrates, vitamins, and minerals.", "Only water and fruits."], correct: "A balanced mix of proteins, carbohydrates, vitamins, and minerals." },
+        { type: 'reading', text: readingTextDay8, question: "13. Why do many teenagers prefer fast food?", options: ["Because it is very healthy.", "Because it is tasty and convenient.", "Because it is cheap.", "Because nutritionists recommend it."], correct: "Because it is tasty and convenient." },
+        { type: 'reading', text: readingTextDay8, question: "14. What health problem can be caused by eating too much fast food?", options: ["Obesity", "Headache", "Toothache", "Flu"], correct: "Obesity" },
+        { type: 'reading', text: readingTextDay8, question: "15. What does the passage suggest teenagers should eat as a snack?", options: ["A slice of pizza", "A hamburger", "An apple or a banana", "Fried chicken"], correct: "An apple or a banana" },
+        { type: 'reading', text: readingTextDay8, question: "16. Which meal is considered the most important of the day?", options: ["Breakfast", "Lunch", "Dinner", "Snack"], correct: "Breakfast" },
+        { type: 'reading', text: readingTextDay8, question: "17. Why do many students skip breakfast?", options: ["Because they don't like eating in the morning.", "Because they want to lose weight.", "Because they get up late and don't have enough time.", "Because breakfast is expensive."], correct: "Because they get up late and don't have enough time." },
+        { type: 'reading', text: readingTextDay8, question: "18. How much water should teenagers drink daily?", options: ["Exactly one liter.", "At least two liters.", "More than four liters.", "Less than one liter."], correct: "At least two liters." },
+        { type: 'reading', text: readingTextDay8, question: "19. Why should teenagers avoid sugary drinks like soda?", options: ["Because they contain too much artificial sugar.", "Because they are expensive.", "Because they are difficult to buy.", "Because they are too cold."], correct: "Because they contain too much artificial sugar." },
+        { type: 'reading', text: readingTextDay8, question: "20. What is the benefit of making small changes in eating habits?", options: ["Teenagers can sleep longer.", "Teenagers can improve their physical and mental health.", "Teenagers can save a lot of money.", "Teenagers will never get sick again."], correct: "Teenagers can improve their physical and mental health." },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: "21. Sắp xếp các từ sau: your / eat / Does / a / vegetables / of / brother / lot / ?", correct: "Does your brother eat a lot of vegetables?" },
+        { type: 'writing', question: "22. Sắp xếp các từ sau: breakfast / every / prepare / you / Do / morning / your / for / family / ?", correct: "Do you prepare breakfast for your family every morning?" },
+        { type: 'writing', question: "23. Sắp xếp các từ sau: milk / My / doesn't / drink / tea / mother / much / .", correct: "My mother doesn't drink much milk tea." },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: the / What / eat / for / does / often / dinner / girl / ?", correct: "What does the girl often eat for dinner?" },
+        { type: 'writing', question: "25. Sắp xếp các từ sau: like / They / traditional / their / cooking / dishes / country / of / .", correct: "They like cooking traditional dishes of their country." }
+      ];
+    }
+    // ==========================================
+    // NGÀY 9: THÌ HIỆN TẠI ĐƠN - MÔI TRƯỜNG (ENVIRONMENT)
+    // ==========================================
+    if (i === 9) {
+      dayData.videoUrl = "https://drive.google.com/file/d/1kjbTnRfEI-mj5UreGObSuSAItiJdxA6h/view?usp=drive_link";
+      dayData.vocabulary = [
+        { word: "rise", meaning: "mọc / tăng" },
+        { word: "set", meaning: "lặn (mặt trời)" },
+        { word: "boil", meaning: "sôi" },
+        { word: "cycle", meaning: "đạp xe" },
+        { word: "tidy", meaning: "dọn dẹp / ngăn nắp" },
+        { word: "sun", meaning: "mặt trời" },
+        { word: "east", meaning: "phía đông" },
+        { word: "west", meaning: "phía tây" },
+        { word: "pollution", meaning: "sự ô nhiễm" },
+        { word: "global warming", meaning: "hiện tượng ấm lên toàn cầu" },
+        { word: "habitat", meaning: "môi trường sống" },
+        { word: "waste", meaning: "rác thải / lãng phí" },
+        { word: "carbon footprint", meaning: "lượng khí thải carbon" },
+        { word: "protect", meaning: "bảo vệ" },
+        { word: "recycle", meaning: "tái chế" },
+        { word: "reduce", meaning: "cắt giảm" },
+        { word: "eco-friendly", meaning: "thân thiện với môi trường" },
+        { word: "sustainable", meaning: "bền vững" }
+      ];
+
+      const readingTextDay9 = "Green Living: Simple Habits to Protect Our Earth\n\nOur planet is facing many serious environmental problems such as global warming, air pollution, and deforestation. However, we can protect the Earth by changing our daily habits. It does not require a lot of money or time to adopt a \"green lifestyle\".\n\nFirst of all, saving energy is very important. Many people leave the lights and televisions on when they are not in the room. We should always remember to turn them off to save electricity. Moreover, we shouldn't waste water. Taking a short shower instead of a bath is a good way to conserve fresh water.\n\nSecondly, plastic waste is extremely harmful to the environment because it takes hundreds of years to decompose. Therefore, we should limit the use of single-use plastic bags and bottles. Instead, using reusable bags and glass bottles is highly recommended. Many supermarkets now encourage customers to bring their own bags when shopping.\n\nFinally, planting trees is one of the most effective actions to make the air cleaner. Trees provide oxygen and absorb carbon dioxide. In spring, many schools organize \"Tree Planting Days\" for students. Doing this not only beautifies the environment but also teaches young people to love and protect nature. Every small action counts. If everyone adopts these simple habits, our world will be a much cleaner and safer place to live.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) ---
+        { type: 'mcq', question: "1. We usually ___ reusable bags when we go to the supermarket.", options: ["use", "uses", "are using", "to use"], correct: "use" },
+        { type: 'mcq', question: "2. Air pollution ___ a very serious problem in our city nowadays.", options: ["is", "are", "be", "am"], correct: "is" },
+        { type: 'mcq', question: "3. My mother always ___ off the lights before leaving the room to save electricity.", options: ["turn", "turns", "turning", "turned"], correct: "turns" },
+        { type: 'mcq', question: "4. ___ students in your school recycle paper and plastic bottles every week?", options: ["Does", "Are", "Do", "Is"], correct: "Do" },
+        { type: 'mcq', question: "5. The sun ___ renewable energy which is completely eco-friendly.", options: ["provide", "provides", "providing", "is provide"], correct: "provides" },
+        { type: 'mcq', question: "6. Many wild animals ___ their natural habitats because of deforestation.", options: ["lose", "loses", "losing", "to lose"], correct: "lose" },
+        { type: 'mcq', question: "7. My brother-in-law ___ drive to work; he always cycles to reduce his carbon footprint.", options: ["don't", "isn't", "aren't", "doesn't"], correct: "doesn't" },
+        { type: 'mcq', question: "8. Water ___ at 100 degrees Celsius, but we shouldn't waste energy to boil more water than we need.", options: ["boil", "boils", "boiling", "is boiling"], correct: "boils" },
+        { type: 'mcq', question: "9. How often ___ you plant trees in the local park?", options: ["does", "do", "are", "is"], correct: "do" },
+        { type: 'mcq', question: "10. They never ___ rubbish into the river near their house.", options: ["throw", "throws", "throwing", "to throw"], correct: "throw" },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay9, question: "11. What is the main idea of the passage?", options: ["The history of global warming.", "How supermarkets sell reusable bags.", "Simple daily habits to protect the environment.", "The benefits of taking a bath."], correct: "Simple daily habits to protect the environment." },
+        { type: 'reading', text: readingTextDay9, question: "12. According to paragraph 1, adopting a green lifestyle", options: ["requires a lot of money", "takes too much time", "does not require a lot of money or time", "is impossible for modern people"], correct: "does not require a lot of money or time" },
+        { type: 'reading', text: readingTextDay9, question: "13. The word \"them\" in paragraph 2 refers to", options: ["many people", "the lights and televisions", "the daily habits", "fresh water"], correct: "the lights and televisions" },
+        { type: 'reading', text: readingTextDay9, question: "14. How can we conserve fresh water according to the text?", options: ["By turning off the lights.", "By leaving the television on.", "By taking a short shower instead of a bath.", "By drinking water from glass bottles."], correct: "By taking a short shower instead of a bath." },
+        { type: 'reading', text: readingTextDay9, question: "15. Why is plastic waste extremely harmful to the environment?", options: ["It is very expensive.", "It absorbs oxygen.", "It makes the air cleaner.", "It takes hundreds of years to decompose."], correct: "It takes hundreds of years to decompose." },
+        { type: 'reading', text: readingTextDay9, question: "16. What should we use instead of single-use plastic bags?", options: ["Plastic bottles", "Reusable bags", "Televisions", "Nothing"], correct: "Reusable bags" },
+        { type: 'reading', text: readingTextDay9, question: "17. Supermarkets now encourage customers to", options: ["bring their own bags when shopping", "buy more plastic bags", "take longer showers", "leave the lights on"], correct: "bring their own bags when shopping" },
+        { type: 'reading', text: readingTextDay9, question: "18. According to the passage, what do trees provide?", options: ["Carbon dioxide", "Single-use bags", "Oxygen", "Electricity"], correct: "Oxygen" },
+        { type: 'reading', text: readingTextDay9, question: "19. When do many schools organize \"Tree Planting Days\"?", options: ["In summer", "In autumn", "In spring", "In winter"], correct: "In spring" },
+        { type: 'reading', text: readingTextDay9, question: "20. Which of the following statements is NOT TRUE according to the passage?", options: ["Global warming is a serious environmental problem.", "Planting trees teaches young people to love nature.", "Taking a bath saves more water than taking a short shower.", "Every small action is important to protect the Earth."], correct: "Taking a bath saves more water than taking a short shower." },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: "21. Sắp xếp các từ sau: The / sun / rises / in / the / east / .", correct: "The sun rises in the east." },
+        { type: 'writing', question: "22. Sắp xếp các từ sau: We / always / use / reusable / bags / at / the / supermarket / .", correct: "We always use reusable bags at the supermarket." },
+        { type: 'writing', question: "23. Sắp xếp các từ sau: Many / people / ride / bicycles / to / work / every / day / .", correct: "Many people ride bicycles to work every day." },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: Our / students / often / plant / trees / in / spring / .", correct: "Our students often plant trees in spring." },
+        { type: 'writing', question: "25. Sắp xếp các từ sau: Water / pollution / is / a / big / problem / in / our / city / .", correct: "Water pollution is a big problem in our city." }
+      ];
+    }
+
+    // ==========================================
+    // NGÀY 10: TỪ LOẠI (PARTS OF SPEECH) & TECHNOLOGY
+    // ==========================================
+    if (i === 10) {
+      dayData.videoUrl = "https://drive.google.com/file/d/1D-btR1RHoIT-I4E7ragPJqS-cNxQfxy7/view?usp=drive_link";
+      dayData.vocabulary = [
+        { word: "teacher", meaning: "giáo viên" },
+        { word: "happiness", meaning: "sự hạnh phúc" },
+        { word: "safety", meaning: "sự an toàn" },
+        { word: "beautiful", meaning: "xinh đẹp" },
+        { word: "dangerous", meaning: "nguy hiểm" },
+        { word: "friendly", meaning: "thân thiện" },
+        { word: "carefully", meaning: "một cách cẩn thận" },
+        { word: "fast", meaning: "nhanh (tính từ/trạng từ)" },
+        { word: "application", meaning: "ứng dụng" },
+        { word: "device", meaning: "thiết bị" },
+        { word: "innovation", meaning: "sự đổi mới" },
+        { word: "smartphone", meaning: "điện thoại thông minh" },
+        { word: "cyberspace", meaning: "không gian mạng" },
+        { word: "algorithm", meaning: "thuật toán" },
+        { word: "automate", meaning: "tự động hóa" },
+        { word: "virtual assistant", meaning: "trợ lý ảo" },
+        { word: "machine learning", meaning: "học máy" },
+        { word: "interactive", meaning: "có tính tương tác" }
+      ];
+
+      const readingTextDay10 = "Artificial Intelligence (AI) has rapidly transformed the way we live, work, and learn. Today, AI is no longer a concept from science fiction; it is a reality that exists in our daily lives. From virtual assistants on our smartphones to personalized recommendations on streaming platforms, AI technology is everywhere.\n\nOne of the most significant impacts of AI is in the field of education. Intelligent tutoring systems can adapt to a student's individual learning pace, providing customized exercises and feedback. This makes learning highly efficient. Moreover, teachers can use AI to automate administrative tasks, such as grading multiple-choice exams, which gives them more free time to focus on interactive classroom activities.\n\nHowever, the rapid development of AI also brings certain challenges. Data privacy is a major concern because AI systems require massive amounts of personal data to function accurately. If this data falls into the wrong hands, it can be extremely dangerous. Additionally, there is a fear that AI might replace human workers in various industries, leading to unemployment.\n\nDespite these concerns, scientists believe that if we regulate AI carefully, its benefits will easily outweigh the risks. The future relies on how successfully humans can collaborate with intelligent machines to create a better world.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) ---
+        { type: 'mcq', question: "1. The new smartphone is ___ designed with many advanced features.", options: ["beauty", "beautiful", "beautifully", "beautify"], correct: "beautifully" },
+        { type: 'mcq', question: "2. Artificial intelligence is becoming a very ___ tool in modern education.", options: ["use", "useful", "uselessly", "usage"], correct: "useful" },
+        { type: 'mcq', question: "3. You should read the instructions ___ before installing this software.", options: ["care", "careful", "careless", "carefully"], correct: "carefully" },
+        { type: 'mcq', question: "4. Programmers must work ___ to finish the new application by next week.", options: ["hard", "hardly", "harden", "hardness"], correct: "hard" },
+        { type: 'mcq', question: "5. His presentation about machine learning was very ___.", options: ["interest", "interested", "interesting", "interestingly"], correct: "interesting" },
+        { type: 'mcq', question: "6. Many ___ are working day and night to improve data security.", options: ["science", "scientists", "scientific", "scientifically"], correct: "scientists" },
+        { type: 'mcq', question: "7. Using public Wi-Fi networks can sometimes be ___ for your personal data.", options: ["danger", "dangerous", "dangerously", "endangered"], correct: "dangerous" },
+        { type: 'mcq', question: "8. She types so ___ that she can finish the report in just ten minutes.", options: ["fast", "fastly", "faster", "fasten"], correct: "fast" },
+        { type: 'mcq', question: "9. The ___ of a high-speed internet connection is undeniable in today's world.", options: ["important", "importantly", "importance", "import"], correct: "importance" },
+        { type: 'mcq', question: "10. Virtual assistants like Siri or Alexa act very ___ when they process voice commands.", options: ["quick", "quickly", "quickness", "quicker"], correct: "quickly" },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay10, question: "11. What is the main idea of the passage?", options: ["How to build an Artificial Intelligence system.", "The history of science fiction movies.", "The impact, benefits, and challenges of AI.", "Why AI will replace all teachers in the future."], correct: "The impact, benefits, and challenges of AI." },
+        { type: 'reading', text: readingTextDay10, question: "12. According to paragraph 1, Artificial Intelligence is", options: ["only found in science fiction", "not yet a reality", "everywhere in our daily lives", "only used on streaming platforms"], correct: "everywhere in our daily lives" },
+        { type: 'reading', text: readingTextDay10, question: "13. How does AI help students in education?", options: ["By doing their homework for them.", "By adapting to their individual learning pace.", "By replacing their human teachers.", "By grading their exams automatically."], correct: "By adapting to their individual learning pace." },
+        { type: 'reading', text: readingTextDay10, question: "14. The word \"efficient\" in paragraph 2 is closest in meaning to:", options: ["terrible", "useless", "effective", "slow"], correct: "effective" },
+        { type: 'reading', text: readingTextDay10, question: "15. The word \"them\" in paragraph 2 refers to:", options: ["teachers", "students", "exams", "administrative tasks"], correct: "teachers" },
+        { type: 'reading', text: readingTextDay10, question: "16. According to the passage, how does AI assist teachers?", options: ["It teaches interactive classroom activities.", "It automates tasks like grading exams.", "It provides customized exercises to teachers.", "It replaces the need for a classroom."], correct: "It automates tasks like grading exams." },
+        { type: 'reading', text: readingTextDay10, question: "17. What is a major concern regarding AI mentioned in paragraph 3?", options: ["It makes learning too fast.", "It is too expensive to develop.", "Data privacy.", "Streaming platforms."], correct: "Data privacy." },
+        { type: 'reading', text: readingTextDay10, question: "18. Why do AI systems require personal data?", options: ["To replace human workers.", "To function accurately.", "To grade exams.", "To create science fiction movies."], correct: "To function accurately." },
+        { type: 'reading', text: readingTextDay10, question: "19. What do scientists believe about the future of AI?", options: ["The risks are greater than the benefits.", "AI should be completely banned.", "With careful regulation, benefits will outweigh risks.", "AI will eventually control human beings."], correct: "With careful regulation, benefits will outweigh risks." },
+        { type: 'reading', text: readingTextDay10, question: "20. Which of the following is NOT mentioned as an application of AI?", options: ["Virtual assistants on smartphones.", "Driving cars automatically.", "Personalized recommendations on streaming platforms.", "Intelligent tutoring systems."], correct: "Driving cars automatically." },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: "21. Sắp xếp các từ sau: The / Internet / has / changed / the / way / we / communicate / .", correct: "The Internet has changed the way we communicate." },
+        { type: 'writing', question: "22. Sắp xếp các từ sau: Artificial / intelligence / is / becoming / very / popular / in / education / .", correct: "Artificial intelligence is becoming very popular in education." },
+        { type: 'writing', question: "23. Sắp xếp các từ sau: You / should / always / read / the / instructions / carefully / .", correct: "You should always read the instructions carefully." },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: This / is / a / very / useful / application / for / learning / English / .", correct: "This is a very useful application for learning English." },
+        { type: 'writing', question: "25. Sắp xếp các từ sau: Many / students / use / smartphones / to / do / their / homework / .", correct: "Many students use smartphones to do their homework." }
+      ];
+    }
+
+    // ==========================================
+    // NGÀY 11: THÌ HIỆN TẠI TIẾP DIỄN & TOURISM
+    // ==========================================
+    if (i === 11) {
+      dayData.videoUrl = "https://drive.google.com/file/d/1tMIC_glXqGcy1X7dK1MtjJ8VKYXNHcQD/view?usp=drive_link";
+      dayData.vocabulary = [
+        { word: "rest", meaning: "nghỉ ngơi" },
+        { word: "close", meaning: "đóng" },
+        { word: "type", meaning: "gõ chữ" },
+        { word: "fly", meaning: "bay" },
+        { word: "wait", meaning: "đợi" },
+        { word: "destination", meaning: "điểm đến" },
+        { word: "accommodation", meaning: "chỗ ở" },
+        { word: "itinerary", meaning: "lịch trình" },
+        { word: "eco-tourism", meaning: "du lịch sinh thái" },
+        { word: "souvenir", meaning: "quà lưu niệm" },
+        { word: "luggage", meaning: "hành lý" },
+        { word: "tour guide", meaning: "hướng dẫn viên" },
+        { word: "sightseeing", meaning: "ngắm cảnh" },
+        { word: "breathtaking", meaning: "đẹp ngoạn mục" },
+        { word: "explore", meaning: "khám phá" }
+      ];
+
+      const readingTextDay11 = "Right now, the Nguyen family is enjoying their summer holiday in Da Nang, a famous tourist destination in Vietnam. They are staying in a beautiful resort near the beach. At the moment, the weather is fantastic, and everyone is doing something fun.\n\nMr. Nguyen is swimming in the clear blue sea. Mrs. Nguyen isn't swimming; she is relaxing on a sunbed and drinking a fresh coconut. Their son, Minh, is building a large sandcastle, and their daughter, Lan, is taking photos of the breathtaking scenery to post on her social media.\n\nTomorrow, they are taking a boat trip to explore the nearby islands. They already booked the tickets and checked the itinerary carefully. They are having a wonderful time. Before they leave, Mrs. Nguyen is planning to buy some souvenirs for her colleagues.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) ---
+        { type: 'mcq', question: "1. Look! The tour guide ___ the flag so we can follow him easily.", options: ["is holding", "are holding", "holds", "holding"], correct: "is holding" },
+        { type: 'mcq', question: "2. At the moment, my parents ___ suitable accommodation for our summer trip.", options: ["look for", "are looking for", "looking for", "looks for"], correct: "are looking for" },
+        { type: 'mcq', question: "3. I can't talk right now. I ___ my luggage for the flight to Paris.", options: ["pack", "are packing", "am packing", "packing"], correct: "am packing" },
+        { type: 'mcq', question: "4. They ___ to Japan tomorrow morning. They already have the tickets.", options: ["fly", "flew", "flies", "are flying"], correct: "are flying" },
+        { type: 'mcq', question: "5. The scenery here is ___! I am taking a lot of photos to show my friends.", options: ["breathtaking", "terrible", "polluted", "crowded"], correct: "breathtaking" },
+        { type: 'mcq', question: "6. ___ the tourists ___ to the local guide right now?", options: ["Do / listen", "Is / listening", "Are / listening", "Does / listen"], correct: "Are / listening" },
+        { type: 'mcq', question: "7. We ___ some traditional crafts as souvenirs for our friends in London.", options: ["are buying", "is buying", "buy", "buys"], correct: "are buying" },
+        { type: 'mcq', question: "8. He ___ resting at the hotel; he is exploring the local night market.", options: ["am not", "aren't", "doesn't", "isn't"], correct: "isn't" },
+        { type: 'mcq', question: "9. Which of the following words means \"a detailed plan or route of a journey\"?", options: ["luggage", "itinerary", "souvenir", "accommodation"], correct: "itinerary" },
+        { type: 'mcq', question: "10. Shh! The baby ___ in the living room after the long flight.", options: ["sleep", "is sleeping", "sleeps", "are sleeping"], correct: "is sleeping" },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay11, question: "11. What is the main idea of the passage?", options: ["The history of Da Nang city.", "A family currently enjoying a beach holiday.", "How to book a boat trip.", "The best souvenirs to buy in Vietnam."], correct: "A family currently enjoying a beach holiday." },
+        { type: 'reading', text: readingTextDay11, question: "12. Where is the Nguyen family staying?", options: ["In a tent.", "In a friend's house.", "In a resort near the beach.", "In a city center hotel."], correct: "In a resort near the beach." },
+        { type: 'reading', text: readingTextDay11, question: "13. What is Mr. Nguyen doing at the moment?", options: ["Reading a book.", "Taking photos.", "Swimming in the sea.", "Building a sandcastle."], correct: "Swimming in the sea." },
+        { type: 'reading', text: readingTextDay11, question: "14. What is Mrs. Nguyen doing?", options: ["Swimming.", "Relaxing and drinking a fresh coconut.", "Taking photos of the scenery.", "Buying souvenirs."], correct: "Relaxing and drinking a fresh coconut." },
+        { type: 'reading', text: readingTextDay11, question: "15. The word \"destination\" in paragraph 1 is closest in meaning to:", options: ["place to go", "food", "ticket", "transport"], correct: "place to go" },
+        { type: 'reading', text: readingTextDay11, question: "16. Who is building a sandcastle?", options: ["Mr. Nguyen.", "Mrs. Nguyen.", "Minh.", "Lan."], correct: "Minh." },
+        { type: 'reading', text: readingTextDay11, question: "17. The word \"breathtaking\" in paragraph 2 is closest in meaning to:", options: ["very ugly", "very beautiful", "boring", "tiring"], correct: "very beautiful" },
+        { type: 'reading', text: readingTextDay11, question: "18. What are they doing tomorrow?", options: ["Going back home.", "Taking a boat trip.", "Visiting a museum.", "Buying a new car."], correct: "Taking a boat trip." },
+        { type: 'reading', text: readingTextDay11, question: "19. The word \"itinerary\" in paragraph 3 refers to:", options: ["A plan of a journey.", "A type of boat.", "A hotel room.", "A local food."], correct: "A plan of a journey." },
+        { type: 'reading', text: readingTextDay11, question: "20. Which of the following statements is NOT true?", options: ["The weather in Da Nang is fantastic now.", "Lan is taking photos of the scenery.", "Mrs. Nguyen is planning to buy souvenirs for her children.", "They have already booked the tickets for the boat trip."], correct: "Mrs. Nguyen is planning to buy souvenirs for her children." },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: "21. Sắp xếp các từ sau: The / tour guide / is / taking / photos / at / the / moment / .", correct: "The tour guide is taking photos at the moment." },
+        { type: 'writing', question: "22. Sắp xếp các từ sau: They / are / flying / to / Paris / tomorrow / morning / .", correct: "They are flying to Paris tomorrow morning." },
+        { type: 'writing', question: "23. Sắp xếp các từ sau: Are / you / packing / your / luggage / ?", correct: "Are you packing your luggage?" },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: We / are / looking / for / accommodation / on / the / Internet / .", correct: "We are looking for accommodation on the Internet." },
+        { type: 'writing', question: "25. Sắp xếp các từ sau: She / is / buying / a / few / souvenirs / for / her / friends / .", correct: "She is buying a few souvenirs for her friends." }
+      ];
+    }
+    // ==========================================
+    // NGÀY 12: MAJOR TEST (BÀI KIỂM TRA LỚN 40 CÂU)
+    // ==========================================
+    if (i === 12) {
+      dayData.isTest = true;
+      dayData.videoUrl = null; 
+      dayData.requiredScore = 40; // Đề thi thực tế có 40 câu [cite: 1114]
+      dayData.vocabulary = []; 
+
+      // Dữ liệu văn bản chung cho bài đọc hiểu [cite: 1273, 1274, 1275, 1276, 1277, 1278, 1279, 1280]
+      const readingTextDay12 = "Green Living and Eco-tourism are becoming very popular nowadays. Eco-tourism means traveling responsibly to natural areas. It protects the environment and improves the lives of local people. Unlike traditional tourism, eco-tourism focuses on preserving nature and reducing carbon footprints.\n\nRight now, many tourists are choosing to visit national parks instead of crowded metropolitan cities. They are exploring breathtaking landscapes and learning about wildlife. While visiting these places, they don't use single-use plastic bags or bottles because plastic waste takes hundreds of years to decompose. Instead, they always bring reusable bags. Furthermore, tourists also support the local community by eating traditional dishes and buying local handicrafts as souvenirs.\n\nBy making small changes in our travel habits, we can enjoy beautiful destinations without harming the Earth. Every small action counts towards a greener future.";
+      
+      // Dữ liệu văn bản chung cho bài đọc điền từ [cite: 1328, 1329, 1330, 1331, 1332, 1333, 1334, 1350]
+      const clozeTextDay12 = "Nowadays, artificial intelligence (AI) (33) ___ changing how we stay healthy. Many teenagers are using smartphone applications to track their daily routines and diets. For example, an app can remind you to drink enough water every day. If you (34) ___ eat enough fresh fruits and vegetables, it automatically suggests healthy recipes. Right now, millions of users (35) ___ downloading these smart tools to avoid obesity. A balanced mix of proteins and vitamins is (36) ___ for your health. Thanks to technology, adopting a green and healthy lifestyle is becoming very (37) ___.";
+
+      dayData.exercises = [
+        // I. BIỂN BÁO & THÔNG BÁO [cite: 1120]
+        { type: 'reading', text: "NOTICE\n- Use Reusable Bags.\n- Say NO to Plastic.", question: "1. What does the sign say?", options: ["You must use single-use plastic bags here.", "You are encouraged to bring reusable bags to protect the environment.", "You can buy plastic bags in this place.", "You should throw your plastic bags on the floor."], correct: "You are encouraged to bring reusable bags to protect the environment." }, // [cite: 1121, 1122, 1123, 1124, 1125, 1126, 1127, 1128]
+        { type: 'reading', text: "FLIGHT DELAYED\n- Flight VN218 is delayed.\n- Please wait in the lounge.", question: "2. What does this notice say?", options: ["The flight is departing earlier than scheduled.", "Passengers should board the plane immediately.", "The flight is late, and passengers need to wait in the lounge.", "The flight has been canceled permanently."], correct: "The flight is late, and passengers need to wait in the lounge." }, // [cite: 1129, 1130, 1131, 1132, 1133, 1134, 1135, 1136]
+
+        // II. NGỮ ÂM [cite: 1137]
+        { type: 'mcq', question: "3. Choose the word whose underlined part differs in pronunciation (ending -s/-es):", options: ["bags", "trees", "habits", "meals"], correct: "habits" }, // [cite: 1138, 1139, 1141]
+        { type: 'mcq', question: "4. Choose the word whose underlined part differs in pronunciation (vowel 'a'):", options: ["nature", "plastic", "travel", "baggage"], correct: "nature" }, // [cite: 1139, 1140, 1141, 1143]
+
+        // III. SẮP XẾP ĐOẠN VĂN [cite: 1144]
+        { type: 'reading', text: "a. Intelligent tutoring systems can adapt to a student's learning pace.\nb. Artificial Intelligence (AI) has rapidly transformed the way we live and learn.\nc. However, data privacy is still a major concern when using AI.\nd. One of the most significant impacts of AI is in the field of education.\ne. This makes learning highly efficient and provides customized exercises.", question: "5. Choose the correct arrangement to make a meaningful paragraph:", options: ["b - d - a - e - c", "b - a - d - e - c", "d - b - a - e - c", "b - c - d - a - e"], correct: "b - d - a - e - c" }, // [cite: 1146, 1147, 1148, 1149, 1150, 1151, 1154, 1155, 1157]
+        { type: 'reading', text: "Dear Mary,\na. Tomorrow, we are taking a boat trip to explore the nearby islands.\nb. Right now, I am relaxing on the beach and drinking a fresh coconut.\nc. I hope you are doing well.\nd. We are having a wonderful summer holiday in Da Nang.\ne. See you when I get back.", question: "6. Choose the correct arrangement to make a meaningful letter:", options: ["d - c - b - a - e", "c - d - b - a - e", "c - b - d - a - e", "d - b - a - c - e"], correct: "c - d - b - a - e" }, // [cite: 1153, 1156, 1158, 1159, 1160, 1161, 1162, 1163, 1164]
+
+        // IV. NGỮ PHÁP & TỪ VỰNG [cite: 1165, 1166]
+        { type: 'mcq', question: "7. My parents ___ eat fast food because they want to stay healthy.", options: ["doesn't", "don't", "aren't", "isn't"], correct: "don't" }, // [cite: 1167, 1168, 1169, 1170, 1172, 1175]
+        { type: 'mcq', question: "8. ___ your brother eat a lot of vegetables every day?", options: ["Does", "Do", "Is", "Are"], correct: "Does" }, // [cite: 1171, 1173, 1176, 1177, 1178, 1179]
+        { type: 'mcq', question: "9. The sun ___ in the east and sets in the west.", options: ["rise", "rising", "rises", "is rising"], correct: "rises" }, // [cite: 1180, 1181, 1182, 1183, 1184, 1185]
+        { type: 'mcq', question: "10. Look! The tour guide ___ the flag so we can follow him easily.", options: ["hold", "holds", "is holding", "are holding"], correct: "is holding" }, // [cite: 1186, 1187, 1188, 1189, 1190, 1191]
+        { type: 'mcq', question: "11. You should read the instructions ___ before installing this software.", options: ["care", "careful", "careless", "carefully"], correct: "carefully" }, // [cite: 1192, 1193, 1194, 1195, 1196, 1197]
+        { type: 'mcq', question: "12. Artificial intelligence is becoming a very ___ tool in modern education.", options: ["use", "useful", "usage", "uselessly"], correct: "useful" }, // [cite: 1198, 1199, 1200, 1203, 1204]
+        { type: 'mcq', question: "13. We always use ___ bags at the supermarket to reduce plastic waste.", options: ["reusable", "single-use", "toxic", "polluted"], correct: "reusable" }, // [cite: 1201, 1202, 1205, 1206, 1213]
+        { type: 'mcq', question: "14. What does the girl often eat for dinner? - She ___ vegetables and fish.", options: ["eating", "is eating", "eats", "eat"], correct: "eats" }, // [cite: 1207, 1210, 1212, 1214, 1215]
+        { type: 'mcq', question: "15. A healthy ___ like an apple or a banana is great between meals.", options: ["destination", "fast food", "snack", "itinerary"], correct: "snack" }, // [cite: 1208, 1209, 1211, 1216, 1217, 1222]
+        { type: 'mcq', question: "16. My brother-in-law doesn't drive to work; he always ___ to reduce his carbon footprint.", options: ["cycles", "cycle", "is cycling", "cycling"], correct: "cycles" }, // [cite: 1218, 1219, 1220, 1221, 1223, 1224, 1226]
+        { type: 'mcq', question: "17. They ___ to Paris tomorrow morning. They already booked the tickets.", options: ["fly", "flies", "are flying", "flew"], correct: "are flying" }, // [cite: 1225, 1227, 1228, 1229, 1234, 1235]
+        { type: 'mcq', question: "18. Before the trip, we checked our ___ carefully to know exactly where we were going.", options: ["luggage", "itinerary", "souvenir", "accommodation"], correct: "itinerary" }, // [cite: 1230, 1231, 1232, 1233, 1237, 1238]
+
+        // V. SẮP XẾP TỪ THÀNH CÂU CHỌN ĐÁP ÁN ĐÚNG [cite: 1239, 1240]
+        { type: 'mcq', question: "19. Choose the correct sentence arranged from: We / not / share / flat / city / center /.", options: ["We not share a flat in the city center.", "We don't share a flat in the city center.", "We doesn't share a flat in the city center.", "We aren't share a flat in the city center."], correct: "We don't share a flat in the city center." }, // [cite: 1240, 1241, 1242, 1243, 1244]
+        { type: 'mcq', question: "20. Choose the correct sentence arranged from: The / students / plant / trees / park / at the moment /.", options: ["The students plant trees in the park at the moment.", "The students are plant trees in the park at the moment.", "The students are planting trees in the park at the moment.", "The students is planting trees in the park at the moment."], correct: "The students are planting trees in the park at the moment." }, // [cite: 1245, 1246, 1247, 1248, 1249]
+
+        // VI. TÌNH HUỐNG GIAO TIẾP [cite: 1251, 1252]
+        { type: 'reading', text: "John and Mary are talking about the upcoming summer.\nJohn: \"I am taking a boat trip to explore Ha Long Bay tomorrow.\"\nMary: \"___\"", question: "21. Choose the best response:", options: ["Have a great trip!", "You're welcome.", "Yes, I do.", "I don't think so."], correct: "Have a great trip!" }, // [cite: 1253, 1254, 1255, 1256, 1258, 1259]
+
+        // VII. VIẾT CÂU TỪ TỪ GỢI Ý CHỌN ĐÁP ÁN ĐÚNG [cite: 1260, 1261]
+        { type: 'mcq', question: "22. Make a sentence from: Why / not / you / use / reusable bags / save / environment /?", options: ["Why don't you use reusable bags to save the environment?", "Why doesn't you use reusable bags to save the environment?", "Why do you not use reusable bags save the environment?", "Why aren't you use reusable bags to saving the environment?"], correct: "Why don't you use reusable bags to save the environment?" }, // [cite: 1262, 1263, 1264, 1265, 1266]
+        { type: 'mcq', question: "23. Make a sentence from: She / usually / travel / bus / but / she / walk / today /.", options: ["She usually travels by bus, but she walks today.", "She usually travel by bus, but she is walking today.", "She usually travels by bus, but she is walking today.", "She is usually traveling by bus, but she walks today."], correct: "She usually travels by bus, but she is walking today." }, // [cite: 1267, 1268, 1269, 1270, 1271]
+
+        // VIII. ĐỌC HIỂU [cite: 1272]
+        { type: 'reading', text: readingTextDay12, question: "24. What is the best title for the passage?", options: ["The Dangers of Plastic Waste", "How to Book a Cheap Flight", "Eco-tourism and Green Habits", "Life in a Metropolitan City"], correct: "Eco-tourism and Green Habits" }, // [cite: 1280, 1281, 1282, 1283, 1284]
+        { type: 'reading', text: readingTextDay12, question: "25. According to the passage, eco-tourism focuses on", options: ["building more crowded cities", "preserving nature and reducing carbon footprints", "using single-use plastic bags", "taking long showers in hotels"], correct: "preserving nature and reducing carbon footprints" }, // [cite: 1285, 1286, 1287, 1288, 1289]
+        { type: 'reading', text: readingTextDay12, question: "26. What are many tourists doing right now?", options: ["They are staying at home and playing video games.", "They are visiting national parks.", "They are buying plastic bottles.", "They are polluting the environment."], correct: "They are visiting national parks." }, // [cite: 1290, 1291, 1292, 1293, 1294]
+        { type: 'reading', text: readingTextDay12, question: "27. The word \"They\" in paragraph 2 refers to", options: ["national parks", "local people", "tourists", "traditional dishes"], correct: "tourists" }, // [cite: 1295, 1297, 1298, 1299, 1305]
+        { type: 'reading', text: readingTextDay12, question: "28. Which of the following is NOT true according to the passage?", options: ["Plastic waste takes a very long time to decompose.", "Eco-tourism improves the lives of local people.", "Tourists buy local handicrafts as souvenirs.", "Traditional tourism and eco-tourism are exactly the same."], correct: "Traditional tourism and eco-tourism are exactly the same." }, // [cite: 1300, 1301, 1302, 1303, 1304]
+
+        // IX. TÌM CÂU ĐỒNG NGHĨA [cite: 1306]
+        { type: 'mcq', question: "29. \"He never eats fast food.\" is closest in meaning to:", options: ["He doesn't ever eat fast food.", "He is always eating fast food.", "Fast food is his favorite meal.", "He didn't eat fast food yesterday."], correct: "He doesn't ever eat fast food." }, // [cite: 1307, 1308, 1309, 1310, 1311]
+        { type: 'mcq', question: "30. \"The flight departs at 8:00 AM tomorrow.\" is closest in meaning to:", options: ["The flight departed at 8:00 AM yesterday.", "The flight is departing at 8:00 AM tomorrow.", "The flight has departed at 8:00 AM tomorrow.", "The flight doesn't depart at 8:00 AM tomorrow."], correct: "The flight is departing at 8:00 AM tomorrow." }, // [cite: 1312, 1313, 1314, 1315, 1316]
+        { type: 'mcq', question: "31. \"Plastic bags are extremely harmful to the environment.\" is closest in meaning to:", options: ["Plastic bags protect the environment extremely well.", "The environment benefits a lot from plastic bags.", "Plastic bags cause great harm to the environment.", "There is no harm in using plastic bags for the environment."], correct: "Plastic bags cause great harm to the environment." }, // [cite: 1317, 1318, 1319, 1320, 1321]
+        { type: 'mcq', question: "32. \"Water boils at 100 degrees Celsius.\" is closest in meaning to:", options: ["Water is boiling at 100 degrees Celsius right now.", "It is a fact that water boils when it reaches 100 degrees Celsius.", "Water never boils at 100 degrees Celsius.", "Water boiled at 100 degrees Celsius in the past."], correct: "It is a fact that water boils when it reaches 100 degrees Celsius." }, // [cite: 1322, 1323, 1324, 1325, 1326]
+
+        // X. ĐỌC ĐIỀN TỪ [cite: 1327]
+        { type: 'reading', text: clozeTextDay12, question: "33. Choose the best word for blank (33):", options: ["is", "are", "do", "does"], correct: "is" }, // [cite: 1335, 1340, 1345, 1351]
+        { type: 'reading', text: clozeTextDay12, question: "34. Choose the best word for blank (34):", options: ["doesn't", "don't", "aren't", "isn't"], correct: "don't" }, // [cite: 1336, 1341, 1346, 1352]
+        { type: 'reading', text: clozeTextDay12, question: "35. Choose the best word for blank (35):", options: ["is", "are", "do", "have"], correct: "are" }, // [cite: 1337, 1342, 1347, 1353]
+        { type: 'reading', text: clozeTextDay12, question: "36. Choose the best word for blank (36):", options: ["harmful", "toxic", "essential", "useless"], correct: "essential" }, // [cite: 1338, 1343, 1348, 1354]
+        { type: 'reading', text: clozeTextDay12, question: "37. Choose the best word for blank (37):", options: ["easily", "easy", "ease", "easier"], correct: "easy" }, // [cite: 1339, 1344, 1349, 1355]
+
+        // XI. TRỌNG ÂM [cite: 1356]
+        { type: 'mcq', question: "38. Choose the word that differs from the other three in the position of primary stress:", options: ["'tourist", "'luggage", "'planet", "re'sort"], correct: "re'sort" }, // [cite: 1357, 1359, 1361, 1363]
+        { type: 'mcq', question: "39. Choose the word that differs from the other three in the position of primary stress:", options: ["a'ttraction", "po'llution", "in'telligent", "'oxygen"], correct: "'oxygen" }, // [cite: 1358, 1360, 1362, 1364]
+
+        // XII. SẮP XẾP HỘI THOẠI [cite: 1365, 1366]
+        { type: 'reading', text: "a. Travel Agent: Good morning! How can I help you?\nb. Customer: That sounds great. I'll book it.\nc. Customer: I'm looking for an eco-tour to the national park.\nd. Travel Agent: We have a wonderful 2-day itinerary for that.", question: "40. Choose the correct arrangement to make a meaningful exchange:", options: ["a - c - d - b", "c - a - d - b", "a - d - c - b", "c - b - a - d"], correct: "a - c - d - b" } // [cite: 1368, 1370, 1371, 1372, 1373]
+      ];
+    }
     course.push(dayData);
   }
   return course;

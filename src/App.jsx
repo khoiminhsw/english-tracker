@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { courseData } from './data';
 import Lesson from './Lesson';
 import VocabularyReview from './VocabularyReview';
-import { Flame, Lock, CheckCircle2, Calendar, Target, LogOut, Info, X, Gamepad2, BookOpen, Crown, Medal, Activity, Award, Coins, Store, Shield, Ticket, Lightbulb, PackageOpen, BrainCircuit, Dices } from 'lucide-react';
+import { Flame, Lock, CheckCircle2, Calendar, Target, LogOut, Info, X, Gamepad2, BookOpen, Crown, Medal, Award, Coins, Store, Shield, Ticket, Lightbulb, PackageOpen, BrainCircuit, Dices, ShieldAlert } from 'lucide-react';
 
 import { auth, provider, db } from './firebase'; 
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
@@ -24,8 +24,11 @@ export default function App() {
   const [totalScore, setTotalScore] = useState(100); 
   const [coins, setCoins] = useState(0); 
   const [wordProgress, setWordProgress] = useState({}); 
-  const [inventory, setInventory] = useState({ shields: 0, skips: 0, hints: 0, tickets: 0 });
+  const [inventory, setInventory] = useState({ shields: 0, skips: 0, hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 });
+  const [shopStats, setShopStats] = useState({ immortalBoughtCount: 0 });
   
+  const [checkinState, setCheckinState] = useState({ day: 0, show: false });
+
   const [showSetup, setShowSetup] = useState(false);
   const [tempSchedule, setTempSchedule] = useState([]);
   const [streak, setStreak] = useState(0);
@@ -72,13 +75,30 @@ export default function App() {
 
       if (docSnap.exists()) {
         const data = docSnap.data();
-        // Ép kiểu tất cả về Number để tránh lỗi String
         setUnlockedDay(Number(data.unlockedDay || 1));
         setTotalScore(Number(data.score !== undefined ? data.score : 100));
         setCoins(Number(data.coins !== undefined ? data.coins : 0));
         setWordProgress(data.wordProgress || {}); 
         
-        setInventory(data.inventory || { shields: 0, skips: 0, hints: 0, tickets: 0 });
+        setInventory(data.inventory || { shields: 0, skips: 0, hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 });
+        setShopStats(data.shopStats || { immortalBoughtCount: 0 });
+
+        let cDay = data.checkin?.day || 0;
+        let cDate = data.checkin?.lastDate || null;
+        let showC = false;
+
+        if (cDate !== todayStr) {
+           let yesterday = new Date();
+           yesterday.setDate(yesterday.getDate() - 1);
+           if (cDate === yesterday.toDateString()) {
+              cDay = (cDay % 7) + 1; 
+           } else {
+              cDay = 1; 
+           }
+           showC = true;
+        }
+        setCheckinState({ day: cDay, show: showC });
+
         setClaimedAchievements(data.claimedAchievements || []);
         setStreak(Number(data.streak || 0));
         setLastPlayedWords(data.lastPlayedWords || []);
@@ -108,7 +128,9 @@ export default function App() {
           score: 100, 
           coins: 0,   
           wordProgress: {},
-          inventory: { shields: 0, skips: 0, hints: 0, tickets: 0 },
+          inventory: { shields: 0, skips: 0, hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 },
+          shopStats: { immortalBoughtCount: 0 },
+          checkin: { lastDate: null, day: 0 },
           claimedAchievements: [],
           streak: 1,
           startDate: todayStr,
@@ -126,7 +148,9 @@ export default function App() {
         setTotalScore(100);
         setCoins(0);
         setWordProgress({});
-        setInventory({ shields: 0, skips: 0, hints: 0, tickets: 0 });
+        setInventory(newProfile.inventory);
+        setShopStats(newProfile.shopStats);
+        setCheckinState({ day: 1, show: true });
         setStartDateStr(todayStr);
         setActivityLog([todayStr]);
         setShowSetup(true);
@@ -146,7 +170,7 @@ export default function App() {
     let newStreak = Number(data.streak || 0);
     let newScore = Number(data.score !== undefined ? data.score : 100);
     let newCoins = Number(data.coins !== undefined ? data.coins : 0);
-    let currentInventory = data.inventory || { shields: 0, skips: 0, hints: 0, tickets: 0 };
+    let currentInventory = data.inventory || { shields: 0, skips: 0, hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 };
     let needsUpdate = false;
 
     if (data.lastLogin) {
@@ -174,7 +198,7 @@ export default function App() {
         if (missedDaysCount > 0) {
           if (currentInventory.shields > 0) {
             currentInventory.shields -= 1;
-            alert(`🛡️ Streak Shield Tự Động Kích Hoạt!\nChuỗi ngày học rực lửa của bạn đã được bảo vệ, NHƯNG Điểm và Coin vẫn bị trừ vì tội lười biếng.`);
+            alert(`🛡️ Streak Shield Tự Động Kích Hoạt!\nChuỗi ngày học rực lửa của bạn đã được bảo vệ.`);
             needsUpdate = true;
           } else {
             newStreak = 0; 
@@ -244,6 +268,35 @@ export default function App() {
     return false;
   };
 
+  const claimCheckinReward = async () => {
+    let c = Number(coins);
+    let inv = { ...inventory };
+    let msg = "";
+    
+    switch(checkinState.day) {
+       case 1: c += 1; msg = "+1 Coin"; break;
+       case 2: c += 2; msg = "+2 Coins"; break;
+       case 3: inv.tickets = (inv.tickets || 0) + 1; msg = "+1 Lượt chơi game"; break;
+       case 4: inv.tickets = (inv.tickets || 0) + 2; msg = "+2 Lượt chơi game"; break;
+       case 5: inv.tickets = (inv.tickets || 0) + 3; msg = "+3 Lượt chơi game"; break;
+       case 6: inv.gachaTickets = (inv.gachaTickets || 0) + 1; msg = "+1 Vé quay Gacha"; break;
+       case 7: inv.immortals = (inv.immortals || 0) + 1; msg = "+1 Thẻ Bất Tử"; break;
+       default: break;
+    }
+    
+    const todayStr = new Date().toDateString();
+    await updateDoc(doc(db, 'users', user.uid), {
+       coins: c,
+       inventory: inv,
+       checkin: { lastDate: todayStr, day: checkinState.day }
+    });
+    
+    setCoins(c);
+    setInventory(inv);
+    setCheckinState({ ...checkinState, show: false });
+    alert(`🎁 Điểm danh Ngày ${checkinState.day} thành công!\nPhần thưởng: ${msg}`);
+  };
+
   const handleUpdateWordProgress = async (wordsArray) => {
     if (!wordsArray || wordsArray.length === 0) return;
     const newProgress = { ...(wordProgress || {}) }; 
@@ -260,7 +313,6 @@ export default function App() {
     await updateDoc(doc(db, 'users', user.uid), { wordProgress: newProgress });
   };
 
-  // SỬA LẠI HÀM CỘNG ĐIỂM
   const handleCompleteLesson = async (dayId, vocabFailCount, exerciseFailCount) => {
     let pointPenalty = 0;
     let coinPenalty = 0;
@@ -268,20 +320,23 @@ export default function App() {
     let coinBonus = 0;
     let message = "📊 TỔNG KẾT BÀI HỌC CỦA BẠN:\n\n";
 
+    const isTestDay = courseData.find(d => d.id === dayId)?.isTest;
+    const maxExFailsAllowed = isTestDay ? 5 : 3; // BÀI TEST CHỈ ĐƯỢC SAI 5 LẦN
+
     if (vocabFailCount > 3) { 
       pointPenalty += 2; coinPenalty += 4; 
       message += `❌ PHẠT: -2 Điểm & -4 Coins (Sai từ vựng đầu giờ).\n`; 
     }
-    if (exerciseFailCount >= 3) { 
+
+    if (exerciseFailCount >= maxExFailsAllowed) { 
       pointPenalty += 2; coinPenalty += 4; 
-      message += `❌ PHẠT: -2 Điểm & -4 Coins (Làm sai bài tập).\n`; 
+      message += `❌ PHẠT: -2 Điểm & -4 Coins (Làm sai bài tập vượt quá số lần cho phép).\n`; 
+    } else if (exerciseFailCount > 0 && exerciseFailCount < maxExFailsAllowed) {
+      message += `✅ HOÀN THÀNH BÀI TẬP.\n⚠️ Lưu ý: Vì có lỗi sai nên bạn không được cộng phần thưởng Tuyệt Đối.\n`;
     }
 
-    // ÉP KIỂU NUMBER ĐỂ CHẮC CHẮN KHÔNG BỊ LỖI FIREBASE STRING ("3" !== 3)
     const currentUnlocked = Number(unlockedDay);
     const currentDayId = Number(dayId);
-    
-    // NẾU BÀI HIỆN TẠI LỚN HƠN HOẶC BẰNG BÀI UNLOCKED -> LÀ BÀI MỚI
     const isFirstTime = currentDayId >= currentUnlocked;
 
     if (isFirstTime) {
@@ -289,16 +344,12 @@ export default function App() {
         pointBonus = 5; 
         coinBonus = 10;
         message += `⭐ XUẤT SẮC: +5 Điểm & +10 Coins (Làm đúng 100% lần đầu!).\n`; 
-      } else {
-        coinBonus = 5;
-        message += `✅ HOÀN THÀNH: +5 Coins an ủi (Không được cộng Điểm vì có đáp án sai).\n`;
       }
     } else {
       coinBonus += 2; 
-      message += `✅ Ôn tập bài cũ thành công: Nhận +2 Coins an ủi (Chống cày điểm).\n`;
+      message += `✅ Ôn tập bài cũ thành công: Nhận +2 Coins an ủi.\n`;
     }
 
-    // ÉP KIỂU NUMBER ĐỂ KHÔNG BỊ CỘNG DỒN CHUỖI ("100" + 5 = "1005")
     let newScore = Number(totalScore) - pointPenalty + pointBonus;
     let newCoins = Number(coins) - coinPenalty + coinBonus; 
     
@@ -335,9 +386,14 @@ export default function App() {
     let newDailyGames = dailyGamesPlayed + 1;
     let newTotalGames = totalGamesPlayed + 1;
 
+    let earnedScore = 0;
+    let rewardCoins = 0;
+
     if (isWin) {
-      newScore += 1; 
-      newCoins += 2; 
+      earnedScore = 1;
+      rewardCoins = 2; 
+      newScore += earnedScore;
+      newCoins += rewardCoins;
     }
 
     if (correctlyAnsweredWords && correctlyAnsweredWords.length > 0) {
@@ -365,8 +421,11 @@ export default function App() {
     setActivityLog(newActivityLog);
     setIsPlayingVocab(false); 
     
-    if (isWin) alert(`🎮 Chúc mừng! Bạn nhận được +1 Điểm, +2 Coins.\nTiến độ những từ ĐÚNG đã được lưu lại.`);
-    else alert(`💀 Game Over!\nTuy nhiên, những từ bạn đã trả lời ĐÚNG vẫn được tính tiến độ.`);
+    if (isWin) {
+      alert(`🎮 Chiến thắng! Bạn nhận được +${earnedScore} Điểm, +${rewardCoins} Coins.\nTiến độ những từ bạn đánh ĐÚNG đã được lưu lại.`);
+    } else {
+      alert(`💀 Game Over!\nTuy nhiên, những từ bạn đã trả lời ĐÚNG vẫn được tính tiến độ.`);
+    }
   };
 
   const getLearnedVocab = () => {
@@ -378,9 +437,9 @@ export default function App() {
   };
 
   const completedLessons = unlockedDay > 1 ? unlockedDay - 1 : 0;
-  
-  const wordsMasteredCount = Object.values(wordProgress || {}).filter(count => count >= 3).length;
-  const masteredWordsList = Object.entries(wordProgress || {}).filter(([word, count]) => count >= 3);
+  const safeWordProgress = wordProgress || {};
+  const wordsMasteredCount = Object.values(safeWordProgress).filter(count => typeof count === 'number' && count >= 3).length;
+  const masteredWordsList = Object.entries(safeWordProgress).filter(([word, count]) => typeof count === 'number' && count >= 3);
 
   const achievementsList = [
     { id: "streak_7", title: "Khởi động", desc: "Đăng nhập liên tục 7 ngày", achieved: streak >= 7, rewardCoins: 20, icon: "🔥", color: "text-orange-500", bg: "bg-orange-100" },
@@ -398,6 +457,9 @@ export default function App() {
     
     { id: "games_10", title: "Game Thủ", desc: "Thắng mini-game 10 lần", achieved: totalGamesPlayed >= 10, rewardCoins: 20, icon: "🎮", color: "text-emerald-500", bg: "bg-emerald-100" },
     { id: "games_30", title: "Kẻ hủy diệt", desc: "Thắng mini-game 30 lần", achieved: totalGamesPlayed >= 30, rewardCoins: 100, icon: "⚔️", color: "text-teal-600", bg: "bg-teal-100" },
+    { id: "games_60", title: "Cao thủ", desc: "Thắng mini-game 60 lần", achieved: totalGamesPlayed >= 60, rewardCoins: 200, icon: "🔥", color: "text-orange-600", bg: "bg-orange-100" },
+    { id: "games_100", title: "Thần thoại", desc: "Thắng mini-game 100 lần", achieved: totalGamesPlayed >= 100, rewardCoins: 500, icon: "👑", color: "text-yellow-500", bg: "bg-yellow-100" },
+    { id: "games_200", title: "Huyền thoại", desc: "Thắng mini-game 200 lần", achieved: totalGamesPlayed >= 200, rewardCoins: 1000, icon: "🌟", color: "text-amber-500", bg: "bg-amber-100" },
   ];
 
   useEffect(() => {
@@ -430,20 +492,34 @@ export default function App() {
     checkAchievements();
   }, [streak, wordsMasteredCount, totalGamesPlayed, completedLessons]);
 
-  const buyItem = async (itemName, cost, key) => {
+  const buyItem = async (itemName, baseCost, key) => {
+    let cost = baseCost;
+    let newShopStats = { ...shopStats };
+    
+    if (key === 'immortals') {
+       cost = 20 + (shopStats.immortalBoughtCount || 0) * 5;
+    }
+
     if (coins < cost) return alert("Bạn không đủ Coins!");
     const confirmBuy = window.confirm(`Xác nhận dùng ${cost} Coins để mua ${itemName}?`);
     if (!confirmBuy) return;
 
     let newCoins = Number(coins) - cost;
     const newInv = { ...inventory };
-    newInv[key] += 1;
+    newInv[key] = (newInv[key] || 0) + 1;
+    
+    if (key === 'immortals') {
+       newShopStats.immortalBoughtCount = (newShopStats.immortalBoughtCount || 0) + 1;
+    }
+
     alert(`✅ Mua thành công: ${itemName}`);
 
     const userRef = doc(db, 'users', user.uid);
-    await updateDoc(userRef, { coins: newCoins, inventory: newInv });
+    await updateDoc(userRef, { coins: newCoins, inventory: newInv, shopStats: newShopStats });
+    
     setCoins(newCoins);
     setInventory(newInv);
+    setShopStats(newShopStats);
   };
 
   const gachaItems = [
@@ -454,25 +530,33 @@ export default function App() {
   ];
 
   const handleSpinGacha = async () => {
-    if (coins < 50) return alert("Bạn không đủ 50 Coins để quay!");
+    let useTicket = (inventory.gachaTickets || 0) > 0;
+    if (!useTicket && coins < 25) return alert("Bạn không đủ 25 Coins hoặc Vé để quay!");
     
-    let newCoins = Number(coins) - 50;
+    let newCoins = Number(coins);
+    let newInv = { ...inventory };
+
+    if (useTicket) {
+       newInv.gachaTickets -= 1;
+    } else {
+       newCoins -= 25;
+    }
+
     setCoins(newCoins);
+    setInventory(newInv);
     setIsSpinning(true);
     setGachaPrize(null);
 
     const rand = Math.random();
     let prizeKey = '';
-    if (rand < 0.40) prizeKey = 'skip';
-    else if (rand < 0.80) prizeKey = 'hint';
-    else if (rand < 0.92) prizeKey = 'coins';
-    else prizeKey = 'jackpot';
+    if (rand < 0.25) prizeKey = 'skip';
+    else if (rand < 0.50) prizeKey = 'hint';
+    else if (rand < 0.80) prizeKey = 'coins'; 
+    else prizeKey = 'jackpot'; 
 
     const targetIndex = gachaItems.findIndex(i => i.id === prizeKey);
 
-    // ===== ĐÃ FIX LỖI TOÁN HỌC =====
-    // Tính chính xác số bước cần nhảy để khung viền đáp trúng phóc ô giải thưởng
-    const baseSpins = 32; // Luôn quay ít nhất 8 vòng
+    const baseSpins = 32; 
     const stepsToTarget = (targetIndex - currentSpinIndex + 4) % 4;
     const totalSpins = baseSpins + stepsToTarget;
 
@@ -488,15 +572,15 @@ export default function App() {
         clearInterval(spinInterval);
         setIsSpinning(false);
         setGachaPrize(gachaItems[targetIndex]);
-        applyGachaPrize(prizeKey, newCoins);
+        applyGachaPrize(prizeKey, newCoins, newInv);
       }
     }, 100); 
   };
 
-  const applyGachaPrize = async (prizeKey, currentCoinsAfterDeduct) => {
+  const applyGachaPrize = async (prizeKey, currentCoinsAfterDeduct, invAfterDeduct) => {
     let updatedCoins = Number(currentCoinsAfterDeduct);
     let updatedScore = Number(totalScore);
-    const updatedInv = { ...inventory };
+    const updatedInv = { ...invAfterDeduct };
 
     if (prizeKey === 'skip') updatedInv.skips += 1;
     else if (prizeKey === 'hint') updatedInv.hints += 1;
@@ -511,52 +595,6 @@ export default function App() {
     setInventory(updatedInv);
   };
 
-  const renderHeatMap = () => {
-    const squares = [];
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const startDateObj = new Date(startDateStr);
-    startDateObj.setHours(0, 0, 0, 0);
-
-    let missedDays = 0;
-    if (schedule) {
-      let checkD = new Date(startDateObj);
-      while (checkD < today) {
-        if (schedule.includes(checkD.getDay()) && !activityLog.includes(checkD.toDateString())) {
-          missedDays++;
-        }
-        checkD.setDate(checkD.getDate() + 1);
-      }
-    }
-
-    for (let i = 34; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const dateStr = d.toDateString();
-      
-      let statusClass = "bg-gray-100 border-gray-200"; 
-      if (activityLog.includes(dateStr)) statusClass = "bg-emerald-400 border-emerald-500 shadow-sm"; 
-      else if (d < startDateObj) statusClass = "bg-gray-50 border-gray-100 opacity-50"; 
-      else if (d < today) statusClass = "bg-red-50 border-red-100"; 
-
-      squares.push(<div key={i} title={dateStr} className={`w-5 h-5 sm:w-6 sm:h-6 rounded-md border ${statusClass} transition-all hover:scale-110`}></div>);
-    }
-    return { squares, missedDays, activeDays: activityLog.length };
-  };
-
-  const handleCheat = async () => {
-    if (isAdmin) return setActiveLesson(null);
-    let newScore = Number(totalScore) - 5;
-    let newCoins = Number(coins) - 10;
-    if (newScore < 0) newScore = 0;
-    if (newCoins < 0) newCoins = 0;
-    await updateDoc(doc(db, 'users', user?.uid), { score: newScore, coins: newCoins });
-    setTotalScore(newScore);
-    setCoins(newCoins);
-    setActiveLesson(null); 
-  };
-
   const openNotebook = async () => {
     if (user) {
       const docSnap = await getDoc(doc(db, 'users', user.uid));
@@ -564,6 +602,8 @@ export default function App() {
     }
     setShowNotebook(true);
   };
+
+  const currentImmortalPrice = 20 + (shopStats?.immortalBoughtCount || 0) * 5;
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-2xl font-bold">Đang tải dữ liệu...</div>;
   if (!user) return (
@@ -592,7 +632,7 @@ export default function App() {
   if (activeLesson) {
     const dayData = courseData.find(d => d.id === activeLesson);
     const prevDayData = activeLesson > 1 ? courseData.find(d => d.id === activeLesson - 1) : null;
-    return <Lesson dayData={dayData} prevDayData={prevDayData} onComplete={handleCompleteLesson} onBack={() => setActiveLesson(null)} onCheat={handleCheat} isAdmin={isAdmin} inventory={inventory} consumeItem={consumeItem} onUpdateWordProgress={handleUpdateWordProgress} />;
+    return <Lesson dayData={dayData} prevDayData={prevDayData} onComplete={handleCompleteLesson} onBack={() => setActiveLesson(null)} onCheat={null} isAdmin={isAdmin} inventory={inventory} consumeItem={consumeItem} onUpdateWordProgress={handleUpdateWordProgress} />;
   }
 
   if (isPlayingVocab) {
@@ -602,13 +642,11 @@ export default function App() {
 
   const currentDayOfWeek = new Date().getDay();
   const isScheduledToday = schedule ? schedule.includes(currentDayOfWeek) : false;
-  const heatmapData = renderHeatMap();
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 relative">
       <div className="max-w-5xl mx-auto space-y-6 mb-8">
         
-        {/* KHỐI 1: CHÀO HỎI */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex justify-between items-center">
            <div>
               <h1 className="text-2xl sm:text-3xl font-black text-gray-800 flex items-center gap-2">
@@ -622,7 +660,6 @@ export default function App() {
            <button onClick={logout} className="text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 p-3 rounded-xl transition-colors"><LogOut size={20} /></button>
         </div>
 
-        {/* KHỐI 2: CHỈ SỐ STATS */}
         <div className="flex flex-wrap items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
           <div className="flex items-center justify-center gap-2 bg-orange-50 text-orange-600 px-6 py-3 rounded-xl font-black border border-orange-100 flex-1">
             <Flame size={24} /> <span className="text-lg">Streak: {streak}</span>
@@ -636,13 +673,12 @@ export default function App() {
           </div>
         </div>
 
-        {/* KHỐI 3: THANH CÔNG CỤ (NÚT BẤM) */}
         <div className="flex flex-wrap items-center gap-3 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
           <button onClick={() => {
                 if (isAdmin || dailyGamesPlayed < 3) setIsPlayingVocab(true);
                 else if (inventory.tickets > 0) {
-                  if (window.confirm("Bạn đã hết lượt. Dùng 1 Vé Mini-game để chơi tiếp?")) consumeItem('tickets').then(() => setIsPlayingVocab(true));
-                } else alert("Bạn đã hết lượt chơi và không có Vé Mini-game!");
+                  if (window.confirm("Bạn đã hết lượt. Dùng 1 Lượt chơi Game dự phòng để chơi tiếp?")) consumeItem('tickets').then(() => setIsPlayingVocab(true));
+                } else alert("Bạn đã hết lượt chơi hôm nay. Hãy điểm danh hoặc kiếm thêm Lượt!");
               }} 
               className="flex-1 flex justify-center items-center gap-2 px-4 py-4 rounded-xl font-bold text-white bg-indigo-500 hover:bg-indigo-600 transition-colors shadow-sm whitespace-nowrap">
             <Gamepad2 size={20} /> Game
@@ -661,7 +697,6 @@ export default function App() {
           </button>
         </div>
 
-        {/* KHỐI 4: THANH TIẾN ĐỘ */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
            <div className="flex justify-between items-center text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">
              <span>Progress Bar</span>
@@ -676,7 +711,6 @@ export default function App() {
 
       </div>
 
-      {/* LƯỚI BÀI HỌC (LỘ TRÌNH 48 NGÀY) */}
       <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {courseData.map((day) => {
           const todayStr = new Date().toDateString();
@@ -702,6 +736,45 @@ export default function App() {
       {/* ============================================================== */}
       {/* CÁC MODAL CỦA HỆ THỐNG */}
       {/* ============================================================== */}
+
+      {checkinState.show && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[110] p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full text-center animate-in zoom-in duration-500">
+            <h2 className="text-3xl font-black text-indigo-600 mb-2">Quà Điểm Danh 🎁</h2>
+            <p className="text-gray-600 mb-6 font-medium">Chuỗi điểm danh 7 ngày liên tiếp</p>
+            
+            <div className="grid grid-cols-4 gap-2 sm:gap-3 mb-6">
+                {[1,2,3,4,5,6,7].map(d => {
+                   let isToday = checkinState.day === d;
+                   let isPast = checkinState.day > d;
+                   
+                   let icon = '🪙'; // Day 1
+                   if (d===2) icon = '💰';
+                   if (d>=3 && d<=5) icon = '🎟️'; // Tickets
+                   if (d===6) icon = '🎲'; // Gacha Ticket
+                   if (d===7) icon = '🛡️'; // Thẻ Bất Tử
+
+                   let itemClass = "p-2 rounded-xl flex flex-col items-center justify-center border-2 transition-all ";
+                   if (isToday) itemClass += "bg-indigo-100 border-indigo-500 scale-105 shadow-md ring-2 ring-indigo-200 animate-pulse";
+                   else if (isPast) itemClass += "bg-green-50 border-green-400 opacity-60";
+                   else itemClass += "bg-gray-50 border-gray-200 opacity-80";
+
+                   return (
+                     <div key={d} className={itemClass}>
+                       <span className={`text-[10px] sm:text-xs font-bold mb-1 ${isToday ? 'text-indigo-700' : isPast ? 'text-green-700' : 'text-gray-500'}`}>Ngày {d}</span>
+                       <span className="text-xl sm:text-2xl">{icon}</span>
+                       {isPast && <CheckCircle2 size={12} className="text-green-600 absolute bottom-1 right-1"/>}
+                     </div>
+                   );
+                })}
+            </div>
+
+            <button onClick={claimCheckinReward} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-black text-lg transition-transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+               Nhận Quà Ngày {checkinState.day}
+            </button>
+          </div>
+        </div>
+      )}
       
       {achievementPopup && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4">
@@ -720,8 +793,8 @@ export default function App() {
       )}
 
       {showShop && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in duration-300">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
             <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-6 flex justify-between items-center text-white shrink-0">
               <div>
                 <h3 className="text-2xl font-black flex items-center gap-2"><Store size={28} /> Cửa Hàng Vật Phẩm</h3>
@@ -730,8 +803,22 @@ export default function App() {
               <button onClick={() => setShowShop(false)} className="hover:bg-black/10 p-2 rounded-full transition-colors"><X size={24} /></button>
             </div>
             
-            <div className="p-6 overflow-y-auto flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="border-2 border-gray-100 rounded-2xl p-5 flex flex-col justify-between hover:border-orange-300 transition-colors">
+            <div className="p-6 overflow-y-auto flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              
+              <div className="border-2 border-red-200 rounded-2xl p-5 flex flex-col justify-between hover:border-red-400 transition-colors bg-red-50/40 relative overflow-hidden">
+                <div className="absolute -right-4 -bottom-4 opacity-10"><ShieldAlert size={100}/></div>
+                <div className="relative z-10">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center shadow-sm border border-red-200"><ShieldAlert size={24}/></div>
+                    <span className="bg-white text-gray-700 font-bold px-3 py-1 rounded-full text-sm shadow-sm border border-gray-100">Đang có: {inventory.immortals || 0}</span>
+                  </div>
+                  <h4 className="text-xl font-black text-red-900 mb-1">Thẻ Bất Tử</h4>
+                  <p className="text-xs text-red-700 font-bold mb-4 bg-white/50 p-2 rounded-lg border border-red-100">Chống trừ điểm khi làm sai bài tập vượt số lần cho phép. (Giá tăng dần sau mỗi lượt mua)</p>
+                </div>
+                <button onClick={() => buyItem("Thẻ Bất Tử", currentImmortalPrice, 'immortals')} className="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white font-black py-3 rounded-xl hover:shadow-lg transition-transform active:scale-95 flex justify-center gap-2 relative z-10"><Coins size={20}/> {currentImmortalPrice} Coins</button>
+              </div>
+
+              <div className="border-2 border-orange-100 rounded-2xl p-5 flex flex-col justify-between hover:border-orange-300 transition-colors">
                 <div>
                   <div className="flex justify-between items-start mb-3">
                     <div className="w-12 h-12 bg-orange-100 text-orange-500 rounded-xl flex items-center justify-center"><Shield size={24}/></div>
@@ -740,52 +827,56 @@ export default function App() {
                   <h4 className="text-xl font-bold text-gray-800 mb-1">Streak Shield</h4>
                   <p className="text-sm text-gray-500 font-medium mb-4">Bảo vệ chuỗi ngày nếu bạn lỡ quên học.</p>
                 </div>
-                <button onClick={() => buyItem("Streak Shield", 50, 'shields')} className="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-black transition-transform active:scale-95 flex justify-center gap-2"><Coins size={20}/> 50 Coins</button>
+                <button onClick={() => buyItem("Streak Shield", 20, 'shields')} className="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-black transition-transform active:scale-95 flex justify-center gap-2"><Coins size={20}/> 20 Coins</button>
               </div>
 
-              <div className="border-2 border-gray-100 rounded-2xl p-5 flex flex-col justify-between hover:border-indigo-300 transition-colors">
+              <div className="border-2 border-indigo-100 rounded-2xl p-5 flex flex-col justify-between hover:border-indigo-300 transition-colors">
                 <div>
                   <div className="flex justify-between items-start mb-3">
                     <div className="w-12 h-12 bg-indigo-100 text-indigo-500 rounded-xl flex items-center justify-center"><Ticket size={24}/></div>
                     <span className="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-full text-sm">Đang có: {inventory.skips}</span>
                   </div>
                   <h4 className="text-xl font-bold text-gray-800 mb-1">Thẻ Skip Từ Vựng</h4>
-                  <p className="text-sm text-gray-500 font-medium mb-4">Bỏ qua trạm kiểm tra từ vựng đầu giờ để học ngay bài mới.</p>
+                  <p className="text-sm text-gray-500 font-medium mb-4">Bỏ qua trạm kiểm tra từ vựng đầu giờ.</p>
                 </div>
-                <button onClick={() => buyItem("Thẻ Skip", 35, 'skips')} className="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-black transition-transform active:scale-95 flex justify-center gap-2"><Coins size={20}/> 35 Coins</button>
+                <button onClick={() => buyItem("Thẻ Skip", 15, 'skips')} className="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-black transition-transform active:scale-95 flex justify-center gap-2"><Coins size={20}/> 15 Coins</button>
               </div>
 
-              <div className="border-2 border-gray-100 rounded-2xl p-5 flex flex-col justify-between hover:border-yellow-300 transition-colors">
+              <div className="border-2 border-yellow-100 rounded-2xl p-5 flex flex-col justify-between hover:border-yellow-300 transition-colors">
                 <div>
                   <div className="flex justify-between items-start mb-3">
                     <div className="w-12 h-12 bg-yellow-100 text-yellow-500 rounded-xl flex items-center justify-center"><Lightbulb size={24}/></div>
                     <span className="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-full text-sm">Đang có: {inventory.hints}</span>
                   </div>
                   <h4 className="text-xl font-bold text-gray-800 mb-1">Gợi ý (Hint)</h4>
-                  <p className="text-sm text-gray-500 font-medium mb-4">Hệ thống sẽ điền giúp bạn 1 đáp án đúng khi đang làm bài.</p>
+                  <p className="text-sm text-gray-500 font-medium mb-4">Điền giúp bạn 1 đáp án đúng khi làm bài tập.</p>
                 </div>
                 <button onClick={() => buyItem("Hint", 20, 'hints')} className="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-black transition-transform active:scale-95 flex justify-center gap-2"><Coins size={20}/> 20 Coins</button>
               </div>
 
-              <div className="border-2 border-purple-200 bg-purple-50/50 rounded-2xl p-5 flex flex-col justify-between hover:border-purple-400 transition-colors">
+              <div className="border-2 border-purple-200 bg-purple-50/50 rounded-2xl p-5 flex flex-col justify-between hover:border-purple-400 transition-colors sm:col-span-2 md:col-span-2">
                 <div>
-                  <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-3"><Dices size={24}/></div>
+                  <div className="flex justify-between items-start mb-3">
+                     <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center"><Dices size={24}/></div>
+                     {(inventory.gachaTickets > 0) && <span className="bg-purple-600 text-white font-black px-3 py-1 rounded-full text-sm shadow-sm animate-pulse">Sẵn sàng: {inventory.gachaTickets} Vé quay</span>}
+                  </div>
                   <h4 className="text-xl font-bold text-purple-900 mb-1">Vòng Quay Gacha</h4>
-                  <p className="text-sm text-purple-700 font-medium mb-4">Thử vận may! Quay trúng Thẻ Skip, Hint, Hoàn vốn, hoặc Jackpot +5 Điểm!</p>
+                  <p className="text-sm text-purple-700 font-medium mb-4">Thử vận may! Quay trúng Thẻ Skip, Hint, 50 Coins, hoặc Jackpot +5 Điểm!</p>
                 </div>
-                <button onClick={() => {setShowShop(false); setShowGachaModal(true);}} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 rounded-xl hover:opacity-90 transition-transform active:scale-95 flex justify-center gap-2"><Coins size={20}/> 50 Coins</button>
+                <button onClick={() => {setShowShop(false); setShowGachaModal(true);}} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 rounded-xl hover:opacity-90 transition-transform active:scale-95 flex justify-center gap-2 shadow-md">
+                   {inventory.gachaTickets > 0 ? <><Ticket size={20}/> Dùng Vé Gacha Miễn Phí</> : <><Coins size={20}/> 25 Coins</>}
+                </button>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL VÒNG QUAY GACHA ANIMATION */}
       {showGachaModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[110] p-4">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[110] p-4 backdrop-blur-sm">
           <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 text-center animate-in zoom-in duration-300">
             <h3 className="text-3xl font-black text-purple-700 mb-2 flex justify-center gap-2"><Dices size={32}/> Vòng Quay Gacha</h3>
-            <p className="text-gray-500 font-medium mb-8">50 Coins / 1 lượt quay</p>
+            <p className="text-gray-500 font-medium mb-8">25 Coins hoặc 1 Vé / 1 lượt quay</p>
 
             <div className="grid grid-cols-2 gap-4 mb-8">
               {gachaItems.map((item, idx) => (
@@ -799,16 +890,16 @@ export default function App() {
             {gachaPrize ? (
               <div className="mb-8 animate-bounce">
                 <p className="text-lg font-bold text-gray-800">Bạn đã quay trúng:</p>
-                <p className={`text-2xl font-black mt-1 ${gachaPrize.text}`}>{gachaPrize.label}</p>
+                <p className={`text-3xl font-black mt-1 ${gachaPrize.text} drop-shadow-md`}>{gachaPrize.label}</p>
               </div>
             ) : (
-              <div className="mb-8 h-[68px]"></div> 
+              <div className="mb-8 h-[76px]"></div> 
             )}
 
             <div className="flex gap-3">
-              <button onClick={() => setShowGachaModal(false)} disabled={isSpinning} className="flex-1 bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 disabled:opacity-50">Đóng</button>
-              <button onClick={handleSpinGacha} disabled={isSpinning || coins < 50} className="flex-[2] bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-black py-4 rounded-xl hover:scale-105 transition-transform shadow-lg disabled:opacity-50 disabled:hover:scale-100 flex justify-center items-center gap-2">
-                {isSpinning ? 'Đang quay...' : <><Coins size={20}/> Quay (50 Coins)</>}
+              <button onClick={() => setShowGachaModal(false)} disabled={isSpinning} className="flex-1 bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 disabled:opacity-50 transition-colors">Đóng</button>
+              <button onClick={handleSpinGacha} disabled={isSpinning || (!inventory.gachaTickets && coins < 25)} className="flex-[2] bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-black py-4 rounded-xl hover:scale-105 transition-transform shadow-lg disabled:opacity-50 disabled:hover:scale-100 flex justify-center items-center gap-2">
+                {isSpinning ? 'Đang quay...' : inventory.gachaTickets > 0 ? <><Ticket size={20}/> Quay (Dùng Vé)</> : <><Coins size={20}/> Quay (25 Coins)</>}
               </button>
             </div>
           </div>
@@ -816,8 +907,8 @@ export default function App() {
       )}
 
       {showProfile && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-50 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in duration-300">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-gray-50 rounded-3xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in duration-300">
             <div className="bg-white px-6 py-4 flex justify-between items-center border-b border-gray-200 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center text-amber-500"><Award size={24}/></div>
@@ -831,13 +922,14 @@ export default function App() {
             
             <div className="p-6 overflow-y-auto flex-1">
               <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                   {achievementsList.map((ach, idx) => (
-                    <div key={idx} className={`relative p-4 rounded-xl border-2 transition-all ${ach.achieved ? `border-transparent ${ach.bg} shadow-sm` : 'border-gray-200 bg-gray-50 opacity-60 grayscale'}`}>
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl mb-3 bg-white shadow-sm ${ach.achieved ? ach.color : 'text-gray-400'}`}>{ach.icon}</div>
-                      <h5 className={`font-bold ${ach.achieved ? 'text-gray-800' : 'text-gray-500'}`}>{ach.title}</h5>
-                      <p className="text-xs text-gray-500 mt-1 font-medium">{ach.desc} <span className="text-yellow-600 font-bold block mt-1">(+{ach.rewardCoins} Coins)</span></p>
-                      {ach.achieved && <div className="absolute top-3 right-3 text-amber-400"><CheckCircle2 size={18}/></div>}
+                    <div key={idx} className={`relative p-4 rounded-xl border-2 transition-all ${ach.achieved ? `border-transparent ${ach.bg} shadow-sm hover:scale-105` : 'border-gray-200 bg-gray-50 opacity-60 grayscale'}`}>
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl mb-3 bg-white shadow-sm ${ach.achieved ? ach.color : 'text-gray-400'}`}>{ach.icon}</div>
+                      <h5 className={`font-bold text-lg ${ach.achieved ? 'text-gray-900' : 'text-gray-500'}`}>{ach.title}</h5>
+                      <p className="text-xs text-gray-500 mt-1 font-medium leading-relaxed">{ach.desc}</p>
+                      <span className="text-yellow-600 font-black block mt-2 text-sm bg-white/60 inline-block px-2 py-1 rounded-md">+{ach.rewardCoins} Coins</span>
+                      {ach.achieved && <div className="absolute top-3 right-3 text-amber-400 bg-white rounded-full"><CheckCircle2 size={20}/></div>}
                     </div>
                   ))}
                 </div>
@@ -848,9 +940,9 @@ export default function App() {
       )}
 
       {showNotebook && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col overflow-hidden">
-            <div className="bg-gradient-to-r from-[#10b981] to-[#059669] p-4 flex justify-between items-center text-white shrink-0">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col overflow-hidden animate-in zoom-in duration-200">
+            <div className="bg-gradient-to-r from-[#10b981] to-[#059669] p-5 flex justify-between items-center text-white shrink-0">
               <h3 className="text-xl font-bold flex items-center gap-2"><BookOpen size={24} /> Ghi Chú Cá Nhân (Library)</h3>
               <button onClick={() => setShowNotebook(false)} className="hover:bg-white/20 p-1 rounded transition-colors"><X size={24} /></button>
             </div>
@@ -861,7 +953,11 @@ export default function App() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {notebook.map((item, idx) => (
-                    <div key={idx} className="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm flex flex-col"><span className="font-bold text-lg text-emerald-800">{item.word}</span><span className="text-gray-600 font-medium mb-2">{item.meaning}</span><span className="text-xs text-gray-400 mt-auto text-right border-t border-dashed pt-2">Đã thêm: {item.addedAt}</span></div>
+                    <div key={idx} className="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm flex flex-col hover:border-emerald-300 transition-colors">
+                      <span className="font-bold text-lg text-emerald-800">{item.word}</span>
+                      <span className="text-gray-600 font-medium mb-2">{item.meaning}</span>
+                      <span className="text-[10px] text-gray-400 mt-auto text-right border-t border-dashed pt-2 uppercase tracking-wider font-bold">Đã thêm: {item.addedAt}</span>
+                    </div>
                   ))}
                 </div>
               )}
@@ -871,9 +967,9 @@ export default function App() {
       )}
 
       {showVocabMastery && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col overflow-hidden animate-in zoom-in duration-300">
-            <div className="bg-gradient-to-r from-fuchsia-500 to-fuchsia-700 p-4 flex justify-between items-center text-white shrink-0">
+            <div className="bg-gradient-to-r from-fuchsia-500 to-fuchsia-700 p-5 flex justify-between items-center text-white shrink-0">
               <h3 className="text-xl font-bold flex items-center gap-2"><BrainCircuit size={24} /> Từ Vựng Đã Master</h3>
               <button onClick={() => setShowVocabMastery(false)} className="hover:bg-white/20 p-1 rounded transition-colors"><X size={24} /></button>
             </div>
@@ -888,8 +984,8 @@ export default function App() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {masteredWordsList.map(([word, count]) => (
-                    <div key={word} className="p-4 rounded-xl border border-green-300 shadow-sm flex justify-between items-center bg-white">
-                      <span className="font-black text-lg text-green-700">{word}</span>
+                    <div key={word} className="p-4 rounded-xl border border-green-300 shadow-sm flex justify-between items-center bg-white hover:bg-green-50 transition-colors cursor-default">
+                      <span className="font-black text-lg text-green-700 capitalize">{word}</span>
                       <span className="text-xs font-bold bg-green-100 text-green-700 px-2 py-1 rounded-full flex items-center gap-1"><CheckCircle2 size={12}/> Mastered</span>
                     </div>
                   ))}
@@ -901,32 +997,26 @@ export default function App() {
       )}
 
       {showRules && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 flex justify-between items-center text-white">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in zoom-in duration-200">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-5 flex justify-between items-center text-white">
               <h3 className="text-xl font-bold flex items-center gap-2"><Target size={24} /> Sổ Tay Kỷ Luật</h3>
               <button onClick={() => setShowRules(false)} className="hover:bg-white/20 p-1 rounded transition-colors"><X size={24} /></button>
             </div>
             <div className="p-6 space-y-4">
-              <div className="bg-green-50 p-4 rounded-xl border border-green-200">
+              <div className="bg-green-50 p-4 rounded-xl border border-green-200 shadow-sm">
                 <h4 className="font-bold text-green-700 mb-2 flex items-center gap-2">🎁 Cách tích lũy Điểm</h4>
-                <ul className="text-sm text-green-800 list-disc list-inside space-y-2">
+                <ul className="text-sm text-green-800 list-disc list-inside space-y-2 font-medium">
                   <li><span className="font-bold">+5 Điểm & +10 Coins:</span> Làm đúng 100% Bài học ở lần đầu tiên.</li>
                   <li><span className="font-bold">+1 Điểm & +2 Coins:</span> Thắng 1 ván Mini-game ôn tập.</li>
-                  <li><span className="font-bold">Mở Gacha:</span> Cơ hội trúng Jackpot +5 Điểm.</li>
+                  <li><span className="font-bold">Điểm Danh:</span> Truy cập liên tục mỗi ngày để nhận quà siêu khủng.</li>
                 </ul>
               </div>
-              <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
-                <h4 className="font-bold text-blue-700 mb-2 flex items-center gap-2">🎮 Phần thưởng Coins phụ</h4>
-                <ul className="text-sm text-blue-800 list-disc list-inside space-y-2">
-                  <li><span className="font-bold">Đạt Huy hiệu:</span> Nhận thưởng khủng từ 20 đến 1000 Coins.</li>
-                </ul>
-              </div>
-              <div className="bg-red-50 p-4 rounded-xl border border-red-200">
+              <div className="bg-red-50 p-4 rounded-xl border border-red-200 shadow-sm">
                 <h4 className="font-bold text-red-700 mb-2 flex items-center gap-2">⚔️ Phạt Kỷ Luật</h4>
-                <ul className="text-sm text-red-800 list-disc list-inside space-y-2">
+                <ul className="text-sm text-red-800 list-disc list-inside space-y-2 font-medium">
                   <li><span className="font-bold">-5 Điểm & -10 Coins:</span> Phạt cho mỗi 1 ngày lười vắng học.</li>
-                  <li><span className="font-bold">-2 Điểm & -4 Coins:</span> Làm sai bài tập 3 lần, sai từ vựng, hoặc có hành vi gian lận.</li>
+                  <li><span className="font-bold">-2 Điểm & -4 Coins:</span> Làm sai bài tập 3 lần, sai từ vựng, hoặc gian lận mở tab khác khi thi.</li>
                 </ul>
               </div>
             </div>
