@@ -321,7 +321,7 @@ export default function App() {
     let message = "📊 TỔNG KẾT BÀI HỌC CỦA BẠN:\n\n";
 
     const isTestDay = courseData.find(d => d.id === dayId)?.isTest;
-    const maxExFailsAllowed = isTestDay ? 5 : 3; // BÀI TEST CHỈ ĐƯỢC SAI 5 LẦN
+    const maxExFailsAllowed = isTestDay ? 5 : 3; 
 
     if (vocabFailCount > 3) { 
       pointPenalty += 2; coinPenalty += 4; 
@@ -424,7 +424,7 @@ export default function App() {
     if (isWin) {
       alert(`🎮 Chiến thắng! Bạn nhận được +${earnedScore} Điểm, +${rewardCoins} Coins.\nTiến độ những từ bạn đánh ĐÚNG đã được lưu lại.`);
     } else {
-      alert(`💀 Game Over!\nTuy nhiên, những từ bạn đã trả lời ĐÚNG vẫn được tính tiến độ.`);
+      alert(`💀 Game Over!\nTuy nhiên, những từ bạn đã trả lời ĐÚNG vẫn được lưu tiến độ Master.`);
     }
   };
 
@@ -496,8 +496,9 @@ export default function App() {
     let cost = baseCost;
     let newShopStats = { ...shopStats };
     
+    // TÍNH GIÁ THẺ BẤT TỬ THEO CẤP SỐ NHÂN: 20 * 2^n
     if (key === 'immortals') {
-       cost = 20 + (shopStats.immortalBoughtCount || 0) * 5;
+       cost = 20 * Math.pow(2, shopStats.immortalBoughtCount || 0);
     }
 
     if (coins < cost) return alert("Bạn không đủ Coins!");
@@ -603,7 +604,8 @@ export default function App() {
     setShowNotebook(true);
   };
 
-  const currentImmortalPrice = 20 + (shopStats?.immortalBoughtCount || 0) * 5;
+  // Tính giá Thẻ Bất Tử hiển thị: 20 nhân lũy thừa cơ số 2 
+  const currentImmortalPrice = 20 * Math.pow(2, shopStats?.immortalBoughtCount || 0);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-2xl font-bold">Đang tải dữ liệu...</div>;
   if (!user) return (
@@ -748,11 +750,11 @@ export default function App() {
                    let isToday = checkinState.day === d;
                    let isPast = checkinState.day > d;
                    
-                   let icon = '🪙'; // Day 1
+                   let icon = '🪙'; 
                    if (d===2) icon = '💰';
-                   if (d>=3 && d<=5) icon = '🎟️'; // Tickets
-                   if (d===6) icon = '🎲'; // Gacha Ticket
-                   if (d===7) icon = '🛡️'; // Thẻ Bất Tử
+                   if (d>=3 && d<=5) icon = '🎟️'; 
+                   if (d===6) icon = '🎲'; 
+                   if (d===7) icon = '🛡️'; 
 
                    let itemClass = "p-2 rounded-xl flex flex-col items-center justify-center border-2 transition-all ";
                    if (isToday) itemClass += "bg-indigo-100 border-indigo-500 scale-105 shadow-md ring-2 ring-indigo-200 animate-pulse";
@@ -813,7 +815,7 @@ export default function App() {
                     <span className="bg-white text-gray-700 font-bold px-3 py-1 rounded-full text-sm shadow-sm border border-gray-100">Đang có: {inventory.immortals || 0}</span>
                   </div>
                   <h4 className="text-xl font-black text-red-900 mb-1">Thẻ Bất Tử</h4>
-                  <p className="text-xs text-red-700 font-bold mb-4 bg-white/50 p-2 rounded-lg border border-red-100">Chống trừ điểm khi làm sai bài tập vượt số lần cho phép. (Giá tăng dần sau mỗi lượt mua)</p>
+                  <p className="text-xs text-red-700 font-bold mb-4 bg-white/50 p-2 rounded-lg border border-red-100">Chống trừ điểm khi làm sai bài tập quá giới hạn (Chỉ có thể dùng nếu đang làm ĐÚNG TỪ 60% TRỞ LÊN). Giá tăng x2 sau mỗi lần mua.</p>
                 </div>
                 <button onClick={() => buyItem("Thẻ Bất Tử", currentImmortalPrice, 'immortals')} className="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white font-black py-3 rounded-xl hover:shadow-lg transition-transform active:scale-95 flex justify-center gap-2 relative z-10"><Coins size={20}/> {currentImmortalPrice} Coins</button>
               </div>
@@ -1016,7 +1018,7 @@ export default function App() {
                 <h4 className="font-bold text-red-700 mb-2 flex items-center gap-2">⚔️ Phạt Kỷ Luật</h4>
                 <ul className="text-sm text-red-800 list-disc list-inside space-y-2 font-medium">
                   <li><span className="font-bold">-5 Điểm & -10 Coins:</span> Phạt cho mỗi 1 ngày lười vắng học.</li>
-                  <li><span className="font-bold">-2 Điểm & -4 Coins:</span> Làm sai bài tập 3 lần, sai từ vựng, hoặc gian lận mở tab khác khi thi.</li>
+                  <li><span className="font-bold">-2 Điểm & -4 Coins:</span> Làm sai bài tập vượt số lần cho phép, sai từ vựng đầu giờ, hoặc gian lận mở tab khác.</li>
                 </ul>
               </div>
             </div>

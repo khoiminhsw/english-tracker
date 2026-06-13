@@ -33,9 +33,9 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
   const [savedToNotebook, setSavedToNotebook] = useState({}); 
   const [hasPassedVocab, setHasPassedVocab] = useState(false);
 
-  // LOGIC BÀI TEST LỚN: TỐI ĐA SAI 5 LẦN THEO YÊU CẦU
+  // LOGIC BÀI TEST LỚN
   const maxFails = dayData.isTest ? 5 : 3;
-  const [testTimeLeft, setTestTimeLeft] = useState(3600); // 60 phút = 3600 giây
+  const [testTimeLeft, setTestTimeLeft] = useState(3600); // 60 phút
   const [hasSubmittedOnce, setHasSubmittedOnce] = useState(false);
 
   const rawUrl = dayData.videoUrl || '';
@@ -61,7 +61,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     }
   }, [prevDayData]);
 
-  // ANTI-CHEAT: Chống mở tab khác
+  // ANTI-CHEAT
   useEffect(() => {
     if (isAdmin) return;
     const handleVisibilityChange = () => {
@@ -84,13 +84,9 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     };
   }, [submitted, onCheat, step, isAdmin]);
 
-  // ==========================================
-  // ĐỘNG CƠ ĐẾM NGƯỢC SIÊU MƯỢT (FIXED)
-  // ==========================================
-  // Luồng 1: Chỉ chuyên đếm ngược trừ thời gian (Không bị reset)
+  // ĐỒNG HỒ ĐẾM NGƯỢC
   useEffect(() => {
     if (step !== 'exercises' || !dayData.isTest || submitted || isAdmin) return;
-
     const timerId = setInterval(() => {
       setTestTimeLeft(prev => {
         if (prev <= 0) {
@@ -100,16 +96,14 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
         return prev - 1;
       });
     }, 1000);
-
     return () => clearInterval(timerId);
   }, [step, dayData.isTest, submitted, isAdmin]); 
 
-  // Luồng 2: Lắng nghe sự kiện hết giờ (Để nộp bài mà không làm sập UI)
+  // LẮNG NGHE HẾT GIỜ
   useEffect(() => {
     if (step === 'exercises' && dayData.isTest && testTimeLeft === 0 && !submitted && !isAdmin) {
       setSubmitted(true);
       setExerciseFailCount(maxFails); 
-      // Dùng setTimeout 100ms để tách biệt luồng thông báo, tránh lỗi màn hình trắng (White Screen of Death)
       setTimeout(() => {
         alert("⏰ ĐÃ HẾT THỜI GIAN LÀM BÀI 60 PHÚT!\nHệ thống tự động thu bài và khóa bài thi.");
       }, 100);
@@ -236,11 +230,11 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
 
     if (currentScore === dayData.requiredScore) {
       setSubmitted(true);
-      if (dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
+      if (dayData.isTest) setStep('test-summary'); // Hiển thị tổng kết test
+      else if (dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
       else onComplete(dayData.id, vocabFailCount, exerciseFailCount);
     } else {
       
-      // ĐẶC QUYỀN NỘP NHÁP LẦN 1 (+15 PHÚT = 900 GIÂY) CHO BÀI TEST LỚN
       if (dayData.isTest && !hasSubmittedOnce && testTimeLeft > 0) {
          setHasSubmittedOnce(true);
          setTestTimeLeft(prev => prev + 900); 
@@ -272,18 +266,18 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
         {isAdmin && <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">Admin Mode</span>}
       </h2>
 
-      {/* ĐỒNG HỒ NỔI CHO BÀI TEST TỰ ĐỘNG ĐẾM NGƯỢC */}
       {dayData.isTest && step === 'exercises' && (
-        <div className={`fixed top-4 right-4 sm:top-8 sm:right-8 bg-white/95 backdrop-blur-md border-[5px] p-4 sm:p-5 rounded-[2rem] shadow-[0_10px_30px_rgba(0,0,0,0.15)] z-50 flex flex-col items-center justify-center animate-in slide-in-from-top-10 transition-colors ${testTimeLeft < 300 ? 'border-red-500 text-red-600 animate-pulse' : 'border-[#6366f1] text-[#4f46e5]'}`}>
-           <span className="text-sm font-black uppercase tracking-widest mb-1 flex items-center gap-1.5"><Clock size={18} className="stroke-[3px]"/> Thời gian</span>
-           <div className="text-5xl sm:text-6xl font-black font-mono tracking-wider leading-none">
-              {Math.floor(testTimeLeft / 60).toString().padStart(2, '0')}:{(testTimeLeft % 60).toString().padStart(2, '0')}
+        <div className={`fixed top-4 right-4 sm:top-8 sm:right-8 bg-white/95 backdrop-blur-md border-[6px] p-5 sm:p-7 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.15)] z-50 flex flex-col items-center justify-center animate-in slide-in-from-top-10 transition-colors ${testTimeLeft < 300 ? 'border-red-500' : 'border-[#6366f1]'}`}>
+           <span className={`text-base font-black uppercase tracking-widest mb-2 flex items-center gap-2 ${testTimeLeft < 300 ? 'text-red-600 animate-pulse' : 'text-[#6366f1]'}`}>
+              <Clock size={20} className="stroke-[3px]"/> THỜI GIAN
+           </span>
+           <div className={`text-6xl sm:text-7xl font-black font-mono tracking-wider leading-none mb-1 ${testTimeLeft < 300 ? 'text-red-600 animate-pulse' : 'text-[#4f46e5]'}`}>
+              {Math.floor(testTimeLeft / 60).toString().padStart(2, '0')}:{Math.floor(testTimeLeft % 60).toString().padStart(2, '0')}
            </div>
-           {hasSubmittedOnce && <span className="text-[13px] bg-[#dcfce7] text-[#166534] px-4 py-1.5 rounded-full mt-3 font-black uppercase shadow-sm animate-bounce">+15 Phút Bonus</span>}
+           {hasSubmittedOnce && <span className="bg-[#dcfce7] text-[#166534] px-5 py-2 rounded-full mt-3 text-sm sm:text-base font-black uppercase shadow-sm">+15 Phút Bonus</span>}
         </div>
       )}
 
-      {/* MÀN HÌNH CHUẨN BỊ (TEST INTRO) VỚI ĐIỀU KIỆN 5 LẦN SAI - 15 PHÚT BONUS */}
       {step === 'test-intro' && (
         <div className="bg-white p-8 sm:p-12 rounded-3xl shadow-2xl border-t-8 border-red-600 max-w-2xl mx-auto text-center animate-in zoom-in duration-300 mt-10">
            <div className="inline-block p-5 bg-red-100 rounded-full mb-6 animate-pulse shadow-inner">
@@ -501,7 +495,8 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               {isAdmin && !submitted && (
                 <button onClick={() => {
-                  if(dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
+                  if(dayData.isTest) setStep('test-summary');
+                  else if(dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
                   else onComplete(dayData.id, 0, 0);
                 }} className="w-full sm:w-auto bg-gray-800 text-white px-8 py-4 rounded-xl font-bold shadow-md hover:bg-black transition-colors flex items-center justify-center gap-2 text-lg">
                   <Wrench size={22} /> Auto-Pass
@@ -509,21 +504,32 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
               )}
               {isExerciseLocked ? (
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                  
+                  {/* NÚT SỬ DỤNG THẺ BẤT TỬ CÓ KIỂM TRA ĐIỀU KIỆN ĐIỂM > 60% */}
                   {(inventory?.immortals > 0) && (
                     <button onClick={async () => {
+                       const percent = Math.round((score / dayData.requiredScore) * 100);
+                       if (percent < 60) {
+                           alert(`❌ TỪ CHỐI KÍCH HOẠT!\nThẻ Bất Tử chỉ có hiệu lực khi bạn làm đúng từ 60% trở lên.\nHiện tại bạn mới đúng ${percent}% (${score}/${dayData.requiredScore} câu).`);
+                           return;
+                       }
+
                        const success = await consumeItem('immortals');
                        if (success) {
-                          alert("🛡️ KÍCH HOẠT THẺ BẤT TỬ!\nBạn đã được miễn trừ hình phạt trừ điểm cho bài tập này.");
-                          setExerciseFailCount(1); // Miễn phạt 
-                          if (dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
+                          alert("🛡️ KÍCH HOẠT THẺ BẤT TỬ THÀNH CÔNG!\nBạn đã được miễn trừ hình phạt trừ điểm cho bài tập này.");
+                          setExerciseFailCount(1); // Đưa về 1 lỗi để bỏ chặn
+                          if (dayData.isTest) setStep('test-summary');
+                          else if (dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
                           else onComplete(dayData.id, vocabFailCount, 1);
                        }
                     }} className="w-full sm:w-auto bg-gradient-to-r from-red-500 to-rose-600 text-white px-8 py-4 rounded-xl font-black shadow-[0_0_15px_rgba(225,29,72,0.5)] hover:opacity-90 animate-pulse flex items-center justify-center gap-2 text-lg">
-                      <ShieldAlert size={24}/> Kích hoạt Thẻ Bất Tử ({inventory.immortals})
+                      <ShieldAlert size={24}/> Dùng Thẻ Bất Tử ({inventory.immortals})
                     </button>
                   )}
+                  
                   <button onClick={() => {
-                    if (dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
+                    if (dayData.isTest) setStep('test-summary');
+                    else if (dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
                     else onComplete(dayData.id, vocabFailCount, exerciseFailCount);
                   }} className="w-full sm:w-auto bg-gray-800 text-white px-8 py-4 rounded-xl font-bold shadow-md hover:bg-black transition-colors text-lg">
                     Chấp nhận phạt & Đi tiếp
@@ -536,6 +542,62 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
               ) : null}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* MÀN HÌNH TỔNG KẾT DÀNH RIÊNG CHO BÀI TEST LỚN (MAJOR TEST) */}
+      {step === 'test-summary' && (
+        <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-8 sm:p-12 rounded-3xl border-2 border-indigo-200 shadow-xl max-w-3xl mx-auto mt-10 animate-in zoom-in duration-300">
+           <h2 className="text-3xl sm:text-4xl font-black text-indigo-800 mb-8 text-center uppercase tracking-tight">Tổng kết Bài thi</h2>
+           
+           <div className="flex flex-col sm:flex-row justify-center items-center gap-6 mb-8">
+              <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-indigo-100 w-full sm:w-1/2">
+                 <p className="text-gray-500 font-bold mb-1 uppercase tracking-wider text-sm">Điểm số</p>
+                 <p className="text-5xl font-black text-indigo-600">{score}/{dayData.requiredScore}</p>
+              </div>
+              <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-indigo-100 w-full sm:w-1/2">
+                 <p className="text-gray-500 font-bold mb-1 uppercase tracking-wider text-sm">Độ chính xác</p>
+                 <p className="text-5xl font-black text-blue-500">{Math.round((score/dayData.requiredScore)*100)}%</p>
+              </div>
+           </div>
+
+           <div className="bg-white p-6 rounded-2xl border border-blue-100 shadow-inner mb-8 text-left">
+              <h3 className="font-bold text-lg text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
+                 <Wrench size={20} className="text-blue-500"/> Phân Tích Kỹ Năng
+              </h3>
+              {(() => {
+                 const wrongTypes = new Set();
+                 (dayData.exercises || []).forEach((ex, idx) => {
+                    const uAns = (answers[idx] || '').toString().trim().toLowerCase();
+                    const cAns = (ex.correct || '').toString().trim().toLowerCase();
+                    if (uAns !== cAns) {
+                       wrongTypes.add(ex.type);
+                    }
+                 });
+                 
+                 if (wrongTypes.size === 0) {
+                    return <p className="text-green-600 font-bold flex items-center gap-2"><CheckCircle2/> 🎉 Xuất sắc! Bạn đã làm đúng toàn bộ bài thi. Hãy duy trì phong độ này nhé!</p>;
+                 } else {
+                    let weaknesses = [];
+                    if (wrongTypes.has('mcq')) weaknesses.push("Ngữ pháp & Từ vựng (Multiple Choice)");
+                    if (wrongTypes.has('reading')) weaknesses.push("Kỹ năng Đọc hiểu văn bản (Reading)");
+                    if (wrongTypes.has('writing')) weaknesses.push("Kỹ năng Viết & Cấu trúc câu (Writing/Reordering)");
+                    
+                    return (
+                       <div className="space-y-3">
+                          <p className="text-gray-700 font-medium leading-relaxed">Hệ thống phát hiện bạn còn nhầm lẫn ở một số câu. Để đạt kết quả tốt hơn, bạn cần chú ý ôn tập chuyên sâu vào các mảng sau:</p>
+                          <ul className="list-disc list-inside text-red-600 font-bold space-y-1.5 ml-2">
+                             {weaknesses.map((w, i) => <li key={i}>{w}</li>)}
+                          </ul>
+                       </div>
+                    );
+                 }
+              })()}
+           </div>
+
+           <button onClick={() => onComplete(dayData.id, vocabFailCount, exerciseFailCount)} className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-5 rounded-2xl font-black text-xl hover:shadow-[0_0_20px_rgba(79,70,229,0.4)] transition-all active:scale-95 shadow-lg">
+             LƯU KẾT QUẢ & KẾT THÚC BÀI THI
+           </button>
         </div>
       )}
 
