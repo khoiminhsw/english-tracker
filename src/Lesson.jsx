@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db, auth } from './firebase';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { CheckCircle2, XCircle, BookPlus, Wrench, AlertOctagon, Lightbulb, Ticket, PlayCircle, Clock, ShieldAlert, BookOpen } from 'lucide-react';
+import { CheckCircle2, XCircle, BookPlus, Wrench, AlertOctagon, Lightbulb, Ticket, PlayCircle, Clock, ShieldAlert, BookOpen, HelpCircle, Trophy, AlertTriangle } from 'lucide-react';
 
 const getYouTubeID = (url) => {
   if (!url) return null;
@@ -33,6 +33,10 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
   const [savedToNotebook, setSavedToNotebook] = useState({}); 
   const [hasPassedVocab, setHasPassedVocab] = useState(false);
 
+  // STATE: THÔNG BÁO XÁC NHẬN NỘP BÀI UI MỚI
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
+  const [pendingScore, setPendingScore] = useState(0);
+
   const maxFails = dayData.isTest ? 5 : 3;
   const [testTimeLeft, setTestTimeLeft] = useState(3600); // 60 phút
   const [hasSubmittedOnce, setHasSubmittedOnce] = useState(false);
@@ -60,6 +64,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     }
   }, [prevDayData]);
 
+  // ANTI-CHEAT: Chống mở tab khác
   useEffect(() => {
     if (isAdmin) return;
     const handleVisibilityChange = () => {
@@ -82,6 +87,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     };
   }, [submitted, onCheat, step, isAdmin]);
 
+  // ĐỒNG HỒ ĐẾM NGƯỢC
   useEffect(() => {
     if (step !== 'exercises' || !dayData.isTest || submitted) return;
     const timerId = setInterval(() => {
@@ -96,13 +102,21 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     return () => clearInterval(timerId);
   }, [step, dayData.isTest, submitted]); 
 
+  // LẮNG NGHE HẾT GIỜ ĐỂ TỰ ĐỘNG CHẤM ĐIỂM
   useEffect(() => {
-    if (step === 'exercises' && dayData.isTest && testTimeLeft === 0 && !submitted) {
+    if (step === 'exercises' && dayData.isTest && testTimeLeft === 0 && !submitted && !isAdmin) {
+      let currentScore = 0;
+      (dayData.exercises || []).forEach((ex, idx) => {
+        const userAnswer = (answers[idx] || '').toString().trim().toLowerCase();
+        const correctAnswer = (ex.correct || '').toString().trim().toLowerCase();
+        if (userAnswer === correctAnswer) currentScore++;
+      });
+      setScore(currentScore);
       setSubmitted(true);
       setExerciseFailCount(maxFails); 
-      setTimeout(() => alert("⏰ ĐÃ HẾT THỜI GIAN LÀM BÀI 60 PHÚT!\nHệ thống tự động thu bài và khóa bài thi."), 100);
+      setTimeout(() => alert("⏰ ĐÃ HẾT THỜI GIAN LÀM BÀI!\nHệ thống tự động thu bài và khóa bài thi."), 100);
     }
-  }, [testTimeLeft, step, dayData.isTest, submitted, maxFails]);
+  }, [testTimeLeft, step, dayData.isTest, submitted, isAdmin, maxFails, answers, dayData.exercises]);
 
   const handleQuit = () => {
     if (isAdmin) return onBack();
@@ -213,43 +227,56 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     }
   };
 
-  const handleSubmitExercises = () => {
+  // ========================================================
+  // XỬ LÝ NỘP BÀI - ĐÃ FIX BUG TRỪ LƯỢT NGAY LẬP TỨC
+  // ========================================================
+  const handlePreSubmit = () => {
     let currentScore = 0;
     (dayData.exercises || []).forEach((ex, idx) => {
       const userAnswer = (answers[idx] || '').toString().trim().toLowerCase();
       const correctAnswer = (ex.correct || '').toString().trim().toLowerCase();
       if (userAnswer === correctAnswer) currentScore++;
     });
-    setScore(currentScore);
+    setPendingScore(currentScore);
 
-    // XỬ LÝ LỆNH MIỄN PHẠT CHO BÀI TEST
     const isMajorTestPass = dayData.isTest && currentScore >= 36;
+    const isPass = currentScore === dayData.requiredScore || isMajorTestPass;
 
-    if (currentScore === dayData.requiredScore || isMajorTestPass) {
+    // CỘNG 1 LẦN NỘP NGAY LẬP TỨC NẾU CHƯA PASS
+    if (!isPass) {
+       setExerciseFailCount(prev => prev + 1);
+       
+       if (dayData.isTest && !hasSubmittedOnce && testTimeLeft > 0) {
+           setHasSubmittedOnce(true);
+           setTestTimeLeft(prev => prev + 900); 
+           // Delay Alert một chút để cập nhật State mượt mà hơn
+           setTimeout(() => {
+              alert("🎁 ĐẶC QUYỀN NỘP NHÁP LẦN 1!\n\nHệ thống phát hiện bài làm còn sai sót.\nBạn được tặng thêm 15 phút để rà soát lại đáp án (Lưu ý: Bạn vẫn bị tính là đã dùng 1 lần kiểm tra).");
+           }, 50);
+       }
+    }
+
+    setShowSubmitConfirm(true);
+  };
+
+  // NÚT BẤM BÊN TRONG POP-UP
+  const confirmSubmit = () => {
+    setShowSubmitConfirm(false);
+    setScore(pendingScore);
+
+    const isMajorTestPass = dayData.isTest && pendingScore >= 36;
+    const isPass = pendingScore === dayData.requiredScore || isMajorTestPass;
+
+    if (isPass) {
       setSubmitted(true);
       if (dayData.isTest) setStep('test-summary'); 
       else if (dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
-      else onComplete(dayData.id, vocabFailCount, exerciseFailCount, currentScore, dayData.exercises.length);
+      else onComplete(dayData.id, vocabFailCount, exerciseFailCount, pendingScore, dayData.exercises.length);
     } else {
-      
-      if (dayData.isTest && !hasSubmittedOnce && testTimeLeft > 0) {
-         setHasSubmittedOnce(true);
-         setTestTimeLeft(prev => prev + 900); 
-         const newFailCount = exerciseFailCount + 1;
-         setExerciseFailCount(newFailCount); 
-         alert("⚠️ BÀI LÀM CÒN SAI SÓT!\n\nBạn đã dùng quyền Nộp bài lần 1. Hệ thống đã tặng thêm cho bạn 15 phút để rà soát và sửa lại những câu sai.");
-         return; 
-      }
-
-      const newFailCount = exerciseFailCount + 1;
-      setExerciseFailCount(newFailCount);
-
-      if (newFailCount >= maxFails) {
-        setSubmitted(true); 
-        alert(`🚨 BẠN ĐÃ LÀM SAI QUÁ ${maxFails} LẦN!\nHệ thống khóa bài. Xem đáp án và chấp nhận nộp phạt Điểm & Coins để đi tiếp.`);
-      } else {
-        alert(`❌ Sai rồi! Bạn đã sai ${newFailCount}/${maxFails} lần.`);
-      }
+      // Học sinh cố tình nộp dù bị báo sai => Khóa bài luôn.
+      setExerciseFailCount(maxFails);
+      setSubmitted(true); 
+      setTimeout(() => alert(`🚨 ĐÃ KHÓA BÀI LÀM!\nBạn đã chấp nhận nộp bài sớm.\nHãy xem đáp án và nộp phạt Điểm & Coins để đi tiếp.`), 100);
     }
   };
 
@@ -264,7 +291,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
       </h2>
 
       {dayData.isTest && step === 'exercises' && (
-        <div className={`fixed top-4 right-4 sm:top-8 sm:right-8 bg-white/95 backdrop-blur-md border-[6px] p-5 sm:p-7 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.15)] z-50 flex flex-col items-center justify-center animate-in slide-in-from-top-10 transition-colors ${testTimeLeft < 300 ? 'border-red-500' : 'border-[#6366f1]'}`}>
+        <div className={`fixed top-4 right-4 sm:top-8 sm:right-8 bg-white/95 backdrop-blur-md border-[6px] p-5 sm:p-7 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.15)] z-40 flex flex-col items-center justify-center animate-in slide-in-from-top-10 transition-colors ${testTimeLeft < 300 ? 'border-red-500' : 'border-[#6366f1]'}`}>
            <span className={`text-base font-black uppercase tracking-widest mb-2 flex items-center gap-2 ${testTimeLeft < 300 ? 'text-red-600 animate-pulse' : 'text-[#6366f1]'}`}>
               <Clock size={20} className="stroke-[3px]"/> THỜI GIAN
            </span>
@@ -275,35 +302,95 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
         </div>
       )}
 
+      {/* ==============================================================
+          HIỂN THỊ POP-UP XÁC NHẬN NỘP BÀI GỌN GÀNG, CHUẨN UX MỚI
+          ============================================================== */}
+      {showSubmitConfirm && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[110] p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-[2rem] shadow-2xl p-8 max-w-sm w-full text-center animate-in zoom-in duration-300 border border-gray-100">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-[#eff6ff] text-[#2563eb] rounded-full mb-6 border-[6px] border-[#dbeafe] shadow-inner">
+               <HelpCircle size={40} className="stroke-[2.5px]"/>
+            </div>
+            <h2 className="text-2xl font-black text-[#1e293b] mb-6 uppercase tracking-widest">Xác nhận nộp bài</h2>
+            
+            <div className="bg-[#f8fafc] p-6 rounded-3xl border border-[#e2e8f0] mb-8 shadow-sm">
+               <p className="text-[#64748b] font-black mb-3 uppercase tracking-widest text-xs">Điểm dự kiến</p>
+               <div className={`text-6xl font-black mb-6 flex justify-center items-baseline gap-2 ${(pendingScore === dayData.requiredScore || (dayData.isTest && pendingScore >= 36)) ? "text-[#16a34a]" : "text-[#ef4444]"}`}>
+                 {pendingScore} <span className="text-3xl text-[#94a3b8] font-black">/ {dayData.exercises.length}</span>
+               </div>
+               
+               {(() => {
+                  const isMajorTestPass = dayData.isTest && pendingScore >= 36;
+                  const isPass = pendingScore === dayData.requiredScore || isMajorTestPass;
+                  const willLock = exerciseFailCount >= maxFails;
+
+                  if (isPass) {
+                     return <div className="bg-[#dcfce7] text-[#166534] p-4 rounded-2xl font-bold text-sm shadow-inner">✅ Đạt chuẩn! Bạn có thể nộp bài để kết thúc.</div>;
+                  } else {
+                     return (
+                       <div className="bg-[#fee2e2] text-[#b91c1c] p-4 rounded-2xl font-bold text-sm border border-[#fecaca] flex flex-col gap-2 shadow-inner">
+                         <span className="flex items-start text-left gap-2 leading-snug"><AlertTriangle size={20} className="shrink-0"/> <span>Hệ thống đã trừ đi 1 lần kiểm tra đáp án.<br/>(Tổng lỗi hiện tại: {exerciseFailCount}/{maxFails})</span></span>
+                         {willLock && <span className="bg-[#dc2626] text-white p-2.5 rounded-xl mt-2 uppercase text-xs animate-pulse text-center tracking-widest">🚨 Hết lượt! Nộp sẽ bị khóa bài.</span>}
+                       </div>
+                     );
+                  }
+               })()}
+            </div>
+
+            <div className="flex gap-3">
+              {exerciseFailCount < maxFails && (
+                <button onClick={() => setShowSubmitConfirm(false)} className="flex-1 bg-[#f1f5f9] text-[#475569] font-black py-4 rounded-2xl hover:bg-[#e2e8f0] transition-colors shadow-sm active:scale-95 text-lg">Quay lại sửa</button>
+              )}
+              {(() => {
+                  const isMajorTestPass = dayData.isTest && pendingScore >= 36;
+                  const isPass = pendingScore === dayData.requiredScore || isMajorTestPass;
+                  
+                  let btnClass = "flex-1 text-white font-black py-4 rounded-2xl transition-all shadow-lg text-lg active:scale-95 ";
+                  if (isPass) btnClass += "bg-[#16a34a] hover:bg-[#15803d] shadow-green-200";
+                  else btnClass += "bg-[#2563eb] hover:bg-[#1d4ed8] shadow-blue-200";
+
+                  return <button onClick={confirmSubmit} className={btnClass}>{exerciseFailCount >= maxFails && !isPass ? "Khóa bài luôn" : "Nộp ngay"}</button>;
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
+
       {step === 'test-intro' && (
         <div className="bg-white p-8 sm:p-12 rounded-3xl shadow-2xl border-t-8 border-red-600 max-w-2xl mx-auto text-center animate-in zoom-in duration-300 mt-10">
            <div className="inline-block p-5 bg-red-100 rounded-full mb-6 animate-pulse shadow-inner">
              <AlertOctagon size={70} className="text-red-600"/>
            </div>
-           <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-5 tracking-tight uppercase">Bài Kiểm Tra Quan Trọng</h2>
+           <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-8 tracking-tight uppercase">Kiểm Tra Năng Lực</h2>
            
-           <div className="bg-red-50 p-6 sm:p-8 rounded-2xl border border-red-200 mb-8 text-left space-y-5 shadow-sm">
-              <p className="text-red-800 font-black text-lg flex items-center gap-2">
-                 <ShieldAlert size={24}/> Bạn đã sẵn sàng để làm bài chưa?
-              </p>
-              <ul className="text-red-700 space-y-4 font-medium text-base">
-                 <li className="flex items-center gap-3">
-                    <span className="w-2 h-2 bg-red-500 rounded-full shrink-0"></span>
-                    <span>Thời gian làm bài: <b className="text-red-900 bg-white px-2 py-1 rounded-lg shadow-sm border border-red-100">60 Phút</b> đếm ngược.</span>
-                 </li>
-                 <li className="flex items-center gap-3">
-                    <span className="w-2 h-2 bg-red-500 rounded-full shrink-0"></span>
-                    <span>Sai quá <b className="text-red-900">5 lần</b> hệ thống sẽ tự động khóa bài và nộp phạt kỷ luật.</span>
-                 </li>
-                 <li className="flex items-start gap-3 bg-red-100/50 p-4 rounded-xl border border-red-200">
-                    <span className="text-xl">🎁</span>
-                    <span className="leading-relaxed"><b className="text-red-900">Đặc quyền:</b> Nộp bài lần đầu tiên (nếu có lỗi sai) sẽ được tự động cộng thêm <b className="text-red-900 font-black">15 phút</b> để rà soát lại.</span>
-                 </li>
-              </ul>
+           <div className="grid grid-cols-1 gap-4 text-left mb-8">
+               <div className="bg-white p-5 rounded-2xl border border-red-200 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+                 <div className="bg-red-100 p-3 rounded-full shrink-0"><Clock className="text-red-600"/></div>
+                 <div>
+                    <h4 className="text-red-900 font-black text-lg">Thời gian giới hạn</h4>
+                    <p className="text-gray-600 font-medium">Bạn có đúng <b>60 Phút</b> đếm ngược để hoàn thành.</p>
+                 </div>
+               </div>
+               
+               <div className="bg-white p-5 rounded-2xl border border-red-200 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+                 <div className="bg-red-100 p-3 rounded-full shrink-0"><AlertOctagon className="text-red-600"/></div>
+                 <div>
+                    <h4 className="text-red-900 font-black text-lg">Giới hạn số lần sai</h4>
+                    <p className="text-gray-600 font-medium">Mỗi lần ấn "Kiểm tra / Nộp bài" nếu sai sẽ bị trừ 1 lượt. Mất <b>5 lượt</b> sẽ bị khóa bài và phạt.</p>
+                 </div>
+               </div>
+
+               <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-200 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+                 <div className="bg-emerald-100 p-3 rounded-full shrink-0"><ShieldAlert className="text-emerald-600"/></div>
+                 <div>
+                    <h4 className="text-emerald-900 font-black text-lg">Đặc quyền Nộp nháp</h4>
+                    <p className="text-gray-600 font-medium">Lần kiểm tra lỗi đầu tiên sẽ được hệ thống tặng thêm <b>15 phút</b> rà soát (vẫn mất 1 lượt sai).</p>
+                 </div>
+               </div>
            </div>
            
            <button onClick={() => setStep('exercises')} className="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white py-5 rounded-2xl font-black text-xl hover:shadow-[0_0_20px_rgba(225,29,72,0.5)] transition-all active:scale-95 flex items-center justify-center gap-3">
-             <PlayCircle size={28}/> BẮT ĐẦU LÀM BÀI NGAY
+             <PlayCircle size={28}/> BẮT ĐẦU LÀM BÀI
            </button>
         </div>
       )}
@@ -477,7 +564,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
           <div className="mt-10 sticky bottom-4 bg-white/95 backdrop-blur-md p-4 sm:p-5 border-2 border-gray-100 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.1)] flex flex-col md:flex-row justify-between items-center z-10 gap-4">
             {isExerciseLocked ? (
               <div className="flex flex-col lg:flex-row items-center justify-between w-full gap-5">
-                <div className="flex items-center justify-between sm:justify-start gap-4 bg-[#ffe4e6] p-3 sm:p-4 rounded-3xl border border-red-100 w-full lg:w-auto">
+                <div className="flex items-center justify-between sm:justify-start gap-4 bg-[#ffe4e6] p-3 sm:p-4 rounded-3xl border border-red-100 w-full lg:w-auto shadow-inner">
                    <div className="flex items-center gap-3 px-2 sm:px-4">
                      <AlertOctagon size={28} className="text-[#e11d48]" />
                      <div className="flex flex-col text-left">
@@ -485,7 +572,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
                        <span className="font-black text-[#e11d48] text-xl sm:text-2xl leading-tight">{score}/{dayData.exercises.length} câu</span>
                      </div>
                    </div>
-                   <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#fecdd3] flex flex-col items-center justify-center text-[#be123c] font-black shrink-0 shadow-sm">
+                   <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#fecdd3] flex flex-col items-center justify-center text-[#be123c] font-black shrink-0 shadow-md">
                      <span className="text-[11px] sm:text-sm leading-tight">Sai</span>
                      <span className="text-sm sm:text-lg leading-tight">{exerciseFailCount}/{maxFails}</span>
                      <span className="text-[11px] sm:text-sm leading-tight">lần</span>
@@ -503,7 +590,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
                        const success = await consumeItem('immortals');
                        if (success) {
                           alert("🛡️ KÍCH HOẠT THẺ BẤT TỬ THÀNH CÔNG!\nBạn đã được miễn trừ hình phạt trừ điểm cho bài tập này.");
-                          setExerciseFailCount(1); // Miễn hình phạt
+                          setExerciseFailCount(1); // Trả lại 1 lỗi
                           if (dayData.isTest) setStep('test-summary');
                           else if (dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
                           else onComplete(dayData.id, vocabFailCount, 1, score, dayData.exercises.length);
@@ -539,7 +626,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
                       <Wrench size={22} /> Auto-Pass
                     </button>
                   )}
-                  <button onClick={handleSubmitExercises} className="w-full sm:w-auto bg-[#4f46e5] text-white px-12 py-4 rounded-2xl font-black shadow-lg shadow-indigo-200 hover:bg-[#4338ca] hover:-translate-y-1 transition-all text-xl tracking-wide">
+                  <button onClick={handlePreSubmit} className="w-full sm:w-auto bg-[#4f46e5] text-white px-12 py-4 rounded-2xl font-black shadow-lg shadow-indigo-200 hover:bg-[#4338ca] hover:-translate-y-1 transition-all text-xl tracking-wide">
                     NỘP BÀI
                   </button>
                 </div>
@@ -598,8 +685,8 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
               })()}
            </div>
 
-           <button onClick={() => onComplete(dayData.id, vocabFailCount, exerciseFailCount, score, dayData.exercises.length)} className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-5 rounded-2xl font-black text-xl hover:shadow-[0_0_20px_rgba(79,70,229,0.4)] transition-all active:scale-95 shadow-lg">
-             LƯU KẾT QUẢ & KẾT THÚC BÀI THI
+           <button onClick={() => onComplete(dayData.id, vocabFailCount, exerciseFailCount, score, dayData.exercises.length)} className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-5 rounded-2xl font-black text-xl hover:shadow-[0_0_20px_rgba(79,70,229,0.4)] transition-all active:scale-95 shadow-lg flex items-center justify-center gap-3">
+             <Trophy size={28}/> LƯU KẾT QUẢ & KẾT THÚC BÀI THI
            </button>
         </div>
       )}
