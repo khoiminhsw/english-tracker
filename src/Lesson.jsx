@@ -33,9 +33,9 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
   const [savedToNotebook, setSavedToNotebook] = useState({}); 
   const [hasPassedVocab, setHasPassedVocab] = useState(false);
 
-  // LOGIC BÀI TEST LỚN
+  // LOGIC BÀI TEST LỚN: TỐI ĐA SAI 5 LẦN THEO YÊU CẦU
   const maxFails = dayData.isTest ? 5 : 3;
-  const [testTimeLeft, setTestTimeLeft] = useState(3600); // 60 phút
+  const [testTimeLeft, setTestTimeLeft] = useState(3600); // 60 phút = 3600 giây
   const [hasSubmittedOnce, setHasSubmittedOnce] = useState(false);
 
   const rawUrl = dayData.videoUrl || '';
@@ -61,7 +61,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     }
   }, [prevDayData]);
 
-  // ANTI-CHEAT
+  // ANTI-CHEAT: Chống mở tab khác
   useEffect(() => {
     if (isAdmin) return;
     const handleVisibilityChange = () => {
@@ -84,31 +84,35 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
     };
   }, [submitted, onCheat, step, isAdmin]);
 
-  // ĐỒNG HỒ ĐẾM NGƯỢC
+  // ==========================================
+  // ĐỘNG CƠ ĐẾM NGƯỢC SIÊU MƯỢT (FIXED)
+  // ==========================================
   useEffect(() => {
-    if (step !== 'exercises' || !dayData.isTest || submitted || isAdmin) return;
+    if (step !== 'exercises' || !dayData.isTest || submitted) return;
+
     const timerId = setInterval(() => {
       setTestTimeLeft(prev => {
-        if (prev <= 0) {
+        if (prev <= 1) {
           clearInterval(timerId);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
-    return () => clearInterval(timerId);
-  }, [step, dayData.isTest, submitted, isAdmin]); 
 
-  // LẮNG NGHE HẾT GIỜ
+    return () => clearInterval(timerId);
+  }, [step, dayData.isTest, submitted]); 
+
+  // Luồng Lắng nghe sự kiện hết giờ
   useEffect(() => {
-    if (step === 'exercises' && dayData.isTest && testTimeLeft === 0 && !submitted && !isAdmin) {
+    if (step === 'exercises' && dayData.isTest && testTimeLeft === 0 && !submitted) {
       setSubmitted(true);
       setExerciseFailCount(maxFails); 
       setTimeout(() => {
         alert("⏰ ĐÃ HẾT THỜI GIAN LÀM BÀI 60 PHÚT!\nHệ thống tự động thu bài và khóa bài thi.");
       }, 100);
     }
-  }, [testTimeLeft, step, dayData.isTest, submitted, isAdmin, maxFails]);
+  }, [testTimeLeft, step, dayData.isTest, submitted, maxFails]);
 
   const handleQuit = () => {
     if (isAdmin) return onBack();
@@ -230,11 +234,12 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
 
     if (currentScore === dayData.requiredScore) {
       setSubmitted(true);
-      if (dayData.isTest) setStep('test-summary'); // Hiển thị tổng kết test
+      if (dayData.isTest) setStep('test-summary'); 
       else if (dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
       else onComplete(dayData.id, vocabFailCount, exerciseFailCount);
     } else {
       
+      // ĐẶC QUYỀN NỘP NHÁP LẦN 1 (+15 PHÚT = 900 GIÂY) CHO BÀI TEST LỚN
       if (dayData.isTest && !hasSubmittedOnce && testTimeLeft > 0) {
          setHasSubmittedOnce(true);
          setTestTimeLeft(prev => prev + 900); 
@@ -266,18 +271,18 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
         {isAdmin && <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">Admin Mode</span>}
       </h2>
 
+      {/* ĐỒNG HỒ NỔI CHO BÀI TEST */}
       {dayData.isTest && step === 'exercises' && (
-        <div className={`fixed top-4 right-4 sm:top-8 sm:right-8 bg-white/95 backdrop-blur-md border-[6px] p-5 sm:p-7 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.15)] z-50 flex flex-col items-center justify-center animate-in slide-in-from-top-10 transition-colors ${testTimeLeft < 300 ? 'border-red-500' : 'border-[#6366f1]'}`}>
-           <span className={`text-base font-black uppercase tracking-widest mb-2 flex items-center gap-2 ${testTimeLeft < 300 ? 'text-red-600 animate-pulse' : 'text-[#6366f1]'}`}>
-              <Clock size={20} className="stroke-[3px]"/> THỜI GIAN
-           </span>
-           <div className={`text-6xl sm:text-7xl font-black font-mono tracking-wider leading-none mb-1 ${testTimeLeft < 300 ? 'text-red-600 animate-pulse' : 'text-[#4f46e5]'}`}>
+        <div className={`fixed top-4 right-4 sm:top-8 sm:right-8 bg-white/95 backdrop-blur-md border-[6px] p-5 sm:p-7 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.15)] z-50 flex flex-col items-center justify-center animate-in slide-in-from-top-10 transition-colors ${testTimeLeft < 300 ? 'border-red-500 text-red-600 animate-pulse' : 'border-[#6366f1] text-[#4f46e5]'}`}>
+           <span className="text-sm font-black uppercase tracking-widest mb-1 flex items-center gap-1.5"><Clock size={18} className="stroke-[3px]"/> Thời gian</span>
+           <div className="text-5xl sm:text-6xl font-black font-mono tracking-wider leading-none">
               {Math.floor(testTimeLeft / 60).toString().padStart(2, '0')}:{Math.floor(testTimeLeft % 60).toString().padStart(2, '0')}
            </div>
-           {hasSubmittedOnce && <span className="bg-[#dcfce7] text-[#166534] px-5 py-2 rounded-full mt-3 text-sm sm:text-base font-black uppercase shadow-sm">+15 Phút Bonus</span>}
+           {hasSubmittedOnce && <span className="text-[13px] bg-[#dcfce7] text-[#166534] px-4 py-1.5 rounded-full mt-3 font-black uppercase shadow-sm animate-bounce">+15 Phút Bonus</span>}
         </div>
       )}
 
+      {/* MÀN HÌNH CHUẨN BỊ (TEST INTRO) VỚI ĐIỀU KIỆN 5 LẦN SAI - 15 PHÚT BONUS */}
       {step === 'test-intro' && (
         <div className="bg-white p-8 sm:p-12 rounded-3xl shadow-2xl border-t-8 border-red-600 max-w-2xl mx-auto text-center animate-in zoom-in duration-300 mt-10">
            <div className="inline-block p-5 bg-red-100 rounded-full mb-6 animate-pulse shadow-inner">
@@ -402,7 +407,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
             const isWritingCorrect = isExerciseLocked && !isWritingError;
             const isHinted = hintedQuestions.includes(idx);
 
-            let cardClass = `p-5 border-2 rounded-2xl relative transition-all duration-500 ease-out shadow-sm `;
+            let cardClass = `p-5 border-2 rounded-3xl relative transition-all duration-500 ease-out shadow-sm `;
             if (isWritingError) cardClass += 'bg-red-50 border-red-200';
             else if (isExerciseLocked) cardClass += 'bg-green-50 border-green-200';
             else if (isHinted) cardClass += 'bg-green-50 border-green-400 ring-4 ring-green-100 scale-[1.02]';
@@ -437,7 +442,7 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
                       const isCorrectChoice = opt.toString().trim().toLowerCase() === (ex.correct || '').toString().trim().toLowerCase();
                       const isUserChoice = (answers[idx] || '').toString().trim().toLowerCase() === opt.toString().trim().toLowerCase();
                       
-                      let optionClass = `flex items-center space-x-3 p-4 rounded-xl border-2 transition-all cursor-pointer select-none `;
+                      let optionClass = `flex items-center space-x-3 p-4 rounded-2xl border-2 transition-all cursor-pointer select-none `;
                       if (isExerciseLocked && isCorrectChoice) optionClass += 'bg-green-100 border-green-500 shadow-inner';
                       else if (isExerciseLocked && isUserChoice && !isCorrectChoice) optionClass += 'bg-red-100 border-red-400';
                       else if (isExerciseLocked) optionClass += 'bg-gray-50 opacity-50 border-transparent cursor-not-allowed';
@@ -477,35 +482,30 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
             )
           })}
 
-          <div className="mt-10 sticky bottom-4 bg-white/95 backdrop-blur-md p-5 border-2 border-gray-200 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] flex flex-col md:flex-row justify-between items-center z-10 gap-5">
-            <div className="flex-1 w-full text-center md:text-left">
-              {submitted ? (
-                <div className={`inline-flex items-center justify-center md:justify-start gap-3 px-5 py-3 rounded-xl font-black text-xl border-2 ${score === dayData.requiredScore ? 'bg-green-100 text-green-700 border-green-200' : 'bg-red-100 text-red-600 border-red-200'}`}>
-                  {score === dayData.requiredScore ? <CheckCircle2 size={28}/> : <AlertOctagon size={28}/>}
-                  Đúng: {score}/{dayData.requiredScore} câu
-                  {score !== dayData.requiredScore && <span className="text-sm bg-red-200 text-red-800 px-3 py-1 rounded-full ml-2">Sai {exerciseFailCount}/{maxFails} lần</span>}
+          {/* =========================================================
+              GIAO DIỆN BOTTOM BAR KHÓA BÀI CỰC ĐẸP (THEO ẢNH YÊU CẦU)
+              ========================================================= */}
+          <div className="mt-10 sticky bottom-4 bg-white/95 backdrop-blur-md p-4 sm:p-5 border-2 border-gray-100 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.1)] flex flex-col md:flex-row justify-between items-center z-10 gap-4">
+            {isExerciseLocked ? (
+              <div className="flex flex-col lg:flex-row items-center justify-between w-full gap-5">
+                {/* Khung điểm đỏ bên trái */}
+                <div className="flex items-center justify-between sm:justify-start gap-4 bg-[#ffe4e6] p-3 sm:p-4 rounded-3xl border border-red-100 w-full lg:w-auto">
+                   <div className="flex items-center gap-3 px-2 sm:px-4">
+                     <AlertOctagon size={28} className="text-[#e11d48]" />
+                     <div className="flex flex-col text-left">
+                       <span className="font-black text-[#e11d48] text-lg sm:text-xl leading-tight">Đúng:</span>
+                       <span className="font-black text-[#e11d48] text-xl sm:text-2xl leading-tight">{score}/{dayData.requiredScore} câu</span>
+                     </div>
+                   </div>
+                   <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#fecdd3] flex flex-col items-center justify-center text-[#be123c] font-black shrink-0 shadow-sm">
+                     <span className="text-[11px] sm:text-sm leading-tight">Sai</span>
+                     <span className="text-sm sm:text-lg leading-tight">{exerciseFailCount}/{maxFails}</span>
+                     <span className="text-[11px] sm:text-sm leading-tight">lần</span>
+                   </div>
                 </div>
-              ) : (
-                <button onClick={handleUseHint} className="text-yellow-700 bg-yellow-50 px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-yellow-100 transition-colors border-2 border-yellow-300 shadow-sm w-full md:w-auto active:scale-95 text-lg">
-                  <Lightbulb size={22}/> Dùng Gợi Ý ({inventory?.hints || 0})
-                </button>
-              )}
-            </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-              {isAdmin && !submitted && (
-                <button onClick={() => {
-                  if(dayData.isTest) setStep('test-summary');
-                  else if(dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
-                  else onComplete(dayData.id, 0, 0);
-                }} className="w-full sm:w-auto bg-gray-800 text-white px-8 py-4 rounded-xl font-bold shadow-md hover:bg-black transition-colors flex items-center justify-center gap-2 text-lg">
-                  <Wrench size={22} /> Auto-Pass
-                </button>
-              )}
-              {isExerciseLocked ? (
-                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                  
-                  {/* NÚT SỬ DỤNG THẺ BẤT TỬ CÓ KIỂM TRA ĐIỀU KIỆN ĐIỂM > 60% */}
+                {/* Các nút bấm bên phải */}
+                <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
                   {(inventory?.immortals > 0) && (
                     <button onClick={async () => {
                        const percent = Math.round((score / dayData.requiredScore) * 100);
@@ -513,34 +513,52 @@ export default function Lesson({ dayData, prevDayData, onComplete, onBack, onChe
                            alert(`❌ TỪ CHỐI KÍCH HOẠT!\nThẻ Bất Tử chỉ có hiệu lực khi bạn làm đúng từ 60% trở lên.\nHiện tại bạn mới đúng ${percent}% (${score}/${dayData.requiredScore} câu).`);
                            return;
                        }
-
                        const success = await consumeItem('immortals');
                        if (success) {
                           alert("🛡️ KÍCH HOẠT THẺ BẤT TỬ THÀNH CÔNG!\nBạn đã được miễn trừ hình phạt trừ điểm cho bài tập này.");
-                          setExerciseFailCount(1); // Đưa về 1 lỗi để bỏ chặn
+                          setExerciseFailCount(1); // Đưa về 1 lỗi để được làm tiếp
                           if (dayData.isTest) setStep('test-summary');
                           else if (dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
                           else onComplete(dayData.id, vocabFailCount, 1);
                        }
-                    }} className="w-full sm:w-auto bg-gradient-to-r from-red-500 to-rose-600 text-white px-8 py-4 rounded-xl font-black shadow-[0_0_15px_rgba(225,29,72,0.5)] hover:opacity-90 animate-pulse flex items-center justify-center gap-2 text-lg">
+                    }} className="flex-1 sm:flex-none bg-[#fb7185] hover:bg-[#f43f5e] text-white px-6 sm:px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 text-lg shadow-sm transition-colors whitespace-nowrap">
                       <ShieldAlert size={24}/> Dùng Thẻ Bất Tử ({inventory.immortals})
                     </button>
                   )}
-                  
                   <button onClick={() => {
                     if (dayData.isTest) setStep('test-summary');
                     else if (dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
                     else onComplete(dayData.id, vocabFailCount, exerciseFailCount);
-                  }} className="w-full sm:w-auto bg-gray-800 text-white px-8 py-4 rounded-xl font-bold shadow-md hover:bg-black transition-colors text-lg">
+                  }} className="flex-1 sm:flex-none bg-[#1e293b] hover:bg-black text-white px-6 sm:px-8 py-4 rounded-2xl font-bold transition-colors text-lg shadow-sm whitespace-nowrap">
                     Chấp nhận phạt & Đi tiếp
                   </button>
                 </div>
-              ) : score !== dayData.requiredScore ? (
-                <button onClick={handleSubmitExercises} className="w-full sm:w-auto bg-blue-600 text-white px-12 py-4 rounded-xl font-black shadow-lg shadow-blue-200 hover:bg-blue-700 hover:-translate-y-1 transition-all text-xl tracking-wide">
-                  NỘP BÀI
-                </button>
-              ) : null}
-            </div>
+              </div>
+            ) : (
+              // TRẠNG THÁI BÌNH THƯỜNG KHI CHƯA KHÓA
+              <>
+                <div className="flex-1 w-full text-center md:text-left">
+                  <button onClick={handleUseHint} className="text-yellow-700 bg-yellow-50 px-6 py-3 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-yellow-100 transition-colors border-2 border-yellow-300 shadow-sm w-full md:w-auto active:scale-95 text-lg">
+                    <Lightbulb size={22}/> Dùng Gợi Ý ({inventory?.hints || 0})
+                  </button>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                  {isAdmin && !submitted && (
+                    <button onClick={() => {
+                      if(dayData.isTest) setStep('test-summary');
+                      else if(dayData.vocabulary && dayData.vocabulary.length > 0) setStep('vocab-reveal');
+                      else onComplete(dayData.id, 0, 0);
+                    }} className="w-full sm:w-auto bg-gray-800 text-white px-8 py-4 rounded-2xl font-bold shadow-md hover:bg-black transition-colors flex items-center justify-center gap-2 text-lg">
+                      <Wrench size={22} /> Auto-Pass
+                    </button>
+                  )}
+                  <button onClick={handleSubmitExercises} className="w-full sm:w-auto bg-[#4f46e5] text-white px-12 py-4 rounded-2xl font-black shadow-lg shadow-indigo-200 hover:bg-[#4338ca] hover:-translate-y-1 transition-all text-xl tracking-wide">
+                    NỘP BÀI
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
