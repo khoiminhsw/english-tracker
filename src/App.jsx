@@ -44,8 +44,6 @@ export default function App() {
   const [showShop, setShowShop] = useState(false); 
   const [showGachaModal, setShowGachaModal] = useState(false); 
   const [showAnalytics, setShowAnalytics] = useState(false); 
-  
-  // STATE MỚI: QUẢN LÝ POP-UP NHẮC HỌC BÀI
   const [showDailyReminder, setShowDailyReminder] = useState(false);
 
   const [notebook, setNotebook] = useState([]);
@@ -88,7 +86,6 @@ export default function App() {
         
         setInventory(data.inventory || { shields: 0, skips: 0, hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 });
         setShopStats(data.shopStats || { immortalBoughtCount: 0 });
-        
         setLessonScores(data.lessonScores || {});
         setLearningStats(data.learningStats || { totalVocabFails: 0, totalExerciseFails: 0 });
 
@@ -308,7 +305,6 @@ export default function App() {
     alert(`🎁 Điểm danh Ngày ${checkinState.day} thành công!\nPhần thưởng: ${msg}`);
   };
 
-  // LOGIC HIỂN THỊ POP-UP NHẮC HỌC BÀI
   useEffect(() => {
     if (schedule && !loading && user && !checkinState.show) {
         const todayStr = new Date().toDateString();
@@ -486,7 +482,6 @@ export default function App() {
 
   const completedLessons = unlockedDay > 1 ? unlockedDay - 1 : 0;
   
-  // SAFE TRY-CATCH CHO WORD PROGRESS (FIX LỖI TRẮNG MÀN HÌNH TẠI MASTERED VOCAB)
   let wordsMasteredCount = 0;
   let masteredWordsList = [];
   try {
@@ -513,9 +508,6 @@ export default function App() {
     
     { id: "games_10", title: "Game Thủ", desc: "Thắng mini-game 10 lần", achieved: totalGamesPlayed >= 10, rewardCoins: 20, icon: "🎮", color: "text-emerald-500", bg: "bg-emerald-100" },
     { id: "games_30", title: "Kẻ hủy diệt", desc: "Thắng mini-game 30 lần", achieved: totalGamesPlayed >= 30, rewardCoins: 100, icon: "⚔️", color: "text-teal-600", bg: "bg-teal-100" },
-    { id: "games_60", title: "Cao thủ", desc: "Thắng mini-game 60 lần", achieved: totalGamesPlayed >= 60, rewardCoins: 200, icon: "🔥", color: "text-orange-600", bg: "bg-orange-100" },
-    { id: "games_100", title: "Thần thoại", desc: "Thắng mini-game 100 lần", achieved: totalGamesPlayed >= 100, rewardCoins: 500, icon: "👑", color: "text-yellow-500", bg: "bg-yellow-100" },
-    { id: "games_200", title: "Huyền thoại", desc: "Thắng mini-game 200 lần", achieved: totalGamesPlayed >= 200, rewardCoins: 1000, icon: "🌟", color: "text-amber-500", bg: "bg-amber-100" },
   ];
 
   useEffect(() => {
@@ -578,11 +570,15 @@ export default function App() {
     setShopStats(newShopStats);
   };
 
+  // ==========================================
+  // LÀM ĐẸP GACHA: HIỆU ỨNG LẤP LÁNH & TỶ LỆ CHUẨN CỦA USER
+  // ==========================================
   const gachaItems = [
-    { id: 'skip', icon: '🎟️', label: "Thẻ Skip", bg: "bg-blue-100", border: "border-blue-300", text: "text-blue-700" },
-    { id: 'hint', icon: '💡', label: "Thẻ Gợi ý", bg: "bg-yellow-100", border: "border-yellow-300", text: "text-yellow-700" },
-    { id: 'coins', icon: '💰', label: "50 Coins", bg: "bg-emerald-100", border: "border-emerald-300", text: "text-emerald-700" },
-    { id: 'jackpot', icon: '🎯', label: "+5 ĐIỂM", bg: "bg-red-100", border: "border-red-400", text: "text-red-700" }
+    { id: 'hint', icon: '💡', label: "Thẻ Gợi ý", bg: "bg-yellow-50", border: "border-yellow-400", text: "text-yellow-700", isPremium: false },
+    { id: 'skip', icon: '🎟️', label: "Thẻ Skip", bg: "bg-blue-50", border: "border-blue-400", text: "text-blue-700", isPremium: false },
+    { id: 'coins', icon: '💰', label: "50 Coins", bg: "bg-emerald-50", border: "border-emerald-400", text: "text-emerald-700", isPremium: false },
+    { id: 'jackpot', icon: '🎯', label: "+5 ĐIỂM", bg: "bg-gradient-to-br from-red-100 to-orange-100", border: "border-red-500", text: "text-red-700", isPremium: true },
+    { id: 'immortal', icon: '🛡️', label: "Thẻ Bất Tử", bg: "bg-gradient-to-br from-purple-100 to-fuchsia-100", border: "border-purple-500", text: "text-purple-700", isPremium: true }
   ];
 
   const handleSpinGacha = async () => {
@@ -600,16 +596,18 @@ export default function App() {
     setIsSpinning(true);
     setGachaPrize(null);
 
+    // THUẬT TOÁN TỶ LỆ MỚI (Hint 50%, Skip 20%, Coins 15%, Jackpot 12%, Bất Tử 3%)
     const rand = Math.random();
     let prizeKey = '';
-    if (rand < 0.25) prizeKey = 'skip';
-    else if (rand < 0.50) prizeKey = 'hint';
-    else if (rand < 0.80) prizeKey = 'coins'; 
-    else prizeKey = 'jackpot'; 
+    if (rand < 0.50) prizeKey = 'hint';         
+    else if (rand < 0.70) prizeKey = 'skip';    
+    else if (rand < 0.85) prizeKey = 'coins';   
+    else if (rand < 0.97) prizeKey = 'jackpot'; 
+    else prizeKey = 'immortal';                 
 
     const targetIndex = gachaItems.findIndex(i => i.id === prizeKey);
-    const baseSpins = 32; 
-    const stepsToTarget = (targetIndex - currentSpinIndex + 4) % 4;
+    const baseSpins = 30; // Vòng quay (chia hết cho 5)
+    const stepsToTarget = (targetIndex - currentSpinIndex + 5) % 5;
     const totalSpins = baseSpins + stepsToTarget;
 
     let currentStep = 0;
@@ -617,7 +615,7 @@ export default function App() {
 
     const spinInterval = setInterval(() => {
       currentStep++;
-      tempIndex = (tempIndex + 1) % 4;
+      tempIndex = (tempIndex + 1) % 5;
       setCurrentSpinIndex(tempIndex);
 
       if (currentStep >= totalSpins) {
@@ -636,6 +634,7 @@ export default function App() {
 
     if (prizeKey === 'skip') updatedInv.skips += 1;
     else if (prizeKey === 'hint') updatedInv.hints += 1;
+    else if (prizeKey === 'immortal') updatedInv.immortals = (updatedInv.immortals || 0) + 1;
     else if (prizeKey === 'coins') updatedCoins += 50; 
     else if (prizeKey === 'jackpot') updatedScore += 5; 
 
@@ -725,7 +724,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 relative">
       
-      {/* SIÊU POP-UP NHẮC NHỞ HỌC BÀI ĐẦU NGÀY */}
       {showDailyReminder && (
          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[120] p-4 backdrop-blur-sm">
            <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center animate-in zoom-in duration-500 relative overflow-hidden">
@@ -1031,7 +1029,7 @@ export default function App() {
                      {(inventory.gachaTickets > 0) && <span className="bg-purple-600 text-white font-black px-3 py-1 rounded-full text-sm shadow-sm animate-pulse">Sẵn sàng: {inventory.gachaTickets} Vé quay</span>}
                   </div>
                   <h4 className="text-xl font-bold text-purple-900 mb-1">Vòng Quay Gacha</h4>
-                  <p className="text-sm text-purple-700 font-medium mb-4">Thử vận may! Quay trúng Thẻ Skip, Hint, 50 Coins, hoặc Jackpot +5 Điểm!</p>
+                  <p className="text-sm text-purple-700 font-medium mb-4">Thử vận may! Có tỷ lệ rơi Thẻ Skip, Hint, Bất Tử, 50 Coins hoặc Jackpot!</p>
                 </div>
                 <button onClick={() => {setShowShop(false); setShowGachaModal(true);}} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 rounded-xl hover:opacity-90 transition-transform active:scale-95 flex justify-center gap-2 shadow-md">
                    {inventory.gachaTickets > 0 ? <><Ticket size={20}/> Dùng Vé Gacha Miễn Phí</> : <><Coins size={20}/> 25 Coins</>}
@@ -1042,34 +1040,69 @@ export default function App() {
         </div>
       )}
 
+      {/* GIAO DIỆN GACHA MỚI - SIÊU ĐẸP VÀ LẤP LÁNH */}
       {showGachaModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[110] p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 text-center animate-in zoom-in duration-300">
-            <h3 className="text-3xl font-black text-purple-700 mb-2 flex justify-center gap-2"><Dices size={32}/> Vòng Quay Gacha</h3>
-            <p className="text-gray-500 font-medium mb-8">25 Coins hoặc 1 Vé / 1 lượt quay</p>
+          <div className="bg-white rounded-[2rem] shadow-2xl max-w-md w-full p-6 sm:p-8 text-center animate-in zoom-in duration-300 border border-gray-100">
+            <h3 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 mb-2 flex justify-center items-center gap-3">
+              <Dices size={36} className="text-purple-600"/> Vòng Quay Gacha
+            </h3>
+            <p className="text-gray-500 font-bold mb-8 uppercase tracking-wider text-sm bg-gray-100 inline-block px-4 py-1.5 rounded-full">25 Coins hoặc 1 Vé / Lượt</p>
 
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              {gachaItems.map((item, idx) => (
-                <div key={item.id} className={`p-4 rounded-xl border-4 transition-all duration-100 flex flex-col items-center justify-center h-28 ${currentSpinIndex === idx ? 'border-purple-500 scale-105 shadow-xl ' + item.bg + ' ' + item.text : 'border-gray-100 bg-gray-50 opacity-50 grayscale'}`}>
-                  <div className="text-4xl mb-2">{item.icon}</div>
-                  <div className="font-bold text-sm leading-tight">{item.label}</div>
-                </div>
-              ))}
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8">
+              {gachaItems.map((item, idx) => {
+                const isPremium = item.isPremium;
+                const isSelected = currentSpinIndex === idx;
+                
+                let containerClass = `relative flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border-[3px] transition-all duration-150 w-[30%] sm:w-[28%] aspect-square `;
+                
+                if (isSelected) {
+                    containerClass += `${item.bg} ${item.border} ${item.text} scale-110 z-10 shadow-2xl `;
+                    if (isPremium) {
+                        containerClass += `shadow-[0_0_20px_rgba(239,68,68,0.5)] ring-4 ring-red-200 ring-offset-2 `;
+                    }
+                } else {
+                    containerClass += `border-gray-200 bg-gray-50 opacity-50 grayscale `;
+                    if (isPremium) {
+                       containerClass += `!opacity-90 grayscale-0 border-orange-200 `; 
+                    }
+                }
+
+                return (
+                  <div key={item.id} className={containerClass}>
+                    {isPremium && (
+                       <div className="absolute top-1.5 right-1.5 text-yellow-500 animate-pulse drop-shadow-md">✨</div>
+                    )}
+                    {isPremium && isSelected && (
+                       <div className="absolute inset-0 bg-white/40 animate-[pulse_0.5s_ease-in-out_infinite] rounded-xl mix-blend-overlay"></div>
+                    )}
+                    <div className={`text-3xl sm:text-4xl mb-2 transition-transform duration-200 ${isSelected ? 'scale-110 drop-shadow-md' : ''}`}>
+                      {item.icon}
+                    </div>
+                    <div className={`font-black text-[10px] sm:text-xs leading-tight text-center ${isSelected ? 'drop-shadow-sm' : ''}`}>
+                      {item.label}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             {gachaPrize ? (
-              <div className="mb-8 animate-bounce">
-                <p className="text-lg font-bold text-gray-800">Bạn đã quay trúng:</p>
-                <p className={`text-3xl font-black mt-1 ${gachaPrize.text} drop-shadow-md`}>{gachaPrize.label}</p>
+              <div className="mb-8 animate-in zoom-in duration-300">
+                <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-2">Phần thưởng của bạn</p>
+                <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-2xl border-2 shadow-lg ${gachaPrize.bg} ${gachaPrize.border} ${gachaPrize.text}`}>
+                   <span className="text-3xl drop-shadow-md">{gachaPrize.icon}</span>
+                   <span className="text-2xl font-black tracking-tight">{gachaPrize.label}</span>
+                </div>
               </div>
             ) : (
-              <div className="mb-8 h-[76px]"></div> 
+              <div className="mb-8 h-[88px]"></div> 
             )}
 
             <div className="flex gap-3">
-              <button onClick={() => setShowGachaModal(false)} disabled={isSpinning} className="flex-1 bg-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-300 disabled:opacity-50 transition-colors">Đóng</button>
-              <button onClick={handleSpinGacha} disabled={isSpinning || (!inventory.gachaTickets && coins < 25)} className="flex-[2] bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-black py-4 rounded-xl hover:scale-105 transition-transform shadow-lg disabled:opacity-50 disabled:hover:scale-100 flex justify-center items-center gap-2">
-                {isSpinning ? 'Đang quay...' : inventory.gachaTickets > 0 ? <><Ticket size={20}/> Quay (Dùng Vé)</> : <><Coins size={20}/> Quay (25 Coins)</>}
+              <button onClick={() => setShowGachaModal(false)} disabled={isSpinning} className="flex-1 bg-gray-100 text-gray-600 font-bold py-4 rounded-xl hover:bg-gray-200 disabled:opacity-50 transition-colors">Đóng</button>
+              <button onClick={handleSpinGacha} disabled={isSpinning || (!inventory.gachaTickets && coins < 25)} className="flex-[2] bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black py-4 rounded-xl hover:shadow-[0_0_20px_rgba(79,70,229,0.4)] transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex justify-center items-center gap-2 text-lg">
+                {isSpinning ? 'Đang quay...' : (inventory.gachaTickets || 0) > 0 ? <><Ticket size={22}/> Quay bằng Vé</> : <><Coins size={22}/> Quay (25 Coins)</>}
               </button>
             </div>
           </div>
@@ -1136,7 +1169,6 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL TỪ VỰNG ĐÃ MASTER - HOẠT ĐỘNG SIÊU AN TOÀN TRÁNH CRASH */}
       {showVocabMastery && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col overflow-hidden animate-in zoom-in duration-300">
