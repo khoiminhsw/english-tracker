@@ -798,6 +798,165 @@ export const generateCourseData = () => {
         { type: 'reading', text: "a. Travel Agent: Good morning! How can I help you?\nb. Customer: That sounds great. I'll book it.\nc. Customer: I'm looking for an eco-tour to the national park.\nd. Travel Agent: We have a wonderful 2-day itinerary for that.", question: "40. Choose the correct arrangement to make a meaningful exchange:", options: ["a - c - d - b", "c - a - d - b", "a - d - c - b", "c - b - a - d"], correct: "a - c - d - b" } // [cite: 1368, 1370, 1371, 1372, 1373]
       ];
     }
+    if (i === 13) {
+      dayData.videoUrl = "https://drive.google.com/file/d/1CnlRIfvD6xt2MgZmPmzjsoWw__tVS7od/view?usp=sharing";
+      
+      // Từ vựng trích xuất từ bài học Ngày 13
+      dayData.vocabulary = [
+        { word: "health", meaning: "sức khỏe" },
+        { word: "habit", meaning: "thói quen" },
+        { word: "nutrition", meaning: "dinh dưỡng" },
+        { word: "disease", meaning: "căn bệnh" },
+        { word: "stress", meaning: "căng thẳng" },
+        { word: "hobby", meaning: "sở thích" },
+        { word: "healthy", meaning: "khỏe mạnh" },
+        { word: "energetic", meaning: "năng động" },
+        { word: "balanced", meaning: "cân bằng" },
+        { word: "relax", meaning: "thư giãn" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20
+      const readingTextDay13 = "Hello, my name is Mai. I am 14 years old and I am a 9th-grade student. I have a very healthy lifestyle. Every day, I get up early at 5:30 AM to do morning exercise. Then, I have a big and nutritious breakfast with eggs, whole-grain bread, and a glass of fresh milk. I know that a balanced diet is very important, so I never eat junk food like hamburgers or fried chicken. Instead, I eat a lot of vegetables, fish, and fruit.\n\nBesides my healthy diet, I also have some good hobbies. In my free time, I love reading books and swimming. Reading helps me relax and relieves stress after a long day at school. Swimming keeps my body strong and flexible.\n\nRight now, it is Sunday morning. I am not studying. I am sitting by the pool and reading my favorite comic book. My younger brother, Nam, is swimming in the pool. My parents are preparing a healthy lunch in the kitchen. We are enjoying our weekend peacefully.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) ---
+        { type: 'mcq', question: '1. My mother usually ___ yoga in the morning, but today she ___ to the gym.', options: ['does / goes', 'is doing / is going', 'does / is going', 'is doing / goes'], correct: 'does / is going' },
+        { type: 'mcq', question: '2. You should eat more fresh fruit and vegetables to stay ___.', options: ['health', 'healthy', 'unhealthy', 'carefully'], correct: 'healthy' },
+        { type: 'mcq', question: '3. Shh! The baby ___ in the bedroom right now.', options: ['sleep', 'is sleeping', 'sleeps', 'are sleeping'], correct: 'is sleeping' },
+        { type: 'mcq', question: '4. I ___ to drink a cup of orange juice at the moment.', options: ['want', 'wants', 'am wanting', 'are wanting'], correct: 'want' },
+        { type: 'mcq', question: '5. A ___ diet is very important for teenagers to grow up properly.', options: ['balance', 'balancing', 'balanced', 'unbalance'], correct: 'balanced' },
+        { type: 'mcq', question: '6. Listen! The birds ___ beautifully in the garden.', options: ['sing', 'sings', 'are singing', 'is singing'], correct: 'are singing' },
+        { type: 'mcq', question: '7. Doing morning ___ every day helps you relieve stress and feel energetic.', options: ['homework', 'exercise', 'chores', 'shopping'], correct: 'exercise' },
+        { type: 'mcq', question: '8. ___ you ___ your teeth twice a day?', options: ['Do / brush', 'Does / brush', 'Are / brushing', 'Is / brushing'], correct: 'Do / brush' },
+        { type: 'mcq', question: '9. They never ___ fast food because it causes obesity.', options: ['eat', 'eats', 'are eating', 'eating'], correct: 'eat' },
+        { type: 'mcq', question: '10. Look at Peter! He ___ basketball with his friends in the school yard.', options: ['plays', 'play', 'are playing', 'is playing'], correct: 'is playing' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay13, question: '11. What is the main idea of the passage?', options: ["Mai's school life.", "Mai's healthy lifestyle and hobbies.", 'How to cook a healthy breakfast.', 'The dangers of eating fast food.'], correct: "Mai's healthy lifestyle and hobbies." },
+        { type: 'reading', text: readingTextDay13, question: '12. What time does Mai usually get up?', options: ['At 5:30 AM.', 'At 6:00 AM.', 'At 6:30 AM.', 'She gets up late.'], correct: 'At 5:30 AM.' },
+        { type: 'reading', text: readingTextDay13, question: '13. What does Mai have for her breakfast?', options: ['Hamburger and fried chicken.', 'Eggs, bread, and milk.', 'Fish and vegetables.', 'Just a glass of water.'], correct: 'Eggs, bread, and milk.' },
+        { type: 'reading', text: readingTextDay13, question: '14. Why does Mai NEVER eat junk food?', options: ['Because it is expensive.', "Because she doesn't like the taste.", 'Because she knows a balanced diet is important.', "Because her parents don't allow it."], correct: 'Because she knows a balanced diet is important.' },
+        { type: 'reading', text: readingTextDay13, question: "15. What are Mai's hobbies?", options: ['Watching TV and sleeping.', 'Reading books and swimming.', 'Cooking and playing games.', 'Eating and hanging out.'], correct: 'Reading books and swimming.' },
+        { type: 'reading', text: readingTextDay13, question: '16. According to the passage, what does reading help Mai do?', options: ['Keep her body strong.', 'Pass her exams.', 'Relax and relieve stress.', 'Make new friends.'], correct: 'Relax and relieve stress.' },
+        { type: 'reading', text: readingTextDay13, question: '17. What is Mai doing right now?', options: ['She is studying.', 'She is swimming in the pool.', 'She is cooking in the kitchen.', 'She is sitting by the pool and reading.'], correct: 'She is sitting by the pool and reading.' },
+        { type: 'reading', text: readingTextDay13, question: '18. Who is swimming in the pool at the moment?', options: ['Mai.', 'Nam.', "Mai's parents.", "Mai's friends."], correct: 'Nam.' },
+        { type: 'reading', text: readingTextDay13, question: "19. Where are Mai's parents right now?", options: ['By the pool.', 'In the kitchen.', 'At the supermarket.', 'In the living room.'], correct: 'In the kitchen.' },
+        { type: 'reading', text: readingTextDay13, question: '20. Which of the following statements is NOT true about Mai?', options: ['She is a 9th-grade student.', 'She avoids junk food.', 'She eats a lot of vegetables and fruit.', 'She is studying hard on Sunday morning.'], correct: 'She is studying hard on Sunday morning.' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: usually / morning / do / exercise / I / the / in / .', correct: 'I usually do exercise in the morning.' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: is / an / right / reading / now / book / She / interesting / .', correct: 'She is reading an interesting book right now.' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: important / a / diet / have / to / is / balanced / It / .', correct: 'It is important to have a balanced diet.' },
+        { type: 'writing', question: '24. Sắp xếp các từ sau: fast / you / eat / food / shouldn\'t / often / very / .', correct: 'You shouldn\'t eat fast food very often.' },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: playing / They / the / sports / are / at / park / moment / the / in / .', correct: 'They are playing sports in the park at the moment.' }
+      ];
+    }
+    if (i === 14) {
+      dayData.videoUrl = "https://drive.google.com/file/d/1CjZ7W9P2SPHiF7D_7sXv5xiA-h1xPOvG/view?usp=sharing";
+      
+      // Từ vựng trích xuất từ bài học Ngày 14
+      dayData.vocabulary = [
+        { word: "memory", meaning: "kỉ niệm" },
+        { word: "childhood", meaning: "tuổi thơ" },
+        { word: "festival", meaning: "lễ hội" },
+        { word: "tradition", meaning: "truyền thống" },
+        { word: "custom", meaning: "phong tục" },
+        { word: "lantern", meaning: "đèn lồng" },
+        { word: "costume", meaning: "trang phục" },
+        { word: "parade", meaning: "cuộc diễu hành / diễu hành" },
+        { word: "firework", meaning: "pháo hoa" },
+        { word: "celebrate", meaning: "ăn mừng / kỷ niệm" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20
+      const readingTextDay14 = "The Mid-Autumn Festival is a popular traditional festival in Vietnam. It is usually celebrated on the 15th day of the 8th lunar month. Last year. I celebrated this meaningful event with my grandparents in the countryside. It was a wonderful time.\n\nA few days before the festival, my grandparents decorated the house with colorful star lanterns. My mother bought a lot of mooncakes, which are the special and traditional cakes for this event. There were many flavors, but my favorite was the green bean mooncake.\n\nIn the evening of the festival, my cousins and I wore funny masks and paraded along the village roads with our lanterns. We watched a fascinating lion dance performance by the local young people. The sound of the drums was very loud and exciting. After the parade, we went back home, sat together in the yard, and enjoyed the delicious mooncakes under the bright full moon.\n\nIt was a very memorable experience for me. I didn't play any modern video games that night, but I felt extremely happy because I learned more about our cultural traditions and spent quality time with my beloved family.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) ---
+        { type: 'mcq', question: '1. Last year, my family ___ to Da Nang to enjoy the International Fireworks Festival.', options: ['go', 'went', 'is going', 'goes'], correct: 'went' },
+        { type: 'mcq', question: '2. ___ you participate in the Mid-Autumn Festival parade last night?', options: ['Do', 'Did', 'Are', 'Does'], correct: 'Did' },
+        { type: 'mcq', question: '3. They ___ their house with beautiful flowers and colorful lanterns two days ago.', options: ['decorate', 'decorated', 'decorating', 'decorates'], correct: 'decorated' },
+        { type: 'mcq', question: '4. I ___ eat any mooncakes at the festival because I don\'t like sweet food.', options: ['didn\'t', 'wasn\'t', 'am not', 'don\'t'], correct: 'didn\'t' },
+        { type: 'mcq', question: '5. People usually wear traditional ___ when they join this local festival.', options: ['fireworks', 'costumes', 'lanterns', 'parades'], correct: 'costumes' },
+        { type: 'mcq', question: '6. My grandfather ___ me a story about the Lunar New Year when I was a child.', options: ['tell', 'told', 'tells', 'telling'], correct: 'told' },
+        { type: 'mcq', question: '7. We watched an exciting lion dance ___ in the center of the village yesterday.', options: ['perform', 'performance', 'performing', 'performs'], correct: 'performance' },
+        { type: 'mcq', question: '8. What did she ___ at the supermarket for the party last weekend?', options: ['buy', 'bought', 'buys', 'buying'], correct: 'buy' },
+        { type: 'mcq', question: '9. Vietnamese people often ___ family members during the Tet holiday.', options: ['gathers', 'gathering', 'gather with', 'gather'], correct: 'gather' }, // Theo đề gốc đáp án là D (gather) dù có option C (gather with), tôi giữ theo đáp án đúng của bạn là 'gather' nhưng thực tế tiếng Anh thường dùng 'gather with'. Đề bài gốc ở câu 9 đáp án D là 'gather'[cite: 2].
+        { type: 'mcq', question: '10. Last summer, we ___ a lot of fun at the music festival.', options: ['have', 'had', 'has', 'having'], correct: 'had' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay14, question: '11. What is the main idea of the passage?', options: ['The history of mooncakes.', 'An unforgettable Mid-Autumn Festival experience.', 'How to make a star lantern.', 'The danger of playing video games.'], correct: 'An unforgettable Mid-Autumn Festival experience.' },
+        { type: 'reading', text: readingTextDay14, question: '12. When is the Mid-Autumn Festival celebrated?', options: ['In the middle of August.', 'On the 15th day of the 8th lunar month.', 'In the first day of the Lunar New Year.', 'Every weekend in autumn.'], correct: 'On the 15th day of the 8th lunar month.' },
+        { type: 'reading', text: readingTextDay14, question: '13. Where did the author celebrate the festival last year?', options: ['In a big city.', 'At the school.', 'In the countryside.', 'In a foreign country.'], correct: 'In the countryside.' },
+        { type: 'reading', text: readingTextDay14, question: '14. What did the grandparents do to prepare for the festival?', options: ['They bought mooncakes.', 'They decorated the house with star lanterns.', 'They made funny masks.', 'They performed a lion dance.'], correct: 'They decorated the house with star lanterns.' },
+        { type: 'reading', text: readingTextDay14, question: '15. What kind of mooncake did the author like best?', options: ['Chocolate mooncake.', 'Meat mooncake.', 'Green bean mooncake.', 'Fruit mooncake.'], correct: 'Green bean mooncake.' },
+        { type: 'reading', text: readingTextDay14, question: '16. What did the children carry during the parade?', options: ['Mooncakes.', 'Drums.', 'Flowers.', 'Star lanterns.'], correct: 'Star lanterns.' },
+        { type: 'reading', text: readingTextDay14, question: '17. Who performed the lion dance?', options: ['The local young people.', "The author's cousins.", 'The grandparents.', 'Famous actors.'], correct: 'The local young people.' },
+        { type: 'reading', text: readingTextDay14, question: '18. Where did the family enjoy the mooncakes?', options: ['In the living room.', 'Under the bright full moon in the yard.', 'Along the village roads.', 'In a restaurant.'], correct: 'Under the bright full moon in the yard.' },
+        { type: 'reading', text: readingTextDay14, question: '19. Did the author play video games that night?', options: ['Yes, he played with his cousins.', 'Yes, he played on his smartphone.', 'No, he didn\'t.', 'The passage doesn\'t mention it.'], correct: 'No, he didn\'t.' },
+        { type: 'reading', text: readingTextDay14, question: '20. Why was the experience memorable for the author?', options: ['Because he got a lot of lucky money.', 'Because he ate too many cakes.', 'Because he traveled to a new country.', 'Because he learned about cultural traditions and spent time with family.'], correct: 'Because he learned about cultural traditions and spent time with family.' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: Hanoi / year / My / family / celebrated / Tet / in / last / .', correct: 'My family celebrated Tet in Hanoi last year.' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: yesterday / display / We / didn\'t / fireworks / watch / the / .', correct: 'We didn\'t watch the fireworks display yesterday.' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: festival / you / eat / mooncakes / the / at / Did / ?', correct: 'Did you eat mooncakes at the festival?' },
+        { type: 'writing', question: '24. Sắp xếp các từ sau: house / They / many / flowers / with / their / decorated / .', correct: 'They decorated their house with many flowers.' },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: parade / costumes / People / traditional / the / wore / during / .', correct: 'People wore traditional costumes during the parade.' }
+      ];
+    }
+    if (i === 15) {
+      dayData.videoUrl = "https://drive.google.com/file/d/1tt0ufDsBSDlJxQ4mXdBLwbFKR5m6Lskm/view?usp=drive_link";
+      
+      // Từ vựng trích xuất từ bài học Ngày 15
+      dayData.vocabulary = [
+        { word: "robot", meaning: "người máy" },
+        { word: "smart home", meaning: "nhà thông minh" },
+        { word: "planet", meaning: "hành tinh" },
+        { word: "invention", meaning: "phát minh" },
+        { word: "machine", meaning: "máy móc" },
+        { word: "discover", meaning: "khám phá" },
+        { word: "explore", meaning: "thám hiểm" },
+        { word: "control", meaning: "điều khiển" },
+        { word: "advanced", meaning: "tiên tiến" },
+        { word: "eco-friendly", meaning: "thân thiện với môi trường" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20
+      const readingTextDay15 = "What will our cities look like in fifty years? Many experts predict that life in the future will be very different from today. First of all, cities will be much larger and more crowded, so architects will build taller skyscrapers. These buildings will act like \"vertical cities\" where people can live, work, and shop without leaving the building.\n\nTransportation will also change significantly. Traffic jams will probably disappear because people will use flying cars and high-speed underground trains. Furthermore, these modern vehicles will be eco-friendly and run on solar energy instead of petrol, which will help reduce air pollution.\n\nAt home, smart technology will take care of our daily needs. Robots will do the housework such as cooking, cleaning, and washing clothes. We will be able to control all the appliances in our houses just by using our voices. For instance, you will just say \"turn on the TV\" or \"make a cup of coffee,\" and the smart home will do it for you.\n\nAlthough there are some worries that robots might replace human workers, most scientists believe that these advanced technologies will give us more free time to enjoy our lives and explore new hobbies.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) ---
+        { type: 'mcq', question: '1. I think people ___ in flying cars in the year 2050.', options: ['will travel', 'travel', 'travels', 'traveled'], correct: 'will travel' },
+        { type: 'mcq', question: '2. A: "I don\'t understand this math problem." B: "Don\'t worry, I ___ you."', options: ['helps', 'will help', 'helped', 'am helping'], correct: 'will help' },
+        { type: 'mcq', question: '3. Scientists hope that they ___ new planets like Earth soon.', options: ['will discover', 'discover', 'are discovering', 'discovering'], correct: 'will discover' },
+        { type: 'mcq', question: '4. Many manual jobs will be ___ by robots in the future.', options: ['replaced', 'replacedly', 'replace', 'replacing'], correct: 'replaced' },
+        { type: 'mcq', question: '5. I promise I ___ anyone your secret.', options: ['will tell', 'tell', 'won\'t tell', 'didn\'t tell'], correct: 'won\'t tell' },
+        { type: 'mcq', question: '6. In the future, we might live in ___ homes that can control temperature automatically.', options: ['smart', 'traditional', 'poor', 'old'], correct: 'smart' },
+        { type: 'mcq', question: '7. ___ robots do all the housework for us next century?', options: ['Do', 'Will', 'Are', 'Have'], correct: 'Will' },
+        { type: 'mcq', question: '8. My brother ___ fifteen years old next month.', options: ['was', 'will be', 'is being', 'be'], correct: 'will be' },
+        { type: 'mcq', question: '9. They ___ to Mars because it is too far and dangerous.', options: ['won\'t travel', 'will travel', 'don\'t travel', 'travel'], correct: 'won\'t travel' },
+        { type: 'mcq', question: '10. Modern machines and advanced ___ will make our lives easier.', options: ['space', 'diseases', 'technology', 'planets'], correct: 'technology' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay15, question: '11. What is the main idea of the passage?', options: ['How to build tall skyscrapers.', 'Life and cities in the future.', 'The history of flying cars.', 'How to make eco-friendly cars.'], correct: 'Life and cities in the future.' },
+        { type: 'reading', text: readingTextDay15, question: '12. According to paragraph 1, what is a "vertical city"?', options: ['A very small village.', 'A flying car.', 'A tall skyscraper where people live, work, and shop.', 'An underground train.'], correct: 'A tall skyscraper where people live, work, and shop.' },
+        { type: 'reading', text: readingTextDay15, question: '13. Why will architects build taller skyscrapers?', options: ['Because people like tall buildings.', 'Because the air is cleaner up there.', 'Because cities will be larger and more crowded.', 'Because robots will build them quickly.'], correct: 'Because cities will be larger and more crowded.' },
+        { type: 'reading', text: readingTextDay15, question: '14. According to paragraph 2, what will help traffic jams disappear?', options: ['Walking to work.', 'Using traditional cars.', 'Riding bicycles.', 'Using flying cars and high-speed trains.'], correct: 'Using flying cars and high-speed trains.' },
+        { type: 'reading', text: readingTextDay15, question: '15. What kind of energy will future vehicles run on?', options: ['Petrol', 'Solar energy', 'Wind energy', 'Coal'], correct: 'Solar energy' },
+        { type: 'reading', text: readingTextDay15, question: '16. The word "it" in paragraph 3 refers to', options: ['a cup of coffee', 'turning on the TV', 'the voice command', 'the requested action (turn on TV/make coffee)'], correct: 'the requested action (turn on TV/make coffee)' },
+        { type: 'reading', text: readingTextDay15, question: '17. Who or what will do the housework in the future?', options: ['Scientists', 'Architects', 'Robots', 'Children'], correct: 'Robots' },
+        { type: 'reading', text: readingTextDay15, question: '18. How will people control the appliances in their houses?', options: ['By clapping their hands.', 'By using remote controls.', 'By pressing buttons.', 'By using their voices.'], correct: 'By using their voices.' },
+        { type: 'reading', text: readingTextDay15, question: '19. What is a common worry mentioned in the last paragraph?', options: ['People will not have free time.', 'Flying cars will be dangerous.', 'Robots might replace human workers.', 'Cities will be too cold.'], correct: 'Robots might replace human workers.' },
+        { type: 'reading', text: readingTextDay15, question: '20. What do most scientists believe about advanced technologies?', options: ['They will give humans more free time.', 'They will destroy the Earth.', 'They will create more traffic jams.', 'They will make life more difficult.'], correct: 'They will give humans more free time.' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: live / smart / People / homes / will / in / .', correct: 'People will live in smart homes.' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: our / robots / think / housework / I / do / will / .', correct: 'I think robots will do our housework.' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: morning / do / What / you / will / tomorrow / ?', correct: 'What will you do tomorrow morning?' },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: traditional / by / won't / cars / We / travel / .", correct: "We won't travel by traditional cars." },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: new / we / will / discover / planets / I / hope / .', correct: 'I hope we will discover new planets.' }
+      ];
+    }
     course.push(dayData);
   }
   return course;
