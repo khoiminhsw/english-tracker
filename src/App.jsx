@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { courseData } from './data';
 import Lesson from './Lesson';
 import VocabularyReview from './VocabularyReview';
-import { Flame, Lock, CheckCircle2, Calendar, Target, LogOut, Info, X, Gamepad2, BookOpen, Crown, Medal, Award, Coins, Store, Shield, Ticket, Lightbulb, PackageOpen, BrainCircuit, Dices, ShieldAlert, PieChart, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Flame, Lock, CheckCircle2, Calendar, Target, LogOut, Info, X, Gamepad2, BookOpen, Crown, Medal, Award, Coins, Store, Shield, Ticket, Lightbulb, BrainCircuit, Dices, ShieldAlert, PieChart, TrendingUp, AlertTriangle, ArrowRightLeft, Sparkles, PlayCircle, Bookmark } from 'lucide-react';
 
 import { auth, provider, db } from './firebase'; 
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
@@ -24,11 +24,13 @@ export default function App() {
   const [totalScore, setTotalScore] = useState(100); 
   const [coins, setCoins] = useState(0); 
   const [wordProgress, setWordProgress] = useState({}); 
-  const [inventory, setInventory] = useState({ shields: 0, skips: 0, hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 });
-  const [shopStats, setShopStats] = useState({ immortalBoughtCount: 0 });
+  const [inventory, setInventory] = useState({ hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 });
+  const [shopStats, setShopStats] = useState({ immortalBoughtCount: 0, dailyHintBought: 0 });
   
+  const [exchangeStats, setExchangeStats] = useState({ dailyCount: 0, monthlyCount: 0, lastDate: null, lastMonth: null });
   const [lessonScores, setLessonScores] = useState({});
   const [learningStats, setLearningStats] = useState({ totalVocabFails: 0, totalExerciseFails: 0 });
+  const [bookmarks, setBookmarks] = useState({}); 
   
   const [checkinState, setCheckinState] = useState({ day: 0, show: false });
   const [showSetup, setShowSetup] = useState(false);
@@ -48,6 +50,7 @@ export default function App() {
 
   const [notebook, setNotebook] = useState([]);
   const [dailyGamesPlayed, setDailyGamesPlayed] = useState(0);
+  const [dailyRedoCount, setDailyRedoCount] = useState(0); 
   const [lastPlayedWords, setLastPlayedWords] = useState([]);
   const [activityLog, setActivityLog] = useState([]); 
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0); 
@@ -76,6 +79,7 @@ export default function App() {
       const userRef = doc(db, 'users', uid);
       const docSnap = await getDoc(userRef);
       const todayStr = new Date().toDateString();
+      const currentMonth = new Date().getMonth();
 
       if (docSnap.exists()) {
         const data = docSnap.data();
@@ -83,11 +87,29 @@ export default function App() {
         setTotalScore(Number(data.score !== undefined ? data.score : 100));
         setCoins(Number(data.coins !== undefined ? data.coins : 0));
         setWordProgress(data.wordProgress || {}); 
+        setBookmarks(data.bookmarks || {}); 
         
-        setInventory(data.inventory || { shields: 0, skips: 0, hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 });
-        setShopStats(data.shopStats || { immortalBoughtCount: 0 });
+        setInventory(data.inventory || { hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 });
+        
+        let sStats = data.shopStats || { immortalBoughtCount: 0, dailyHintBought: 0 };
+        if (data.lastGameDate !== todayStr) {
+           sStats.dailyHintBought = 0; 
+        }
+        setShopStats(sStats);
+        
         setLessonScores(data.lessonScores || {});
         setLearningStats(data.learningStats || { totalVocabFails: 0, totalExerciseFails: 0 });
+
+        let eStats = data.exchangeStats || { dailyCount: 0, monthlyCount: 0, lastDate: todayStr, lastMonth: currentMonth };
+        if (eStats.lastDate !== todayStr) {
+            eStats.dailyCount = 0;
+            eStats.lastDate = todayStr;
+        }
+        if (eStats.lastMonth !== currentMonth) {
+            eStats.monthlyCount = 0;
+            eStats.lastMonth = currentMonth;
+        }
+        setExchangeStats(eStats);
 
         let cDay = data.checkin?.day || 0;
         let cDate = data.checkin?.lastDate || null;
@@ -116,8 +138,10 @@ export default function App() {
         
         if (data.lastGameDate === todayStr) {
           setDailyGamesPlayed(Number(data.dailyGamesPlayed || 0));
+          setDailyRedoCount(Number(data.dailyRedoCount || 0));
         } else {
           setDailyGamesPlayed(0); 
+          setDailyRedoCount(0);
         }
 
         if (data.schedule) {
@@ -134,8 +158,10 @@ export default function App() {
           score: 100, 
           coins: 0,   
           wordProgress: {},
-          inventory: { shields: 0, skips: 0, hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 },
-          shopStats: { immortalBoughtCount: 0 },
+          bookmarks: {},
+          inventory: { hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 },
+          shopStats: { immortalBoughtCount: 0, dailyHintBought: 0 },
+          exchangeStats: { dailyCount: 0, monthlyCount: 0, lastDate: todayStr, lastMonth: currentMonth },
           lessonScores: {},
           learningStats: { totalVocabFails: 0, totalExerciseFails: 0 },
           checkin: { lastDate: null, day: 0 },
@@ -144,6 +170,7 @@ export default function App() {
           startDate: todayStr,
           lastLogin: todayStr,
           dailyGamesPlayed: 0,
+          dailyRedoCount: 0,
           lastGameDate: todayStr,
           lastPlayedWords: [],
           notebook: [],
@@ -156,8 +183,10 @@ export default function App() {
         setTotalScore(100);
         setCoins(0);
         setWordProgress({});
+        setBookmarks({});
         setInventory(newProfile.inventory);
         setShopStats(newProfile.shopStats);
+        setExchangeStats(newProfile.exchangeStats);
         setLessonScores({});
         setLearningStats(newProfile.learningStats);
         setCheckinState({ day: 1, show: true });
@@ -180,7 +209,7 @@ export default function App() {
     let newStreak = Number(data.streak || 0);
     let newScore = Number(data.score !== undefined ? data.score : 100);
     let newCoins = Number(data.coins !== undefined ? data.coins : 0);
-    let currentInventory = data.inventory || { shields: 0, skips: 0, hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 };
+    let currentInventory = data.inventory || { hints: 0, tickets: 0, immortals: 0, gachaTickets: 0 };
     let needsUpdate = false;
 
     if (data.lastLogin) {
@@ -206,15 +235,9 @@ export default function App() {
         }
 
         if (missedDaysCount > 0) {
-          if (currentInventory.shields > 0) {
-            currentInventory.shields -= 1;
-            alert(`🛡️ Streak Shield Tự Động Kích Hoạt!\nChuỗi ngày học rực lửa của bạn đã được bảo vệ.`);
-            needsUpdate = true;
-          } else {
-            newStreak = 0; 
-            needsUpdate = true;
-          }
-
+          newStreak = 0; 
+          needsUpdate = true;
+          
           const pointPenalty = missedDaysCount * 5;
           const coinPenalty = missedDaysCount * 10; 
           
@@ -223,7 +246,6 @@ export default function App() {
           if (newScore < 0) newScore = 0;
           if (newCoins < 0) newCoins = 0;
           alert(`CẢNH BÁO BỎ HỌC!\nBạn đã vắng mặt ${missedDaysCount} buổi.\nPhạt ${pointPenalty} Điểm Kỷ Luật và ${coinPenalty} Coins!`);
-          needsUpdate = true;
         } else {
           newStreak = 0; 
           needsUpdate = true;
@@ -306,24 +328,27 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (schedule && !loading && user && !checkinState.show) {
-        const todayStr = new Date().toDateString();
-        const currentDayOfWeek = new Date().getDay();
-        const isScheduledToday = schedule.includes(currentDayOfWeek);
-        const hasNotStudiedToday = lastCompletedDate !== todayStr;
-        
-        if (isScheduledToday && hasNotStudiedToday && !sessionStorage.getItem('dailyReminderShown') && unlockedDay <= 48) {
-            setShowDailyReminder(true);
-            sessionStorage.setItem('dailyReminderShown', 'true');
+    try {
+        if (schedule && !loading && user && !checkinState.show) {
+            const todayStr = new Date().toDateString();
+            const currentDayOfWeek = new Date().getDay();
+            const isScheduledToday = schedule.includes(currentDayOfWeek);
+            const hasNotStudiedToday = lastCompletedDate !== todayStr;
+            
+            if (isScheduledToday && hasNotStudiedToday && !sessionStorage.getItem('dailyReminderShown') && unlockedDay <= 48) {
+                setShowDailyReminder(true);
+                sessionStorage.setItem('dailyReminderShown', 'true');
+            }
         }
-    }
+    } catch(e) {}
   }, [schedule, loading, user, lastCompletedDate, checkinState.show, unlockedDay]);
 
   const handleUpdateWordProgress = async (wordsArray) => {
     if (!wordsArray || wordsArray.length === 0) return;
     const newProgress = { ...(wordProgress || {}) }; 
     wordsArray.forEach(w => {
-      const wordLower = w.toLowerCase();
+      if (!w) return;
+      const wordLower = String(w).toLowerCase();
       if (!newProgress[wordLower]) newProgress[wordLower] = 0;
       if (newProgress[wordLower] < 3) newProgress[wordLower] += 1;
     });
@@ -331,7 +356,56 @@ export default function App() {
     await updateDoc(doc(db, 'users', user.uid), { wordProgress: newProgress });
   };
 
-  const handleCompleteLesson = async (dayId, vocabFailCount, exerciseFailCount, actualScore = 0, totalQuestions = 0) => {
+  const handleToggleBookmark = async (dayId, qIdx) => {
+    const currentBookmarks = bookmarks[dayId] || [];
+    const newBookmarksForDay = currentBookmarks.includes(qIdx)
+        ? currentBookmarks.filter(id => id !== qIdx)
+        : [...currentBookmarks, qIdx];
+    
+    const newBookmarks = { ...bookmarks, [dayId]: newBookmarksForDay };
+    setBookmarks(newBookmarks);
+    await updateDoc(doc(db, 'users', user.uid), { bookmarks: newBookmarks });
+  };
+
+  const handleCompleteLesson = async (dayId, vocabFailCount, exerciseFailCount, actualScore = 0, totalQuestions = 0, isRedoMode = false, currentAnswers = {}) => {
+    const userRef = doc(db, 'users', user.uid);
+    const newLessonScores = { ...lessonScores };
+    const oldLessonData = newLessonScores[dayId] || {};
+    const currentLessonRedoCount = oldLessonData.redoCount || 0;
+
+    // XỬ LÝ CHẾ ĐỘ ÔN TẬP (REDO)
+    if (isRedoMode) {
+        if (actualScore < totalQuestions) {
+            alert(`❌ Ôn tập chưa đạt!\nBạn mới đúng ${actualScore}/${totalQuestions} câu. Phải đúng 100% mới được nhận Xu ôn tập!`);
+            return; 
+        }
+
+        let coinBonus = 0;
+        let message = "📊 TỔNG KẾT ÔN TẬP:\n\n";
+        
+        if (currentLessonRedoCount < 3) {
+            coinBonus = 2;
+            message += `✅ Ôn tập xuất sắc 100%! Bạn nhận được +2 Coins (Lượt thưởng: ${currentLessonRedoCount + 1}/3 của bài này).\n`;
+        } else {
+            message += `✅ Ôn tập hoàn tất! (Bài học này đã đạt giới hạn 6 Xu thưởng. Đạt mốc tối đa!).\n`;
+        }
+
+        let newCoins = Number(coins) + coinBonus;
+        newLessonScores[dayId] = { ...oldLessonData, redoCount: currentLessonRedoCount + 1 };
+
+        await updateDoc(userRef, {
+            coins: newCoins,
+            lessonScores: newLessonScores
+        });
+
+        setCoins(newCoins);
+        setLessonScores(newLessonScores);
+        setActiveLesson(null);
+        alert(message);
+        return; 
+    }
+
+    // LÀM BÀI MỚI CHÍNH THỨC
     let pointPenalty = 0;
     let coinPenalty = 0;
     let pointBonus = 0;
@@ -378,9 +452,6 @@ export default function App() {
            if(!isMajorTestPass) message += `⭐ XUẤT SẮC: +5 Điểm & +10 Coins (Hoàn hảo!).\n`; 
          }
       }
-    } else {
-      coinBonus += 2; 
-      message += `✅ Ôn tập bài cũ thành công: Nhận +2 Coins an ủi.\n`;
     }
 
     let newScore = Number(totalScore) - pointPenalty + pointBonus;
@@ -388,13 +459,14 @@ export default function App() {
     if (newScore < 0) newScore = 0;
     if (newCoins < 0) newCoins = 0;
 
-    const newLessonScores = { ...lessonScores };
     newLessonScores[dayId] = {
         score: actualScore,
         total: totalQuestions,
         scale10: Number(scale10),
         isTest: !!isTestDay,
-        date: new Date().toLocaleDateString('vi-VN')
+        date: new Date().toLocaleDateString('vi-VN'),
+        savedAnswers: currentAnswers,
+        redoCount: 0 
     };
 
     const newStats = { ...learningStats };
@@ -405,7 +477,6 @@ export default function App() {
     const todayStr = new Date().toDateString();
     const newActivityLog = activityLog.includes(todayStr) ? activityLog : [...activityLog, todayStr];
 
-    const userRef = doc(db, 'users', user.uid);
     await updateDoc(userRef, {
       score: newScore,
       coins: newCoins,
@@ -428,7 +499,56 @@ export default function App() {
     alert(message);
   };
 
-  const handleGameComplete = async (isWin, correctlyAnsweredWords, gameType) => {
+  const handleCheat = async () => {
+    if (isAdmin) {
+      alert("🛠 Admin Mode: Bỏ qua hình phạt gian lận.");
+      setActiveLesson(null);
+      return;
+    }
+    
+    let pointPenalty = 10;
+    let coinPenalty = 20;
+    
+    let newScore = Number(totalScore) - pointPenalty;
+    let newCoins = Number(coins) - coinPenalty;
+    
+    if (newScore < 0) newScore = 0;
+    if (newCoins < 0) newCoins = 0;
+    
+    const todayStr = new Date().toDateString();
+    const newActivityLog = activityLog.includes(todayStr) ? activityLog : [...activityLog, todayStr];
+
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, { 
+          score: newScore, 
+          coins: newCoins,
+          activityLog: newActivityLog
+      });
+      
+      setTotalScore(newScore);
+      setCoins(newCoins);
+      setActivityLog(newActivityLog);
+      setActiveLesson(null);
+
+      setTimeout(() => {
+         alert(`🚨 BIÊN BẢN PHẠT GIAN LẬN:\n\nHệ thống đã tự động thu bài và áp dụng hình phạt:\n- Trừ ${pointPenalty} Điểm.\n- Trừ ${coinPenalty} Coins.\n\nHãy trung thực hơn trong lần học sau!`);
+      }, 100);
+    } catch (error) {
+      console.error("Lỗi khi xử lý phạt gian lận: ", error);
+      setActiveLesson(null);
+    }
+  };
+
+  const handlePlaceBet = async (amount) => {
+      if (coins < amount) return false;
+      const newCoins = coins - amount;
+      setCoins(newCoins);
+      await updateDoc(doc(db, 'users', user.uid), { coins: newCoins });
+      return true;
+  };
+
+  const handleGameComplete = async (isWin, correctlyAnsweredWords, gameType, betAmount = 0) => {
     const todayStr = new Date().toDateString();
     let newScore = Number(totalScore);
     let newCoins = Number(coins);
@@ -439,7 +559,7 @@ export default function App() {
 
     if (isWin) {
       earnedScore = 1;
-      rewardCoins = 2; 
+      rewardCoins = betAmount > 0 ? (betAmount * 2) : 2; 
       newScore += earnedScore;
       newCoins += rewardCoins;
     }
@@ -468,16 +588,33 @@ export default function App() {
     setActivityLog(newActivityLog);
     setIsPlayingVocab(false); 
     
-    if (isWin) alert(`🎮 Chiến thắng! Bạn nhận được +${earnedScore} Điểm, +${rewardCoins} Coins.\nTiến độ những từ bạn đánh ĐÚNG đã được lưu lại.`);
-    else alert(`💀 Game Over!\nTuy nhiên, những từ bạn đã trả lời ĐÚNG vẫn được tính tiến độ.`);
+    if (isWin) {
+       if (betAmount > 0) alert(`🎰 THẮNG CƯỢC! Bạn đã nhân đôi tài sản, nhận về ${rewardCoins} Coins và +1 Điểm học tập!`);
+       else alert(`🎮 Chiến thắng! Bạn nhận được +1 Điểm, +2 Coins.`);
+    } else {
+       if (betAmount > 0) alert(`💀 THUA CƯỢC! Bạn đã mất trắng ${betAmount} Coins tiền cược.`);
+       else alert(`💀 Game Over!`);
+    }
   };
 
   const getLearnedVocab = () => {
     let vocabPool = [];
     courseData.forEach(day => {
-      if (day.id < unlockedDay && day.vocabulary && day.vocabulary.length > 0) vocabPool = [...vocabPool, ...day.vocabulary];
+      if (day.id < unlockedDay && day.vocabulary && day.vocabulary.length > 0) {
+          vocabPool = [...vocabPool, ...day.vocabulary];
+      }
     });
-    return vocabPool;
+    
+    let safeWP = {};
+    try {
+       safeWP = (wordProgress && typeof wordProgress === 'object' && !Array.isArray(wordProgress)) ? wordProgress : {};
+    } catch (e) {}
+
+    return vocabPool.filter(v => {
+       if (!v || !v.word) return false;
+       const w = String(v.word).toLowerCase();
+       return (safeWP[w] || 0) < 3;
+    });
   };
 
   const completedLessons = unlockedDay > 1 ? unlockedDay - 1 : 0;
@@ -488,26 +625,27 @@ export default function App() {
      const safeWP = (wordProgress && typeof wordProgress === 'object' && !Array.isArray(wordProgress)) ? wordProgress : {};
      masteredWordsList = Object.entries(safeWP).filter(([w, c]) => typeof c === 'number' && c >= 3);
      wordsMasteredCount = masteredWordsList.length;
-  } catch (err) {
-     console.error("Lỗi parse wordProgress: ", err);
-  }
+  } catch (err) {}
 
   const achievementsList = [
-    { id: "streak_7", title: "Khởi động", desc: "Đăng nhập liên tục 7 ngày", achieved: streak >= 7, rewardCoins: 20, icon: "🔥", color: "text-orange-500", bg: "bg-orange-100" },
-    { id: "streak_30", title: "Thói quen", desc: "Đăng nhập liên tục 30 ngày", achieved: streak >= 30, rewardCoins: 100, icon: "🔥", color: "text-red-500", bg: "bg-red-100" },
-    { id: "streak_50", title: "Bền bỉ", desc: "Đăng nhập liên tục 50 ngày", achieved: streak >= 50, rewardCoins: 300, icon: "🔥", color: "text-rose-500", bg: "bg-rose-100" },
-    { id: "streak_80", title: "Kỷ luật thép", desc: "Đăng nhập liên tục 80 ngày", achieved: streak >= 80, rewardCoins: 500, icon: "💎", color: "text-cyan-500", bg: "bg-cyan-100" },
+    { id: "streak_7", title: "Khởi động", desc: "Đăng nhập liên tục 7 ngày", achieved: streak >= 7, rewardCoins: 20, icon: "🔥", color: "text-orange-500", bg: "bg-orange-50", iconBg: "bg-white", border: "border-orange-100" },
+    { id: "streak_30", title: "Thói quen", desc: "Đăng nhập liên tục 30 ngày", achieved: streak >= 30, rewardCoins: 100, icon: "🔥", color: "text-red-500", bg: "bg-red-50", iconBg: "bg-white", border: "border-red-100" },
+    { id: "streak_50", title: "Bền bỉ", desc: "Đăng nhập liên tục 50 ngày", achieved: streak >= 50, rewardCoins: 300, icon: "🔥", color: "text-rose-500", bg: "bg-rose-50", iconBg: "bg-white", border: "border-rose-100" },
+    { id: "streak_80", title: "Kỷ luật thép", desc: "Đăng nhập liên tục 80 ngày", achieved: streak >= 80, rewardCoins: 500, icon: "💎", color: "text-cyan-500", bg: "bg-cyan-50", iconBg: "bg-white", border: "border-cyan-100" },
     
-    { id: "lessons_10", title: "Chăm chỉ", desc: "Hoàn thành 10 bài học", achieved: completedLessons >= 10, rewardCoins: 40, icon: "📝", color: "text-blue-500", bg: "bg-blue-100" },
-    { id: "lessons_24", title: "Băng rừng", desc: "Hoàn thành 24 bài (Nửa khóa)", achieved: completedLessons >= 24, rewardCoins: 200, icon: "⏳", color: "text-blue-600", bg: "bg-blue-200" },
-    { id: "lessons_48", title: "Học giả", desc: "Tốt nghiệp toàn bộ 48 bài", achieved: completedLessons >= 48, rewardCoins: 500, icon: "🎓", color: "text-purple-600", bg: "bg-purple-200" },
+    { id: "lessons_10", title: "Chăm chỉ", desc: "Hoàn thành 10 bài học", achieved: completedLessons >= 10, rewardCoins: 40, icon: "📝", color: "text-blue-500", bg: "bg-blue-50", iconBg: "bg-white", border: "border-blue-100" },
+    { id: "lessons_24", title: "Băng rừng", desc: "Hoàn thành 24 bài (Nửa khóa)", achieved: completedLessons >= 24, rewardCoins: 200, icon: "⏳", color: "text-indigo-500", bg: "bg-indigo-50", iconBg: "bg-white", border: "border-indigo-100" },
+    { id: "lessons_48", title: "Học giả", desc: "Tốt nghiệp toàn bộ 48 bài", achieved: completedLessons >= 48, rewardCoins: 500, icon: "🎓", color: "text-purple-600", bg: "bg-purple-50", iconBg: "bg-white", border: "border-purple-100" },
     
-    { id: "words_50", title: "Tân binh", desc: "Làm chủ 50 từ vựng", achieved: wordsMasteredCount >= 50, rewardCoins: 30, icon: "🧠", color: "text-fuchsia-500", bg: "bg-fuchsia-100" },
-    { id: "words_100", title: "Trí nhớ tốt", desc: "Làm chủ 100 từ vựng", achieved: wordsMasteredCount >= 100, rewardCoins: 100, icon: "📚", color: "text-indigo-500", bg: "bg-indigo-100" },
-    { id: "words_250", title: "Từ điển sống", desc: "Làm chủ 250 từ vựng", achieved: wordsMasteredCount >= 250, rewardCoins: 300, icon: "👑", color: "text-amber-500", bg: "bg-amber-100" },
+    { id: "words_50", title: "Tân binh", desc: "Làm chủ 50 từ vựng", achieved: wordsMasteredCount >= 50, rewardCoins: 30, icon: "🧠", color: "text-fuchsia-500", bg: "bg-fuchsia-50", iconBg: "bg-white", border: "border-fuchsia-100" },
+    { id: "words_100", title: "Trí nhớ tốt", desc: "Làm chủ 100 từ vựng", achieved: wordsMasteredCount >= 100, rewardCoins: 100, icon: "📚", color: "text-indigo-500", bg: "bg-indigo-50", iconBg: "bg-white", border: "border-indigo-100" },
+    { id: "words_250", title: "Từ điển sống", desc: "Làm chủ 250 từ vựng", achieved: wordsMasteredCount >= 250, rewardCoins: 300, icon: "👑", color: "text-amber-500", bg: "bg-amber-50", iconBg: "bg-white", border: "border-amber-100" },
     
-    { id: "games_10", title: "Game Thủ", desc: "Thắng mini-game 10 lần", achieved: totalGamesPlayed >= 10, rewardCoins: 20, icon: "🎮", color: "text-emerald-500", bg: "bg-emerald-100" },
-    { id: "games_30", title: "Kẻ hủy diệt", desc: "Thắng mini-game 30 lần", achieved: totalGamesPlayed >= 30, rewardCoins: 100, icon: "⚔️", color: "text-teal-600", bg: "bg-teal-100" },
+    { id: "games_10", title: "Game Thủ", desc: "Thắng mini-game 10 lần", achieved: totalGamesPlayed >= 10, rewardCoins: 20, icon: "🎮", color: "text-emerald-500", bg: "bg-emerald-50", iconBg: "bg-white", border: "border-emerald-100" },
+    { id: "games_30", title: "Kẻ hủy diệt", desc: "Thắng mini-game 30 lần", achieved: totalGamesPlayed >= 30, rewardCoins: 100, icon: "⚔️", color: "text-teal-600", bg: "bg-teal-50", iconBg: "bg-white", border: "border-teal-100" },
+    { id: "games_60", title: "Cao thủ", desc: "Thắng mini-game 60 lần", achieved: totalGamesPlayed >= 60, rewardCoins: 200, icon: "🔥", color: "text-orange-600", bg: "bg-orange-50", iconBg: "bg-white", border: "border-orange-100" },
+    { id: "games_100", title: "Thần thoại", desc: "Thắng mini-game 100 lần", achieved: totalGamesPlayed >= 100, rewardCoins: 500, icon: "👑", color: "text-yellow-500", bg: "bg-yellow-50", iconBg: "bg-white", border: "border-yellow-100" },
+    { id: "games_200", title: "Huyền thoại", desc: "Thắng mini-game 200 lần", achieved: totalGamesPlayed >= 200, rewardCoins: 1000, icon: "🌟", color: "text-amber-500", bg: "bg-amber-50", iconBg: "bg-white", border: "border-amber-100" },
   ];
 
   useEffect(() => {
@@ -548,6 +686,10 @@ export default function App() {
        cost = 20 * Math.pow(2, shopStats.immortalBoughtCount || 0);
     }
 
+    if (key === 'hints') {
+        if (newShopStats.dailyHintBought >= 3) return alert("❌ Bạn đã mua tối đa 3 Thẻ Gợi ý trong hôm nay! Hãy quay lại vào ngày mai hoặc mở Gacha để kiếm thêm.");
+    }
+
     if (coins < cost) return alert("Bạn không đủ Coins!");
     const confirmBuy = window.confirm(`Xác nhận dùng ${cost} Coins để mua ${itemName}?`);
     if (!confirmBuy) return;
@@ -558,6 +700,9 @@ export default function App() {
     
     if (key === 'immortals') {
        newShopStats.immortalBoughtCount = (newShopStats.immortalBoughtCount || 0) + 1;
+    }
+    if (key === 'hints') {
+       newShopStats.dailyHintBought = (newShopStats.dailyHintBought || 0) + 1;
     }
 
     alert(`✅ Mua thành công: ${itemName}`);
@@ -570,15 +715,36 @@ export default function App() {
     setShopStats(newShopStats);
   };
 
-  // ==========================================
-  // LÀM ĐẸP GACHA: HIỆU ỨNG LẤP LÁNH & TỶ LỆ CHUẨN CỦA USER
-  // ==========================================
+  const handleExchangePoints = async () => {
+     if (exchangeStats.dailyCount >= 10) return alert("Hôm nay bạn đã đổi tối đa 10 lần rồi. Hãy quay lại vào ngày mai!");
+     if (exchangeStats.monthlyCount >= 50) return alert("Tháng này bạn đã đổi tối đa 50 lần rồi. Vui lòng chờ đến tháng sau!");
+     if (totalScore < 1) return alert("Bạn không có Điểm để đổi!");
+
+     const confirm = window.confirm("Xác nhận đổi 1 Điểm học tập lấy 10 Coins?");
+     if (!confirm) return;
+
+     const newScore = totalScore - 1;
+     const newCoins = coins + 10;
+     const newExStats = {
+        ...exchangeStats,
+        dailyCount: exchangeStats.dailyCount + 1,
+        monthlyCount: exchangeStats.monthlyCount + 1
+     };
+
+     await updateDoc(doc(db, 'users', user.uid), { score: newScore, coins: newCoins, exchangeStats: newExStats });
+     setTotalScore(newScore);
+     setCoins(newCoins);
+     setExchangeStats(newExStats);
+     alert("💰 Quy đổi thành công! +10 Coins.");
+  };
+
   const gachaItems = [
     { id: 'hint', icon: '💡', label: "Thẻ Gợi ý", bg: "bg-yellow-50", border: "border-yellow-400", text: "text-yellow-700", isPremium: false },
-    { id: 'skip', icon: '🎟️', label: "Thẻ Skip", bg: "bg-blue-50", border: "border-blue-400", text: "text-blue-700", isPremium: false },
+    { id: 'ticket', icon: '🎟️', label: "Vé Chơi Game", bg: "bg-blue-50", border: "border-blue-400", text: "text-blue-700", isPremium: false },
     { id: 'coins', icon: '💰', label: "50 Coins", bg: "bg-emerald-50", border: "border-emerald-400", text: "text-emerald-700", isPremium: false },
     { id: 'jackpot', icon: '🎯', label: "+5 ĐIỂM", bg: "bg-gradient-to-br from-red-100 to-orange-100", border: "border-red-500", text: "text-red-700", isPremium: true },
-    { id: 'immortal', icon: '🛡️', label: "Thẻ Bất Tử", bg: "bg-gradient-to-br from-purple-100 to-fuchsia-100", border: "border-purple-500", text: "text-purple-700", isPremium: true }
+    { id: 'immortal', icon: '🛡️', label: "Thẻ Bất Tử", bg: "bg-gradient-to-br from-purple-100 to-fuchsia-100", border: "border-purple-500", text: "text-purple-700", isPremium: true },
+    { id: 'super_jackpot', icon: '💎', label: "500 Coins", bg: "bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-500", border: "border-yellow-200", text: "text-white", isPremium: true }
   ];
 
   const handleSpinGacha = async () => {
@@ -596,18 +762,19 @@ export default function App() {
     setIsSpinning(true);
     setGachaPrize(null);
 
-    // THUẬT TOÁN TỶ LỆ MỚI (Hint 50%, Skip 20%, Coins 15%, Jackpot 12%, Bất Tử 3%)
+    // Tỉ lệ mới: 500 Xu (0.1%), Bất tử (1%), 5 Điểm (5%), Vé (20%), 50 Xu (15%), Hint (58.9%)
     const rand = Math.random();
     let prizeKey = '';
-    if (rand < 0.50) prizeKey = 'hint';         
-    else if (rand < 0.70) prizeKey = 'skip';    
-    else if (rand < 0.85) prizeKey = 'coins';   
-    else if (rand < 0.97) prizeKey = 'jackpot'; 
-    else prizeKey = 'immortal';                 
+    if (rand < 0.589) prizeKey = 'hint';         
+    else if (rand < 0.789) prizeKey = 'ticket';    
+    else if (rand < 0.939) prizeKey = 'coins';   
+    else if (rand < 0.989) prizeKey = 'jackpot'; 
+    else if (rand < 0.999) prizeKey = 'immortal';
+    else prizeKey = 'super_jackpot';                 
 
     const targetIndex = gachaItems.findIndex(i => i.id === prizeKey);
-    const baseSpins = 30; // Vòng quay (chia hết cho 5)
-    const stepsToTarget = (targetIndex - currentSpinIndex + 5) % 5;
+    const baseSpins = 30; 
+    const stepsToTarget = (targetIndex - currentSpinIndex + 6) % 6;
     const totalSpins = baseSpins + stepsToTarget;
 
     let currentStep = 0;
@@ -615,7 +782,7 @@ export default function App() {
 
     const spinInterval = setInterval(() => {
       currentStep++;
-      tempIndex = (tempIndex + 1) % 5;
+      tempIndex = (tempIndex + 1) % 6;
       setCurrentSpinIndex(tempIndex);
 
       if (currentStep >= totalSpins) {
@@ -632,10 +799,11 @@ export default function App() {
     let updatedScore = Number(totalScore);
     const updatedInv = { ...invAfterDeduct };
 
-    if (prizeKey === 'skip') updatedInv.skips += 1;
-    else if (prizeKey === 'hint') updatedInv.hints += 1;
+    if (prizeKey === 'hint') updatedInv.hints = (updatedInv.hints || 0) + 1;
+    else if (prizeKey === 'ticket') updatedInv.tickets = (updatedInv.tickets || 0) + 1;
     else if (prizeKey === 'immortal') updatedInv.immortals = (updatedInv.immortals || 0) + 1;
     else if (prizeKey === 'coins') updatedCoins += 50; 
+    else if (prizeKey === 'super_jackpot') updatedCoins += 500;
     else if (prizeKey === 'jackpot') updatedScore += 5; 
 
     const userRef = doc(db, 'users', user.uid);
@@ -710,12 +878,30 @@ export default function App() {
   if (activeLesson) {
     const dayData = courseData.find(d => d.id === activeLesson);
     const prevDayData = activeLesson > 1 ? courseData.find(d => d.id === activeLesson - 1) : null;
-    return <Lesson dayData={dayData} prevDayData={prevDayData} onComplete={handleCompleteLesson} onBack={() => setActiveLesson(null)} onCheat={null} isAdmin={isAdmin} inventory={inventory} consumeItem={consumeItem} onUpdateWordProgress={handleUpdateWordProgress} />;
+    const isLessonCompleted = activeLesson < unlockedDay;
+    const savedAnswers = lessonScores[activeLesson]?.savedAnswers || {};
+    const bookmarkedForDay = bookmarks[activeLesson] || [];
+
+    return <Lesson 
+              dayData={dayData} 
+              prevDayData={prevDayData} 
+              isCompleted={isLessonCompleted} 
+              savedAnswers={savedAnswers}
+              bookmarkedQuestions={bookmarkedForDay}
+              onBookmark={handleToggleBookmark}
+              onComplete={handleCompleteLesson} 
+              onBack={() => setActiveLesson(null)} 
+              onCheat={handleCheat} 
+              isAdmin={isAdmin} 
+              inventory={inventory} 
+              consumeItem={consumeItem} 
+              onUpdateWordProgress={handleUpdateWordProgress} 
+           />;
   }
 
   if (isPlayingVocab) {
     const learnedVocab = getLearnedVocab();
-    return <VocabularyReview learnedVocab={learnedVocab} lastPlayedWords={lastPlayedWords} onBack={() => setIsPlayingVocab(false)} onCompleteGame={handleGameComplete} dailyGamesPlayed={dailyGamesPlayed} isAdmin={isAdmin} />;
+    return <VocabularyReview learnedVocab={learnedVocab} wordProgress={wordProgress} lastPlayedWords={lastPlayedWords} onBack={() => setIsPlayingVocab(false)} onCompleteGame={handleGameComplete} dailyGamesPlayed={dailyGamesPlayed} isAdmin={isAdmin} onPlaceBet={handlePlaceBet} />;
   }
 
   const currentDayOfWeek = new Date().getDay();
@@ -778,14 +964,14 @@ export default function App() {
           <button onClick={() => {
                 if (isAdmin || dailyGamesPlayed < 3) setIsPlayingVocab(true);
                 else if (inventory.tickets > 0) {
-                  if (window.confirm("Bạn đã hết lượt. Dùng 1 Lượt chơi Game dự phòng để chơi tiếp?")) consumeItem('tickets').then(() => setIsPlayingVocab(true));
+                  if (window.confirm("Bạn đã hết lượt. Dùng 1 Vé chơi game dự phòng để chơi tiếp?")) consumeItem('tickets').then(() => setIsPlayingVocab(true));
                 } else alert("Bạn đã hết lượt chơi hôm nay. Hãy điểm danh hoặc kiếm thêm Lượt!");
               }} 
               className="flex-1 flex justify-center items-center gap-2 px-4 py-4 rounded-xl font-bold text-white bg-indigo-500 hover:bg-indigo-600 transition-colors shadow-sm whitespace-nowrap">
-            <Gamepad2 size={20} /> Game
+            <Gamepad2 size={20} /> Game Center
           </button>
           <button onClick={() => setShowShop(true)} className="flex-1 flex justify-center items-center gap-2 px-4 py-4 rounded-xl font-bold text-white bg-yellow-500 hover:bg-yellow-600 transition-colors shadow-sm whitespace-nowrap">
-            <Store size={20} /> Store
+            <Store size={20} /> Store & Gacha
           </button>
           <button onClick={openNotebook} className="flex-1 flex justify-center items-center gap-2 px-4 py-4 rounded-xl font-bold text-white bg-emerald-500 hover:bg-emerald-600 transition-colors shadow-sm whitespace-nowrap">
             <BookOpen size={20} /> Library
@@ -812,17 +998,35 @@ export default function App() {
 
       </div>
 
-      <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <div className="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {courseData.map((day) => {
           const todayStr = new Date().toDateString();
           const isCompleted = day.id < unlockedDay;
           const isAcademicallyNext = day.id === unlockedDay;
           const hasNotStudiedToday = lastCompletedDate !== todayStr;
-          const isUnlocked = isAdmin || (isAcademicallyNext && isScheduledToday && hasNotStudiedToday);
+          
+          const isUnlocked = isAdmin || isCompleted || (isAcademicallyNext && isScheduledToday && hasNotStudiedToday);
           const isWaitingForTomorrow = !isAdmin && isAcademicallyNext && (!isScheduledToday || !hasNotStudiedToday);
+          
+          // Lấy đúng số lượt redo của BÀI NÀY
+          const currentLessonRedo = lessonScores[day.id]?.redoCount || 0;
+          const canEarnRedoCoins = isCompleted && currentLessonRedo < 3;
+          const maxedRedo = isCompleted && currentLessonRedo >= 3;
 
           return (
-            <button key={day.id} disabled={!isUnlocked} onClick={() => setActiveLesson(day.id)} className={`relative p-4 h-32 rounded-xl flex flex-col justify-center items-center border-2 transition-all ${isCompleted && !isAdmin ? 'bg-green-50 border-green-500 text-green-700' : isWaitingForTomorrow ? 'bg-orange-50 border-orange-300 text-orange-600 cursor-not-allowed opacity-80' : !isUnlocked ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed' : day.isTest ? 'bg-purple-50 border-purple-500 text-purple-700 shadow-md hover:scale-105 animate-pulse' : 'bg-white border-blue-500 text-blue-700 shadow-md hover:scale-105 animate-pulse'}`}>
+            <button key={day.id} disabled={!isUnlocked} onClick={() => setActiveLesson(day.id)} className={`relative aspect-[4/3] sm:aspect-square p-4 rounded-2xl flex flex-col justify-center items-center border-2 transition-all ${isCompleted && !isAdmin ? 'bg-green-50/50 border-green-500 text-green-700 hover:scale-105 cursor-pointer shadow-sm' : isWaitingForTomorrow ? 'bg-orange-50 border-orange-300 text-orange-600 cursor-not-allowed opacity-80' : !isUnlocked ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed' : day.isTest ? 'bg-purple-50 border-purple-500 text-purple-700 shadow-md hover:scale-105 animate-pulse' : 'bg-white border-blue-500 text-blue-700 shadow-md hover:scale-105 animate-pulse'}`}>
+              
+              {isCompleted && !isAdmin && canEarnRedoCoins && (
+                  <div className="absolute -top-3 -right-3 bg-gradient-to-r from-emerald-400 to-green-500 text-white text-[10px] font-black px-2 py-1 rounded-full shadow-md animate-bounce border-2 border-white flex items-center gap-1 z-10">
+                     <Coins size={10}/> +2 Ôn tập
+                  </div>
+              )}
+              {isCompleted && !isAdmin && maxedRedo && (
+                  <div className="absolute -top-3 -right-3 bg-gray-400 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm border-2 border-white z-10">
+                     Đã xong
+                  </div>
+              )}
+
               {!isUnlocked && !isCompleted && !isWaitingForTomorrow && <Lock className="absolute top-2 right-2 w-4 h-4 text-gray-300" />}
               {!isScheduledToday && isAcademicallyNext && !isCompleted && !isWaitingForTomorrow && !isAdmin && <Calendar className="absolute top-2 right-2 w-4 h-4 text-orange-400" />}
               {isWaitingForTomorrow && <Calendar className="absolute top-2 right-2 w-5 h-5 text-orange-400" title="Đã hết lượt học hôm nay / Chưa đến ngày" />}
@@ -960,128 +1164,140 @@ export default function App() {
         </div>
       )}
 
+      {/* SHOP UI FIX LAYOUT RESPONSIVE HOÀN HẢO */}
       {showShop && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
             <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-6 flex justify-between items-center text-white shrink-0">
               <div>
                 <h3 className="text-2xl font-black flex items-center gap-2"><Store size={28} /> Cửa Hàng Vật Phẩm</h3>
-                <p className="font-medium text-yellow-100 flex items-center gap-2 mt-1">Sức mua hiện tại: <span className="bg-black/20 px-2 py-1 rounded flex items-center gap-1"><Coins size={16}/> {coins} Coins</span></p>
+                <p className="font-medium text-yellow-100 flex items-center gap-2 mt-1">Sức mua hiện tại: <span className="bg-black/20 px-2 py-1 rounded flex items-center gap-1"><Coins size={16}/> {coins} Coins</span> | <span className="bg-black/20 px-2 py-1 rounded flex items-center gap-1"><Target size={16}/> {totalScore} Điểm</span></p>
               </div>
               <button onClick={() => setShowShop(false)} className="hover:bg-black/10 p-2 rounded-full transition-colors"><X size={24} /></button>
             </div>
             
-            <div className="p-6 overflow-y-auto flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="p-6 overflow-y-auto flex-1 flex flex-col">
               
-              <div className="border-2 border-red-200 rounded-2xl p-5 flex flex-col justify-between hover:border-red-400 transition-colors bg-red-50/40 relative overflow-hidden">
-                <div className="absolute -right-4 -bottom-4 opacity-10"><ShieldAlert size={100}/></div>
-                <div className="relative z-10">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center shadow-sm border border-red-200"><ShieldAlert size={24}/></div>
-                    <span className="bg-white text-gray-700 font-bold px-3 py-1 rounded-full text-sm shadow-sm border border-gray-100">Đang có: {inventory.immortals || 0}</span>
+              {/* TRẠM QUY ĐỔI ĐIỂM SANG XU NẰM FULL WIDTH TRÊN CÙNG */}
+              <div className="border-2 border-emerald-400 bg-emerald-50 rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500 transition-colors relative overflow-hidden mb-6 shadow-sm w-full">
+                <div className="absolute right-0 top-0 opacity-10 pointer-events-none"><ArrowRightLeft size={180}/></div>
+                <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-3 mb-2">
+                       <div className="w-12 h-12 bg-white text-emerald-600 rounded-xl flex items-center justify-center shadow-sm border border-emerald-200"><ArrowRightLeft size={24}/></div>
+                       <h4 className="text-xl sm:text-2xl font-black text-emerald-900">Trạm Quy Đổi</h4>
+                    </div>
+                    <p className="text-sm text-emerald-800 font-medium mb-2">Đổi Điểm học tập lấy Coins (Tỷ giá: 1 Điểm = 10 Coins).</p>
+                    <div className="flex flex-wrap gap-2 text-xs font-bold text-emerald-700">
+                       <span className="bg-white px-3 py-1.5 rounded-lg shadow-sm border border-emerald-100">Hôm nay: {exchangeStats.dailyCount}/10 lần</span>
+                       <span className="bg-white px-3 py-1.5 rounded-lg shadow-sm border border-emerald-100">Tháng này: {exchangeStats.monthlyCount}/50 lần</span>
+                    </div>
                   </div>
-                  <h4 className="text-xl font-black text-red-900 mb-1">Thẻ Bất Tử</h4>
-                  <p className="text-xs text-red-700 font-bold mb-4 bg-white/50 p-2 rounded-lg border border-red-100">Chống trừ điểm khi làm sai bài tập quá giới hạn (Chỉ có thể dùng nếu đang làm ĐÚNG TỪ 60% TRỞ LÊN). Giá tăng x2 sau mỗi lần mua.</p>
+                  <button onClick={handleExchangePoints} className="w-full md:w-auto shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-4 px-8 rounded-xl shadow-lg hover:shadow-emerald-500/50 transition-transform active:scale-95 flex items-center justify-center gap-2">
+                     <Target size={20}/> -1 Điểm <ArrowRightLeft size={16}/> +10 Coins
+                  </button>
                 </div>
-                <button onClick={() => buyItem("Thẻ Bất Tử", currentImmortalPrice, 'immortals')} className="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white font-black py-3 rounded-xl hover:shadow-lg transition-transform active:scale-95 flex justify-center gap-2 relative z-10"><Coins size={20}/> {currentImmortalPrice} Coins</button>
               </div>
 
-              <div className="border-2 border-orange-100 rounded-2xl p-5 flex flex-col justify-between hover:border-orange-300 transition-colors">
-                <div>
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="w-12 h-12 bg-orange-100 text-orange-500 rounded-xl flex items-center justify-center"><Shield size={24}/></div>
-                    <span className="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-full text-sm">Đang có: {inventory.shields}</span>
+              {/* LƯỚI VẬT PHẨM */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                  <div className="border-2 border-red-200 rounded-2xl p-5 flex flex-col justify-between hover:border-red-400 transition-colors bg-red-50/40 relative overflow-hidden">
+                    <div className="absolute -right-4 -bottom-4 opacity-10"><ShieldAlert size={100}/></div>
+                    <div className="relative z-10">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center shadow-sm border border-red-200"><ShieldAlert size={24}/></div>
+                        <span className="bg-white text-gray-700 font-bold px-3 py-1 rounded-full text-sm shadow-sm border border-gray-100">Đang có: {inventory.immortals || 0}</span>
+                      </div>
+                      <h4 className="text-xl font-black text-red-900 mb-1">Thẻ Bất Tử</h4>
+                      <p className="text-xs text-red-700 font-bold mb-4 bg-white/50 p-2 rounded-lg border border-red-100">Chống phạt trừ điểm (Dùng khi đúng >= 60%). Giá x2 sau mỗi lần mua.</p>
+                    </div>
+                    <button onClick={() => buyItem("Thẻ Bất Tử", currentImmortalPrice, 'immortals')} className="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white font-black py-3 rounded-xl hover:shadow-lg transition-transform active:scale-95 flex justify-center gap-2 relative z-10"><Coins size={20}/> {currentImmortalPrice} Coins</button>
                   </div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-1">Streak Shield</h4>
-                  <p className="text-sm text-gray-500 font-medium mb-4">Bảo vệ chuỗi ngày nếu bạn lỡ quên học.</p>
-                </div>
-                <button onClick={() => buyItem("Streak Shield", 20, 'shields')} className="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-black transition-transform active:scale-95 flex justify-center gap-2"><Coins size={20}/> 20 Coins</button>
+
+                  <div className="border-2 border-yellow-200 rounded-2xl p-5 flex flex-col justify-between hover:border-yellow-400 transition-colors bg-yellow-50/40">
+                    <div>
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-xl flex items-center justify-center shadow-sm border border-yellow-200"><Lightbulb size={24}/></div>
+                        <span className="bg-white text-gray-700 font-bold px-3 py-1 rounded-full text-sm shadow-sm border border-gray-100">Đang có: {inventory.hints || 0}</span>
+                      </div>
+                      <h4 className="text-xl font-black text-yellow-900 mb-1">Thẻ Gợi Ý (Hint)</h4>
+                      <p className="text-xs text-yellow-700 font-bold mb-4 bg-white/50 p-2 rounded-lg border border-yellow-100">Loại bỏ 2 đáp án sai (50/50). <br/><span className="text-red-500">Mua: {shopStats.dailyHintBought}/3 lần hôm nay.</span></p>
+                    </div>
+                    <button onClick={() => buyItem("Thẻ Gợi Ý", 20, 'hints')} className="w-full bg-yellow-600 text-white font-black py-3 rounded-xl hover:bg-yellow-700 transition-transform active:scale-95 flex justify-center gap-2"><Coins size={20}/> 20 Coins</button>
+                  </div>
+
+                  <div className="border-2 border-blue-200 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-400 transition-colors bg-blue-50/40">
+                    <div>
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shadow-sm border border-blue-200"><Ticket size={24}/></div>
+                        <span className="bg-white text-gray-700 font-bold px-3 py-1 rounded-full text-sm shadow-sm border border-gray-100">Đang có: {inventory.tickets || 0}</span>
+                      </div>
+                      <h4 className="text-xl font-black text-blue-900 mb-1">Vé Chơi Game</h4>
+                      <p className="text-xs text-blue-700 font-bold mb-4 bg-white/50 p-2 rounded-lg border border-blue-100">Cung cấp thêm 1 lượt chơi Minigame khi hết lượt miễn phí.</p>
+                    </div>
+                    <button onClick={() => buyItem("Vé Chơi Game", 10, 'tickets')} className="w-full bg-blue-600 text-white font-black py-3 rounded-xl hover:bg-blue-700 transition-transform active:scale-95 flex justify-center gap-2"><Coins size={20}/> 10 Coins</button>
+                  </div>
               </div>
 
-              <div className="border-2 border-indigo-100 rounded-2xl p-5 flex flex-col justify-between hover:border-indigo-300 transition-colors">
-                <div>
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="w-12 h-12 bg-indigo-100 text-indigo-500 rounded-xl flex items-center justify-center"><Ticket size={24}/></div>
-                    <span className="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-full text-sm">Đang có: {inventory.skips}</span>
+              {/* VÒNG QUAY GACHA FULL WIDTH */}
+              <div className="border-2 border-purple-300 bg-gradient-to-r from-purple-50 to-fuchsia-50 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-center hover:border-purple-500 transition-colors shrink-0 shadow-sm gap-4 w-full">
+                  <div className="flex items-center gap-4 w-full sm:w-auto">
+                     <div className="w-16 h-16 bg-purple-600 text-white rounded-2xl flex items-center justify-center shadow-md animate-pulse shrink-0"><Dices size={32}/></div>
+                     <div>
+                       <h4 className="text-2xl font-black text-purple-900 mb-1">Vòng Quay Nhân Phẩm</h4>
+                       <p className="text-sm text-purple-800 font-medium">Cơ hội trúng <b className="text-amber-600">500 Coins VIP</b>, Bất Tử, +5 Điểm và nhiều hơn thế!</p>
+                     </div>
                   </div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-1">Thẻ Skip Từ Vựng</h4>
-                  <p className="text-sm text-gray-500 font-medium mb-4">Bỏ qua trạm kiểm tra từ vựng đầu giờ.</p>
-                </div>
-                <button onClick={() => buyItem("Thẻ Skip", 15, 'skips')} className="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-black transition-transform active:scale-95 flex justify-center gap-2"><Coins size={20}/> 15 Coins</button>
+                  <div className="flex flex-col gap-2 w-full sm:w-auto shrink-0 mt-4 sm:mt-0">
+                     {(inventory.gachaTickets > 0) && <span className="bg-purple-200 text-purple-800 font-black px-4 py-2 rounded-xl text-sm shadow-inner text-center border border-purple-300">Sẵn sàng: {inventory.gachaTickets} Vé quay</span>}
+                     <button onClick={() => {setShowShop(false); setShowGachaModal(true);}} className="w-full bg-purple-600 text-white font-black py-4 px-8 rounded-xl hover:bg-purple-700 shadow-lg hover:shadow-purple-500/40 transition-transform active:scale-95 flex justify-center items-center gap-2 whitespace-nowrap">
+                       <PlayCircle size={20}/> MỞ GACHA NGAY
+                     </button>
+                  </div>
               </div>
 
-              <div className="border-2 border-yellow-100 rounded-2xl p-5 flex flex-col justify-between hover:border-yellow-300 transition-colors">
-                <div>
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="w-12 h-12 bg-yellow-100 text-yellow-500 rounded-xl flex items-center justify-center"><Lightbulb size={24}/></div>
-                    <span className="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-full text-sm">Đang có: {inventory.hints}</span>
-                  </div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-1">Gợi ý (Hint)</h4>
-                  <p className="text-sm text-gray-500 font-medium mb-4">Điền giúp bạn 1 đáp án đúng khi làm bài tập.</p>
-                </div>
-                <button onClick={() => buyItem("Hint", 20, 'hints')} className="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-black transition-transform active:scale-95 flex justify-center gap-2"><Coins size={20}/> 20 Coins</button>
-              </div>
-
-              <div className="border-2 border-purple-200 bg-purple-50/50 rounded-2xl p-5 flex flex-col justify-between hover:border-purple-400 transition-colors sm:col-span-2 md:col-span-2">
-                <div>
-                  <div className="flex justify-between items-start mb-3">
-                     <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center"><Dices size={24}/></div>
-                     {(inventory.gachaTickets > 0) && <span className="bg-purple-600 text-white font-black px-3 py-1 rounded-full text-sm shadow-sm animate-pulse">Sẵn sàng: {inventory.gachaTickets} Vé quay</span>}
-                  </div>
-                  <h4 className="text-xl font-bold text-purple-900 mb-1">Vòng Quay Gacha</h4>
-                  <p className="text-sm text-purple-700 font-medium mb-4">Thử vận may! Có tỷ lệ rơi Thẻ Skip, Hint, Bất Tử, 50 Coins hoặc Jackpot!</p>
-                </div>
-                <button onClick={() => {setShowShop(false); setShowGachaModal(true);}} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-3 rounded-xl hover:opacity-90 transition-transform active:scale-95 flex justify-center gap-2 shadow-md">
-                   {inventory.gachaTickets > 0 ? <><Ticket size={20}/> Dùng Vé Gacha Miễn Phí</> : <><Coins size={20}/> 25 Coins</>}
-                </button>
-              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* GIAO DIỆN GACHA MỚI - SIÊU ĐẸP VÀ LẤP LÁNH */}
+      {/* GACHA MODAL VỚI HIỆU ỨNG TIER 1 SIÊU ĐẸP CHO 500 COINS */}
       {showGachaModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[110] p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-[2rem] shadow-2xl max-w-md w-full p-6 sm:p-8 text-center animate-in zoom-in duration-300 border border-gray-100">
+          <div className="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full p-6 sm:p-8 text-center animate-in zoom-in duration-300 border border-gray-100 overflow-hidden relative">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500"></div>
+            
             <h3 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 mb-2 flex justify-center items-center gap-3">
               <Dices size={36} className="text-purple-600"/> Vòng Quay Gacha
             </h3>
-            <p className="text-gray-500 font-bold mb-8 uppercase tracking-wider text-sm bg-gray-100 inline-block px-4 py-1.5 rounded-full">25 Coins hoặc 1 Vé / Lượt</p>
+            <p className="text-gray-500 font-bold mb-8 uppercase tracking-wider text-sm bg-gray-100 inline-block px-4 py-1.5 rounded-full shadow-inner">25 Coins hoặc 1 Vé / Lượt</p>
 
             <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8">
               {gachaItems.map((item, idx) => {
-                const isPremium = item.isPremium;
+                const isTier1 = item.tier === 1;
+                const isTier2 = item.tier === 2;
                 const isSelected = currentSpinIndex === idx;
                 
-                let containerClass = `relative flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border-[3px] transition-all duration-150 w-[30%] sm:w-[28%] aspect-square `;
+                let containerClass = `relative flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border-[3px] transition-all duration-150 w-[30%] sm:w-[28%] aspect-square overflow-hidden `;
                 
                 if (isSelected) {
-                    containerClass += `${item.bg} ${item.border} ${item.text} scale-110 z-10 shadow-2xl `;
-                    if (isPremium) {
-                        containerClass += `shadow-[0_0_20px_rgba(239,68,68,0.5)] ring-4 ring-red-200 ring-offset-2 `;
-                    }
+                    containerClass += `scale-110 z-10 shadow-2xl ${item.bg} ${item.border} ${item.text} `;
+                    if (isTier1) containerClass += `ring-4 ring-yellow-400 ring-offset-2 shadow-[0_0_30px_rgba(234,179,8,0.8)] `;
+                    else if (isTier2) containerClass += `ring-2 ring-purple-300 ring-offset-2 shadow-[0_0_20px_rgba(168,85,247,0.5)] `;
                 } else {
-                    containerClass += `border-gray-200 bg-gray-50 opacity-50 grayscale `;
-                    if (isPremium) {
-                       containerClass += `!opacity-90 grayscale-0 border-orange-200 `; 
-                    }
+                    containerClass += `border-gray-200 bg-gray-50 opacity-60 grayscale `;
+                    if (isTier1) containerClass += `!opacity-100 grayscale-0 border-yellow-300 shadow-[0_0_10px_rgba(234,179,8,0.3)] `; 
+                    if (isTier2) containerClass += `!opacity-90 grayscale-0 border-purple-200 `; 
                 }
 
                 return (
                   <div key={item.id} className={containerClass}>
-                    {isPremium && (
-                       <div className="absolute top-1.5 right-1.5 text-yellow-500 animate-pulse drop-shadow-md">✨</div>
-                    )}
-                    {isPremium && isSelected && (
-                       <div className="absolute inset-0 bg-white/40 animate-[pulse_0.5s_ease-in-out_infinite] rounded-xl mix-blend-overlay"></div>
-                    )}
-                    <div className={`text-3xl sm:text-4xl mb-2 transition-transform duration-200 ${isSelected ? 'scale-110 drop-shadow-md' : ''}`}>
-                      {item.icon}
-                    </div>
-                    <div className={`font-black text-[10px] sm:text-xs leading-tight text-center ${isSelected ? 'drop-shadow-sm' : ''}`}>
-                      {item.label}
-                    </div>
+                    {isTier1 && <div className="absolute inset-0 bg-gradient-to-tr from-yellow-300/30 to-amber-500/30 animate-[spin_3s_linear_infinite] rounded-xl pointer-events-none"></div>}
+                    {(isTier1 || isTier2) && (<div className="absolute top-1 right-1 text-yellow-400 animate-pulse drop-shadow-md"><Sparkles size={14}/></div>)}
+                    {isSelected && (isTier1 || isTier2) && (<div className="absolute inset-0 bg-white/40 animate-[pulse_0.3s_ease-in-out_infinite] rounded-xl mix-blend-overlay"></div>)}
+                    
+                    <div className={`text-3xl sm:text-4xl mb-2 transition-transform duration-200 z-10 ${isSelected ? 'scale-125 drop-shadow-lg' : ''}`}>{item.icon}</div>
+                    <div className={`font-black text-[10px] sm:text-xs leading-tight text-center z-10 ${isSelected ? 'drop-shadow-sm' : ''} ${isTier1 && !isSelected ? 'text-amber-600' : ''}`}>{item.label}</div>
                   </div>
                 );
               })}
@@ -1090,25 +1306,30 @@ export default function App() {
             {gachaPrize ? (
               <div className="mb-8 animate-in zoom-in duration-300">
                 <p className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-2">Phần thưởng của bạn</p>
-                <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-2xl border-2 shadow-lg ${gachaPrize.bg} ${gachaPrize.border} ${gachaPrize.text}`}>
-                   <span className="text-3xl drop-shadow-md">{gachaPrize.icon}</span>
-                   <span className="text-2xl font-black tracking-tight">{gachaPrize.label}</span>
+                <div className={`inline-flex items-center gap-3 px-6 py-4 rounded-2xl border-2 shadow-xl ${gachaPrize.bg} ${gachaPrize.border} ${gachaPrize.text} relative overflow-hidden`}>
+                   {gachaPrize.tier === 1 && <div className="absolute inset-0 bg-white/20 animate-[pulse_1s_ease-in-out_infinite]"></div>}
+                   <span className="text-4xl drop-shadow-md relative z-10">{gachaPrize.icon}</span>
+                   <span className="text-3xl font-black tracking-tight relative z-10">{gachaPrize.label}</span>
                 </div>
               </div>
             ) : (
-              <div className="mb-8 h-[88px]"></div> 
+              <div className="mb-8 h-[94px]"></div> 
             )}
 
             <div className="flex gap-3">
               <button onClick={() => setShowGachaModal(false)} disabled={isSpinning} className="flex-1 bg-gray-100 text-gray-600 font-bold py-4 rounded-xl hover:bg-gray-200 disabled:opacity-50 transition-colors">Đóng</button>
-              <button onClick={handleSpinGacha} disabled={isSpinning || (!inventory.gachaTickets && coins < 25)} className="flex-[2] bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black py-4 rounded-xl hover:shadow-[0_0_20px_rgba(79,70,229,0.4)] transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex justify-center items-center gap-2 text-lg">
-                {isSpinning ? 'Đang quay...' : (inventory.gachaTickets || 0) > 0 ? <><Ticket size={22}/> Quay bằng Vé</> : <><Coins size={22}/> Quay (25 Coins)</>}
+              <button onClick={handleSpinGacha} disabled={isSpinning || (!inventory.gachaTickets && coins < 25)} className="flex-[2] bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black py-4 rounded-xl hover:shadow-[0_0_20px_rgba(79,70,229,0.4)] transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex justify-center items-center gap-2 text-lg relative overflow-hidden">
+                {isSpinning && <div className="absolute inset-0 bg-white/20 animate-pulse"></div>}
+                <span className="relative z-10 flex items-center gap-2">
+                  {isSpinning ? 'Đang quay...' : (inventory.gachaTickets || 0) > 0 ? <><Ticket size={22}/> Dùng Vé Gacha</> : <><Coins size={22}/> Quay (25 Coins)</>}
+                </span>
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* CÁC PHẦN BẢNG ĐIỂM / CHECKIN / PROFILE ĐƯỢC GIỮ NGUYÊN */}
       {showProfile && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div className="bg-gray-50 rounded-3xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in duration-300">
@@ -1127,12 +1348,12 @@ export default function App() {
               <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                   {achievementsList.map((ach, idx) => (
-                    <div key={idx} className={`relative p-4 rounded-xl border-2 transition-all ${ach.achieved ? `border-transparent ${ach.bg} shadow-sm hover:scale-105` : 'border-gray-200 bg-gray-50 opacity-60 grayscale'}`}>
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl mb-3 bg-white shadow-sm ${ach.achieved ? ach.color : 'text-gray-400'}`}>{ach.icon}</div>
-                      <h5 className={`font-bold text-lg ${ach.achieved ? 'text-gray-900' : 'text-gray-500'}`}>{ach.title}</h5>
-                      <p className="text-xs text-gray-500 mt-1 font-medium leading-relaxed">{ach.desc}</p>
-                      <span className="text-yellow-600 font-black block mt-2 text-sm bg-white/60 inline-block px-2 py-1 rounded-md">+{ach.rewardCoins} Coins</span>
-                      {ach.achieved && <div className="absolute top-3 right-3 text-amber-400 bg-white rounded-full"><CheckCircle2 size={20}/></div>}
+                    <div key={idx} className={`relative p-5 rounded-2xl border-2 transition-all duration-300 ${ach.achieved ? `border-transparent ${ach.bg} shadow-md hover:-translate-y-1` : 'border-gray-100 bg-white opacity-60 grayscale'}`}>
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl mb-4 shadow-sm ${ach.achieved ? `${ach.iconBg} ${ach.color}` : 'bg-gray-100 text-gray-400'}`}>{ach.icon}</div>
+                      <h5 className={`font-black text-lg mb-1 ${ach.achieved ? 'text-gray-800' : 'text-gray-400'}`}>{ach.title}</h5>
+                      <p className="text-xs font-medium text-gray-500 leading-relaxed mb-3">{ach.desc}</p>
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-black shadow-sm ${ach.achieved ? 'bg-white text-yellow-600' : 'bg-gray-100 text-gray-400'}`}>+{ach.rewardCoins} Coins</span>
+                      {ach.achieved && <div className="absolute top-4 right-4 text-amber-500 bg-white rounded-full shadow-sm"><CheckCircle2 size={20}/></div>}
                     </div>
                   ))}
                 </div>
