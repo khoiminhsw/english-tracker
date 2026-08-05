@@ -957,6 +957,190 @@ export const generateCourseData = () => {
         { type: 'writing', question: '25. Sắp xếp các từ sau: new / we / will / discover / planets / I / hope / .', correct: 'I hope we will discover new planets.' }
       ];
     }
+if (i === 16) {
+      dayData.videoUrl = "https://drive.google.com/file/d/1P23t9Uiv09QTYk5mup3Yl7sfACdKlHI4/view?usp=drive_link";
+      
+      // Từ vựng trích xuất và mở rộng cho bài học Ngày 16 (Quá khứ tiếp diễn & Thảm họa thiên nhiên)
+      dayData.vocabulary = [
+        { word: "earthquake", meaning: "trận động đất" },
+        { word: "storm", meaning: "cơn bão" },
+        { word: "typhoon", meaning: "bão nhiệt đới" },
+        { word: "erupt", meaning: "phun trào (núi lửa)" },
+        { word: "rescue", meaning: "giải cứu" },
+        { word: "shelter", meaning: "nơi trú ẩn" },
+        { word: "damage", meaning: "thiệt hại" },
+        { word: "destroy", meaning: "phá hủy" },
+        { word: "survivor", meaning: "người sống sót" },
+        { word: "safely", meaning: "một cách an toàn" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20
+      const readingTextDay16 = "Last weekend, a terrible storm hit our town. It was Saturday evening, and my family was doing different things at home. I was reading a book in my bedroom while my sister was listening to music. My parents were preparing dinner in the kitchen. Suddenly, the lights went out, and we heard a loud noise outside.\n\nMy father looked out the window and saw that the strong wind was blowing down the trees. It was raining heavily. We were feeling very scared. My mother quickly found some candles and a flashlight. We sat together in the living room and waited for the storm to stop.\n\nWhile we were sitting in the dark, we heard the sound of a police car. They were driving around the neighborhood to check if everyone was safe. Fortunately, our house was not damaged, but many trees in the park were destroyed. The rescue teams worked all night to help the town. It was an unforgettable experience.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) ---
+        { type: 'mcq', question: '1. I ___ TV when the phone rang.', options: ['was watching', 'am watching', 'watched', 'were watching'], correct: 'was watching' },
+        { type: 'mcq', question: '2. While we ___ dinner, it started to rain heavily.', options: ['have', 'had', 'are having', 'were having'], correct: 'were having' },
+        { type: 'mcq', question: '3. She ___ a book at 8 PM yesterday.', options: ['is reading', 'was reading', 'read', 'reads'], correct: 'was reading' },
+        { type: 'mcq', question: '4. What ___ you ___ when the earthquake happened?', options: ['did / do', 'do / do', 'were / doing', 'are / doing'], correct: 'were / doing' },
+        { type: 'mcq', question: '5. They ___ football when it suddenly snowed.', options: ['played', 'were playing', 'are playing', 'play'], correct: 'were playing' },
+        { type: 'mcq', question: '6. While the teacher was explaining, the students ___ carefully.', options: ['was listening', 'are listening', 'were listening', 'listened'], correct: 'were listening' },
+        { type: 'mcq', question: '7. The wind ___ strongly when we stepped out of the house.', options: ['is blowing', 'blows', 'were blowing', 'was blowing'], correct: 'was blowing' },
+        { type: 'mcq', question: '8. My mother ___ dinner while my father was reading the newspaper.', options: ['prepared', 'was preparing', 'is preparing', 'prepares'], correct: 'was preparing' },
+        { type: 'mcq', question: '9. ___ he ___ along the street when he saw the accident?', options: ['Was / walking', 'Is / walking', 'Did / walk', 'Were / walking'], correct: 'Was / walking' },
+        { type: 'mcq', question: '10. The rescue team ___ people when the building collapsed.', options: ['was helping', 'helps', 'is helping', 'were helping'], correct: 'was helping' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay16, question: '11. What is the main idea of the passage?', options: ['A family’s experience during a terrible storm.', 'How to prepare for an earthquake.', 'The history of a town.', 'A fun weekend at the park.'], correct: 'A family’s experience during a terrible storm.' },
+        { type: 'reading', text: readingTextDay16, question: '12. When did the storm hit the town?', options: ['Last Sunday morning.', 'Last Saturday evening.', 'Yesterday afternoon.', 'Last Friday night.'], correct: 'Last Saturday evening.' },
+        { type: 'reading', text: readingTextDay16, question: '13. What was the writer doing when the lights went out?', options: ['Listening to music.', 'Preparing dinner.', 'Reading a book.', 'Sleeping.'], correct: 'Reading a book.' },
+        { type: 'reading', text: readingTextDay16, question: '14. What were the parents doing at that time?', options: ['Reading books.', 'Listening to music.', 'Looking out the window.', 'Preparing dinner in the kitchen.'], correct: 'Preparing dinner in the kitchen.' },
+        { type: 'reading', text: readingTextDay16, question: '15. What did the father see when he looked out the window?', options: ['A police car.', 'The strong wind blowing down trees.', 'People running in the street.', 'A collapsed building.'], correct: 'The strong wind blowing down trees.' },
+        { type: 'reading', text: readingTextDay16, question: '16. How did the family feel during the storm?', options: ['Happy.', 'Excited.', 'Scared.', 'Bored.'], correct: 'Scared.' },
+        { type: 'reading', text: readingTextDay16, question: '17. What did the mother quickly find?', options: ['Some food and water.', 'Some candles and a flashlight.', 'A radio and batteries.', 'Warm clothes.'], correct: 'Some candles and a flashlight.' },
+        { type: 'reading', text: readingTextDay16, question: '18. Who was driving around the neighborhood to check on people?', options: ['The rescue team.', 'The police.', 'The neighbors.', 'The parents.'], correct: 'The police.' },
+        { type: 'reading', text: readingTextDay16, question: '19. Was the writer’s house damaged by the storm?', options: ['Yes, it was completely destroyed.', 'Yes, but only a little.', 'No, it was not damaged.', 'The passage doesn’t mention it.'], correct: 'No, it was not damaged.' },
+        { type: 'reading', text: readingTextDay16, question: '20. What was destroyed during the storm?', options: ['Many trees in the park.', 'The police car.', 'The living room.', 'The writer’s bedroom.'], correct: 'Many trees in the park.' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: watching / I / TV / yesterday / was / 8 PM / at / .', correct: 'I was watching TV at 8 PM yesterday.' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: playing / They / when / started / were / tennis / rain / to / it / .', correct: 'They were playing tennis when it started to rain.' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: preparing / mother / dinner / My / while / was / reading / my / father / was / .', correct: 'My mother was preparing dinner while my father was reading.' },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: not / We / were / sleeping / the / when / happened / earthquake / .", correct: "We were not sleeping when the earthquake happened." },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: doing / What / you / yesterday / were / evening / ?', correct: 'What were you doing yesterday evening?' }
+      ];
+    }
+    if (i === 17) {
+      dayData.videoUrl = "https://drive.google.com/file/d/1r4BmbDxiOQba86ay0Cz3-xyivsL516iU/view?usp=drive_link";
+      
+      // Từ vựng trích xuất và mở rộng cho bài học Ngày 17 (Hiện tại hoàn thành & Trải nghiệm du lịch)
+      dayData.vocabulary = [
+        { word: "experience", meaning: "trải nghiệm, kinh nghiệm" },
+        { word: "abroad", meaning: "ở nước ngoài" },
+        { word: "destination", meaning: "điểm đến" },
+        { word: "luggage", meaning: "hành lý" },
+        { word: "explore", meaning: "khám phá" },
+        { word: "culture", meaning: "văn hóa" },
+        { word: "traditional", meaning: "truyền thống" },
+        { word: "unforgettable", meaning: "không thể nào quên" },
+        { word: "book (a ticket/trip)", meaning: "đặt (vé/chuyến đi)" },
+        { word: "delicious", meaning: "ngon miệng" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20
+      const readingTextDay17 = "My name is Anna, and I love traveling. So far, I have visited three different countries with my family. We have been to Japan, South Korea, and Thailand. During these trips, I have tried many delicious traditional foods, such as sushi and kimchi. However, I have never eaten extremely spicy food because my stomach is quite sensitive.\n\nMy parents have already booked our next trip for the summer holiday. We have planned to visit Europe for the first time. We are going to explore France and Italy. I haven't packed my luggage yet because there are still two weeks left, but I am very excited. I have already bought a new camera to take beautiful photos.\n\nTraveling has taught me a lot about different cultures and has given me unforgettable experiences. I have made some international friends online, and we have kept in touch since last year. Have you ever traveled abroad? It is truly a wonderful way to learn about the world.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) ---
+        { type: 'mcq', question: '1. I ___ to Paris three times in my life.', options: ['have been', 'has been', 'was', 'am'], correct: 'have been' },
+        { type: 'mcq', question: '2. She ___ her homework yet.', options: ['has finished', 'haven\'t finished', 'hasn\'t finished', 'finished'], correct: 'hasn\'t finished' },
+        { type: 'mcq', question: '3. They have lived in this city ___ 2015.', options: ['since', 'for', 'in', 'ago'], correct: 'since' },
+        { type: 'mcq', question: '4. ___ you ever ___ sushi?', options: ['Do / eat', 'Have / eaten', 'Did / eat', 'Are / eating'], correct: 'Have / eaten' },
+        { type: 'mcq', question: '5. We have known each other ___ five years.', options: ['since', 'for', 'during', 'in'], correct: 'for' },
+        { type: 'mcq', question: '6. My father ___ just ___ a new car.', options: ['have / bought', 'has / buy', 'has / bought', 'did / buy'], correct: 'has / bought' },
+        { type: 'mcq', question: '7. Hurry up! The train ___ already ___.', options: ['have / left', 'has / left', 'has / leave', 'did / leave'], correct: 'has / left' },
+        { type: 'mcq', question: '8. I have ___ seen that movie. I don\'t know what it is about.', options: ['ever', 'never', 'already', 'just'], correct: 'never' },
+        { type: 'mcq', question: '9. He ___ his keys, so he can\'t open the door now.', options: ['lost', 'loses', 'has lost', 'have lost'], correct: 'has lost' },
+        { type: 'mcq', question: '10. How long ___ you ___ English?', options: ['have / studied', 'do / study', 'has / studied', 'did / study'], correct: 'have / studied' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay17, question: '11. What is the main idea of the passage?', options: ['Anna\'s problems with spicy food.', 'How to book a trip to Europe.', 'Anna\'s travel experiences and future plans.', 'The history of traditional foods.'], correct: 'Anna\'s travel experiences and future plans.' },
+        { type: 'reading', text: readingTextDay17, question: '12. How many countries has Anna visited so far?', options: ['One', 'Two', 'Three', 'Four'], correct: 'Three' },
+        { type: 'reading', text: readingTextDay17, question: '13. Which countries has Anna been to?', options: ['Japan, South Korea, and Thailand.', 'France and Italy.', 'Japan, China, and Thailand.', 'South Korea, France, and Italy.'], correct: 'Japan, South Korea, and Thailand.' },
+        { type: 'reading', text: readingTextDay17, question: '14. What has Anna tried during her trips?', options: ['Spicy food.', 'Delicious traditional foods.', 'Fast food.', 'European food.'], correct: 'Delicious traditional foods.' },
+        { type: 'reading', text: readingTextDay17, question: '15. Why has she never eaten extremely spicy food?', options: ['Because she doesn\'t have money.', 'Because she hates the smell.', 'Because her stomach is sensitive.', 'Because her parents don\'t allow it.'], correct: 'Because her stomach is sensitive.' },
+        { type: 'reading', text: readingTextDay17, question: '16. What have her parents already done?', options: ['They have packed the luggage.', 'They have booked the next trip.', 'They have bought a new camera.', 'They have visited Europe.'], correct: 'They have booked the next trip.' },
+        { type: 'reading', text: readingTextDay17, question: '17. Where have they planned to visit for their next trip?', options: ['Japan and Thailand.', 'France and Italy.', 'South Korea and China.', 'America.'], correct: 'France and Italy.' },
+        { type: 'reading', text: readingTextDay17, question: '18. Has Anna packed her luggage yet?', options: ['Yes, she has.', 'No, she hasn\'t.', 'She packed it yesterday.', 'The passage doesn\'t mention.'], correct: 'No, she hasn\'t.' },
+        { type: 'reading', text: readingTextDay17, question: '19. What has Anna bought for the upcoming trip?', options: ['A new bag.', 'Some traditional food.', 'A new camera.', 'A new smartphone.'], correct: 'A new camera.' },
+        { type: 'reading', text: readingTextDay17, question: '20. What has traveling taught Anna?', options: ['How to speak French.', 'A lot about different cultures.', 'How to cook sushi.', 'How to book cheap flights.'], correct: 'A lot about different cultures.' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: have / visited / I / London / never / .', correct: 'I have never visited London.' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: lived / She / has / here / 2010 / since / .', correct: 'She has lived here since 2010.' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: Have / ever / eaten / you / food / Japanese / ?', correct: 'Have you ever eaten Japanese food?' },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: just / They / have / their / finished / homework / .", correct: "They have just finished their homework." },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: not / We / bought / the / tickets / have / yet / .', correct: 'We have not bought the tickets yet.' }
+      ];
+    }
+    if (i === 18) {
+      dayData.isTest = true;
+      dayData.videoUrl = null; 
+      dayData.requiredScore = 40; // Đề thi thực tế có 40 câu
+      dayData.vocabulary = []; 
+
+      // Dữ liệu văn bản chung cho bài đọc hiểu
+      const readingTextDay18 = "Last summer, our school organized a volunteer trip to a remote village. While we were traveling on the bus, we saw many beautiful landscapes. When we arrived, the local people were waiting for us. Over the past year, our school has built a new library for the children there. Currently, we are collecting more books to send to them. We usually organize these charity events twice a year. I have participated in many campaigns, but this one was the most memorable. By helping others, we learn to appreciate our lives more.";
+      
+      // Dữ liệu văn bản chung cho bài đọc điền từ
+      const clozeTextDay18 = "Space exploration has always been a fascinating topic. In 1969, Neil Armstrong (33) ___ on the moon. Since then, technology (34) ___ significantly. Currently, scientists (35) ___ a new spacecraft to explore Mars. They hope to find signs of water there. Space missions (36) ___ very expensive, but they provide valuable information about our universe. Right now, many young students (37) ___ to become astronauts in the future.";
+
+      dayData.exercises = [
+        // I. BIỂN BÁO & THÔNG BÁO
+        { type: 'reading', text: "CAUTION\n- Wet Floor.\n- Please walk slowly.", question: "1. What does the sign say?", options: ["You must run quickly.", "You should be careful because the floor is wet.", "You can swim here.", "You should wash the floor."], correct: "You should be careful because the floor is wet." },
+        { type: 'reading', text: "LIBRARY RULES\n- Keep silent.\n- No food or drinks.", question: "2. What does this notice say?", options: ["You can eat and drink here.", "You must speak loudly.", "You must not make noise or eat in the library.", "You can buy food in the library."], correct: "You must not make noise or eat in the library." },
+
+        // II. NGỮ ÂM
+        { type: 'mcq', question: "3. Choose the word whose underlined part differs in pronunciation (ending -ed):", options: ["play\u0332e\u0332d\u0332", "listen\u0332e\u0332d\u0332", "watch\u0332e\u0332d\u0332", "clean\u0332e\u0332d\u0332"], correct: "watch\u0332e\u0332d\u0332" },
+        { type: 'mcq', question: "4. Choose the word whose underlined part differs in pronunciation (vowel 'a'):", options: ["sp\u0332a\u0332ce", "tr\u0332a\u0332vel", "pl\u0332a\u0332net", "gr\u0332a\u0332vity"], correct: "sp\u0332a\u0332ce" },
+
+        // III. SẮP XẾP ĐOẠN VĂN
+        { type: 'reading', text: "a. I was reading a book in my bedroom.\nb. Suddenly, the lights went out.\nc. Last night, I was alone at home.\nd. I felt very scared.\ne. While I was sitting in the dark, I heard a loud noise outside.", question: "5. Choose the correct arrangement to make a meaningful paragraph:", options: ["c - a - b - e - d", "a - b - c - d - e", "c - b - a - d - e", "a - c - b - e - d"], correct: "c - a - b - e - d" },
+        { type: 'reading', text: "a. Dear John,\nb. Have you ever been to Paris?\nc. I have just returned from a trip there.\nd. It was an amazing experience!\ne. Best wishes.", question: "6. Choose the correct arrangement to make a meaningful letter:", options: ["a - c - b - d - e", "a - b - c - d - e", "b - a - c - d - e", "a - c - d - b - e"], correct: "a - b - c - d - e" },
+
+        // IV. NGỮ PHÁP & TỪ VỰNG (Hiện tại đơn, Tiếp diễn, Quá khứ đơn, Quá khứ tiếp diễn, Hiện tại hoàn thành)
+        { type: 'mcq', question: "7. My father usually ___ coffee in the morning.", options: ["drinks", "is drinking", "drank", "has drunk"], correct: "drinks" },
+        { type: 'mcq', question: "8. Look! The children ___ football in the yard.", options: ["play", "played", "are playing", "have played"], correct: "are playing" },
+        { type: 'mcq', question: "9. We ___ the national museum two days ago.", options: ["visit", "have visited", "were visiting", "visited"], correct: "visited" },
+        { type: 'mcq', question: "10. I ___ my homework when the phone rang yesterday.", options: ["do", "am doing", "was doing", "have done"], correct: "was doing" },
+        { type: 'mcq', question: "11. She ___ in this city since 2010.", options: ["lives", "is living", "lived", "has lived"], correct: "has lived" },
+        { type: 'mcq', question: "12. They ___ their science project yet.", options: ["don't finish", "didn't finish", "haven't finished", "aren't finishing"], correct: "haven't finished" },
+        { type: 'mcq', question: "13. While they ___ in the park, it started to rain heavily.", options: ["walk", "are walking", "walked", "were walking"], correct: "were walking" },
+        { type: 'mcq', question: "14. It is a fact that water ___ at 100 degrees Celsius.", options: ["boil", "boils", "is boiling", "boiled"], correct: "boils" },
+        { type: 'mcq', question: "15. Neil Armstrong was the first ___ to walk on the moon.", options: ["alien", "planet", "astronaut", "robot"], correct: "astronaut" },
+        { type: 'mcq', question: "16. We should use ___ bags instead of plastic ones to protect the environment.", options: ["single-use", "reusable", "toxic", "expensive"], correct: "reusable" },
+        { type: 'mcq', question: "17. They decided to donate old clothes and books to the local ___.", options: ["charity", "airport", "laboratory", "grocery"], correct: "charity" },
+        { type: 'mcq', question: "18. The plane took off from the ___ exactly on time.", options: ["station", "airport", "harbor", "museum"], correct: "airport" },
+
+        // V. SẮP XẾP TỪ THÀNH CÂU CHỌN ĐÁP ÁN ĐÚNG
+        { type: 'mcq', question: "19. Choose the correct sentence arranged from: I / never / have / eaten / Japanese / food / before /.", options: ["I have never eaten Japanese food before.", "I have eaten never Japanese food before.", "I never have eaten Japanese food before.", "I have never eaten before Japanese food."], correct: "I have never eaten Japanese food before." },
+        { type: 'mcq', question: "20. Choose the correct sentence arranged from: She / cooking / was / dinner / at 6 PM / yesterday /.", options: ["She cooking dinner was at 6 PM yesterday.", "She was cooking dinner at 6 PM yesterday.", "Yesterday at 6 PM she dinner was cooking.", "She was at 6 PM yesterday cooking dinner."], correct: "She was cooking dinner at 6 PM yesterday." },
+
+        // VI. TÌNH HUỐNG GIAO TIẾP
+        { type: 'reading', text: "Peter and Mary are talking at school.\nPeter: \"I have just passed my final English exam!\"\nMary: \"___\"", question: "21. Choose the best response:", options: ["Good luck!", "Congratulations!", "You're welcome.", "I'm sorry to hear that."], correct: "Congratulations!" },
+
+        // VII. VIẾT CÂU TỪ TỪ GỢI Ý CHỌN ĐÁP ÁN ĐÚNG
+        { type: 'mcq', question: "22. Make a sentence from: I / start / learn / English / 5 years ago /.", options: ["I start learning English 5 years ago.", "I have started learning English 5 years ago.", "I started learning English 5 years ago.", "I was starting to learn English 5 years ago."], correct: "I started learning English 5 years ago." },
+        { type: 'mcq', question: "23. Make a sentence from: While / I / walk / home / I / see / an accident /.", options: ["While I walked home, I was seeing an accident.", "While I was walking home, I saw an accident.", "While I am walking home, I see an accident.", "While I have walked home, I saw an accident."], correct: "While I was walking home, I saw an accident." },
+
+        // VIII. ĐỌC HIỂU
+        { type: 'reading', text: readingTextDay18, question: "24. What is the main idea of the passage?", options: ["How to travel by bus safely.", "A memorable volunteer trip.", "How to build a library.", "The history of a remote village."], correct: "A memorable volunteer trip." },
+        { type: 'reading', text: readingTextDay18, question: "25. What did the students see while they were traveling on the bus?", options: ["A new library.", "Many beautiful landscapes.", "The local people.", "Many wild animals."], correct: "Many beautiful landscapes." },
+        { type: 'reading', text: readingTextDay18, question: "26. What has the school built over the past year?", options: ["A new bus.", "A new school.", "A new library.", "A new hospital."], correct: "A new library." },
+        { type: 'reading', text: readingTextDay18, question: "27. How often do they organize charity events?", options: ["Once a year.", "Twice a year.", "Every month.", "Every summer."], correct: "Twice a year." },
+        { type: 'reading', text: readingTextDay18, question: "28. The word \"memorable\" is closest in meaning to:", options: ["unforgettable", "terrible", "boring", "expensive"], correct: "unforgettable" },
+
+        // IX. TÌM CÂU ĐỒNG NGHĨA
+        { type: 'mcq', question: "29. \"He started playing the piano in 2015.\" is closest in meaning to:", options: ["He has played the piano since 2015.", "He is playing the piano in 2015.", "He played the piano in 2015.", "He has started playing the piano since 2015."], correct: "He has played the piano since 2015." },
+        { type: 'mcq', question: "30. \"The last time I saw her was last week.\" is closest in meaning to:", options: ["I didn't see her last week.", "I haven't seen her since last week.", "I have seen her for a week.", "I saw her for the last time since last week."], correct: "I haven't seen her since last week." },
+        { type: 'mcq', question: "31. \"I was walking home, and it suddenly started to rain.\" is closest in meaning to:", options: ["It rained while I walk home.", "While I was walking home, it started to rain.", "I walked home while it is raining.", "It has rained while I was walking home."], correct: "While I was walking home, it started to rain." },
+        { type: 'mcq', question: "32. \"She has never visited London before.\" is closest in meaning to:", options: ["This is the first time she has visited London.", "She visited London a long time ago.", "She always visits London.", "She is visiting London right now."], correct: "This is the first time she has visited London." },
+
+        // X. ĐỌC ĐIỀN TỪ
+        { type: 'reading', text: clozeTextDay18, question: "33. Choose the best word for blank (33):", options: ["land", "landed", "have landed", "was landing"], correct: "landed" },
+        { type: 'reading', text: clozeTextDay18, question: "34. Choose the best word for blank (34):", options: ["improve", "improved", "has improved", "is improving"], correct: "has improved" },
+        { type: 'reading', text: clozeTextDay18, question: "35. Choose the best word for blank (35):", options: ["build", "built", "are building", "have built"], correct: "are building" },
+        { type: 'reading', text: clozeTextDay18, question: "36. Choose the best word for blank (36):", options: ["is", "are", "was", "were"], correct: "are" },
+        { type: 'reading', text: clozeTextDay18, question: "37. Choose the best word for blank (37):", options: ["study", "are studying", "studied", "have studied"], correct: "are studying" },
+
+        // XI. TRỌNG ÂM
+        { type: 'mcq', question: "38. Choose the word that differs from the other three in the position of primary stress:", options: ["'planet", "'orbit", "a'broad", "'system"], correct: "a'broad" },
+        { type: 'mcq', question: "39. Choose the word that differs from the other three in the position of primary stress:", options: ["de'velop", "a'ssistant", "in'vention", "'astronaut"], correct: "'astronaut" },
+
+        // XII. SẮP XẾP HỘI THOẠI
+        { type: 'reading', text: "a. Yes, I'm looking for a book about space.\nb. Good morning! Can I help you?\nc. We have some great ones in the science section over there.\nd. Thank you, I'll go check there.", question: "40. Choose the correct arrangement to make a meaningful exchange:", options: ["b - c - a - d", "b - a - c - d", "a - b - c - d", "c - b - a - d"], correct: "b - a - c - d" }
+      ];
+    }
     course.push(dayData);
   }
   return course;
