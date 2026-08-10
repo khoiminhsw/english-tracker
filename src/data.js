@@ -1141,6 +1141,218 @@ if (i === 16) {
         { type: 'reading', text: "a. Yes, I'm looking for a book about space.\nb. Good morning! Can I help you?\nc. We have some great ones in the science section over there.\nd. Thank you, I'll go check there.", question: "40. Choose the correct arrangement to make a meaningful exchange:", options: ["b - c - a - d", "b - a - c - d", "a - b - c - d", "c - b - a - d"], correct: "b - a - c - d" }
       ];
     }
+if (i === 19) {
+      dayData.videoUrl = "https://www.youtube.com/watch?v=vUKXzJcLm1M"; // URL bài giảng Tương lai đơn
+      
+      // Từ vựng trích xuất cho bài học Ngày 19 (Chủ đề Âm nhạc, Nghệ thuật & Tương lai đơn)
+      dayData.vocabulary = [
+        { word: "instrument", meaning: "nhạc cụ" },
+        { word: "perform", meaning: "biểu diễn" },
+        { word: "concert", meaning: "buổi hòa nhạc" },
+        { word: "musician", meaning: "nhạc sĩ" },
+        { word: "exhibition", meaning: "buổi triển lãm" },
+        { word: "creative", meaning: "sáng tạo" },
+        { word: "traditional", meaning: "truyền thống" },
+        { word: "audience", meaning: "khán giả" },
+        { word: "compose", meaning: "sáng tác" },
+        { word: "melody", meaning: "giai điệu" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20 (Ứng dụng thì Tương lai đơn)
+      const readingTextDay19 = "Next month, our school will organize a big music and arts festival. The event will take place in the main hall. Many talented students will perform traditional and modern songs. John, our best musician, will play the piano, and Mary will sing a beautiful melody. We think the audience will love their performance.\n\nIn addition to music, there will be an art exhibition. Students will display their creative paintings and drawings. The art teacher believes that the exhibition will inspire many young artists. Visitors will have the chance to buy some of the artworks. The money from the sales will go to a local charity.\n\nWe won't have any normal classes on that day. Instead, everyone will join the festival and enjoy the activities. The principal hopes that this event will become a traditional festival for our school in the future. We promise that it will be an unforgettable experience for everyone.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) --- Ngữ pháp Tương lai đơn & Từ vựng Nghệ thuật
+        { type: 'mcq', question: '1. I think the music concert ___ at 8 PM tomorrow.', options: ['starts', 'will start', 'started', 'is starting'], correct: 'will start' },
+        { type: 'mcq', question: '2. ___ you ___ the piano at the school festival next week?', options: ['Do / play', 'Are / playing', 'Will / play', 'Did / play'], correct: 'Will / play' },
+        { type: 'mcq', question: '3. She promises she ___ a new song for us soon.', options: ['composes', 'will compose', 'composed', 'is composing'], correct: 'will compose' },
+        { type: 'mcq', question: '4. We ___ to the art exhibition tomorrow because we have an important exam.', options: ['won\'t go', 'will go', 'don\'t go', 'didn\'t go'], correct: 'won\'t go' },
+        { type: 'mcq', question: '5. Many famous ___ will perform at the music festival next month.', options: ['audiences', 'instruments', 'exhibitions', 'musicians'], correct: 'musicians' },
+        { type: 'mcq', question: '6. I believe the ___ will enjoy the beautiful melody tonight.', options: ['audience', 'concert', 'exhibition', 'instrument'], correct: 'audience' },
+        { type: 'mcq', question: '7. The students ___ their creative paintings in the main hall next Monday.', options: ['display', 'will display', 'displayed', 'are displaying'], correct: 'will display' },
+        { type: 'mcq', question: '8. What ___ they ___ at the concert next Sunday?', options: ['do / sing', 'did / sing', 'will / sing', 'are / singing'], correct: 'will / sing' },
+        { type: 'mcq', question: '9. I hope he ___ his traditional musical instrument to the party tonight.', options: ['brings', 'will bring', 'brought', 'is bringing'], correct: 'will bring' },
+        { type: 'mcq', question: '10. She ___ a popular singer in the future because she has a great voice.', options: ['will become', 'becomes', 'became', 'is becoming'], correct: 'will become' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay19, question: '11. What is the main idea of the passage?', options: ['How to play the piano.', 'An upcoming music and arts festival at school.', 'Famous musicians in history.', 'Why students should learn art.'], correct: 'An upcoming music and arts festival at school.' },
+        { type: 'reading', text: readingTextDay19, question: '12. Where will the event take place?', options: ['In the classroom.', 'In the local park.', 'In the main hall.', 'In a museum.'], correct: 'In the main hall.' },
+        { type: 'reading', text: readingTextDay19, question: '13. What will John do at the festival?', options: ['He will sing a song.', 'He will play the piano.', 'He will draw a picture.', 'He will buy an artwork.'], correct: 'He will play the piano.' },
+        { type: 'reading', text: readingTextDay19, question: '14. What will Mary do?', options: ['She will play the guitar.', 'She will sell paintings.', 'She will sing a beautiful melody.', 'She will organize the event.'], correct: 'She will sing a beautiful melody.' },
+        { type: 'reading', text: readingTextDay19, question: '15. What will students display at the art exhibition?', options: ['Traditional instruments.', 'Creative paintings and drawings.', 'Photos of musicians.', 'Old books.'], correct: 'Creative paintings and drawings.' },
+        { type: 'reading', text: readingTextDay19, question: '16. What will visitors have the chance to do?', options: ['Buy some of the artworks.', 'Meet famous singers.', 'Learn how to play the piano.', 'Take normal classes.'], correct: 'Buy some of the artworks.' },
+        { type: 'reading', text: readingTextDay19, question: '17. Where will the money from the sales go?', options: ['To the principal.', 'To the students.', 'To a local charity.', 'To buy new instruments.'], correct: 'To a local charity.' },
+        { type: 'reading', text: readingTextDay19, question: '18. Will students have normal classes on that day?', options: ['Yes, they will.', 'No, they won\'t.', 'Only in the morning.', 'The passage doesn\'t mention it.'], correct: 'No, they won\'t.' },
+        { type: 'reading', text: readingTextDay19, question: '19. What does the principal hope?', options: ['The students will study harder.', 'The event will become a traditional festival.', 'The audience will buy all the paintings.', 'The charity will give them money.'], correct: 'The event will become a traditional festival.' },
+        { type: 'reading', text: readingTextDay19, question: '20. The word "unforgettable" in the last sentence is closest in meaning to:', options: ['memorable', 'boring', 'terrible', 'expensive'], correct: 'memorable' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: will / The / perform / tomorrow / musician / concert / at / the / .', correct: 'The musician will perform at the concert tomorrow.' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: you / Will / to / exhibition / the / art / go / weekend / next / ?', correct: 'Will you go to the art exhibition next weekend?' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: a / compose / She / will / new / soon / song / .', correct: 'She will compose a new song soon.' },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: won't / They / any / buy / instruments / musical / .", correct: "They won't buy any musical instruments." },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: audience / love / think / the / I / melody / will / the / .', correct: 'I think the audience will love the melody.' }
+      ];
+    }
+    if (i === 20) {
+      dayData.videoUrl = "https://www.youtube.com/watch?v=FCz4wAVtvXk";
+      
+      // Từ vựng trích xuất và mở rộng cho bài học Ngày 20 (Tương lai hoàn thành & Mục tiêu tương lai)
+      dayData.vocabulary = [
+        { word: "complete", meaning: "hoàn thành" },
+        { word: "exam", meaning: "kỳ thi" },
+        { word: "graduate", meaning: "tốt nghiệp" },
+        { word: "degree", meaning: "bằng cấp" },
+        { word: "project", meaning: "dự án" },
+        { word: "presentation", meaning: "bài thuyết trình" },
+        { word: "submit", meaning: "nộp (bài)" },
+        { word: "deadline", meaning: "hạn chót" },
+        { word: "career", meaning: "sự nghiệp" },
+        { word: "achieve", meaning: "đạt được" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20
+      const readingTextDay20 = "My name is Kevin, and I am currently a 9th-grade student. I have many plans for my future. By the end of this month, I will have completed all my final exams. I hope I will get good grades to enter a prestigious high school. My older sister, Linda, is a university student. By next summer, she will have graduated with a degree in education. She wants to become a teacher.\n\nAt school, my classmates and I are working on a large science project about renewable energy. The deadline is next Friday. We are working very hard, and by next Thursday, we will have finished the presentation. We will have submitted the final report to our science teacher before the deadline.\n\nSetting goals helps us stay focused. By the time I am twenty-five, I will have started my dream career in computer science. I believe that if we study hard and plan well, we will achieve our goals and become successful in life.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) --- (Trọng tâm: Tương lai hoàn thành & Từ vựng)
+        { type: 'mcq', question: '1. By next month, we ___ our final exams.', options: ['will finish', 'are finishing', 'will have finished', 'have finished'], correct: 'will have finished' },
+        { type: 'mcq', question: '2. She ___ from university by the end of 2028.', options: ['will have graduated', 'graduates', 'has graduated', 'is graduating'], correct: 'will have graduated' },
+        { type: 'mcq', question: '3. By the time you arrive tonight, I ___ cooking dinner.', options: ['will finish', 'will have finished', 'finish', 'am finishing'], correct: 'will have finished' },
+        { type: 'mcq', question: '4. They ___ the science project before the deadline next Friday.', options: ['will have completed', 'complete', 'completed', 'have completed'], correct: 'will have completed' },
+        { type: 'mcq', question: '5. He hopes he ___ a successful career by the time he is 30.', options: ['achieves', 'will achieve', 'will have achieved', 'achieved'], correct: 'will have achieved' },
+        { type: 'mcq', question: '6. Make sure you ___ the report to the teacher before Friday.', options: ['submit', 'submits', 'submitted', 'submitting'], correct: 'submit' },
+        { type: 'mcq', question: '7. We have to finish this important task before the ___.', options: ['degree', 'career', 'deadline', 'exam'], correct: 'deadline' },
+        { type: 'mcq', question: '8. My sister wants to get a ___ in education to become a teacher.', options: ['degree', 'project', 'deadline', 'presentation'], correct: 'degree' },
+        { type: 'mcq', question: '9. By 8 PM tonight, I ___ my presentation for tomorrow\'s class.', options: ['will prepare', 'will have prepared', 'prepare', 'prepared'], correct: 'will have prepared' },
+        { type: 'mcq', question: '10. ___ you ___ reading the book by next week?', options: ['Will / read', 'Do / read', 'Have / read', 'Will / have read'], correct: 'Will / have read' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay20, question: '11. What is the main idea of the passage?', options: ['How to pass an exam.', 'Kevin\'s future goals and school projects.', 'The benefits of renewable energy.', 'How to become a teacher.'], correct: 'Kevin\'s future goals and school projects.' },
+        { type: 'reading', text: readingTextDay20, question: '12. What will Kevin have completed by the end of this month?', options: ['His university degree.', 'His science project.', 'All his final exams.', 'His presentation.'], correct: 'All his final exams.' },
+        { type: 'reading', text: readingTextDay20, question: '13. Why does Kevin want good grades?', options: ['To get a new computer.', 'To become a teacher.', 'To enter a prestigious high school.', 'To travel abroad.'], correct: 'To enter a prestigious high school.' },
+        { type: 'reading', text: readingTextDay20, question: '14. What will Linda have done by next summer?', options: ['She will have finished 9th grade.', 'She will have started a computer science career.', 'She will have graduated from university.', 'She will have submitted a project.'], correct: 'She will have graduated from university.' },
+        { type: 'reading', text: readingTextDay20, question: '15. What does Linda want to become in the future?', options: ['A teacher.', 'A scientist.', 'An architect.', 'A doctor.'], correct: 'A teacher.' },
+        { type: 'reading', text: readingTextDay20, question: '16. What is the science project about?', options: ['Space exploration.', 'Renewable energy.', 'Traditional festivals.', 'Computer science.'], correct: 'Renewable energy.' },
+        { type: 'reading', text: readingTextDay20, question: '17. When is the deadline for the science project?', options: ['Next Thursday.', 'By the end of this month.', 'Next Friday.', 'When Kevin is twenty-five.'], correct: 'Next Friday.' },
+        { type: 'reading', text: readingTextDay20, question: '18. What will Kevin and his classmates have done by next Thursday?', options: ['Finished the presentation.', 'Graduated from high school.', 'Started a new career.', 'Taken their final exams.'], correct: 'Finished the presentation.' },
+        { type: 'reading', text: readingTextDay20, question: '19. What will Kevin have started by the time he is twenty-five?', options: ['A degree in education.', 'His dream career in computer science.', 'A renewable energy project.', 'A new high school.'], correct: 'His dream career in computer science.' },
+        { type: 'reading', text: readingTextDay20, question: '20. The word "achieve" in the last paragraph is closest in meaning to:', options: ['fail', 'lose', 'reach', 'forget'], correct: 'reach' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: finished / I / will / have / my / by / homework / 9 PM / .', correct: 'I will have finished my homework by 9 PM.' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: the / project / will / By / completed / next / week / they / have / .', correct: 'By next week they will have completed the project.' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: She / graduated / will / from / have / university / by / 2030 / .', correct: 'She will have graduated from university by 2030.' },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: Will / cleaned / room / you / have / by / the / tomorrow / ?", correct: "Will you have cleaned the room by tomorrow?" },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: time / arrives / By / the / he / we / left / will / have / .', correct: 'By the time he arrives we will have left.' }
+      ];
+    }
+    if (i === 21) {
+      dayData.videoUrl = "https://www.youtube.com/watch?v=fnFYTx5P9mE";
+      
+      // Từ vựng trích xuất và mở rộng cho bài học Ngày 21 (Ngữ âm & Phát âm)
+      dayData.vocabulary = [
+        { word: "pronunciation", meaning: "cách phát âm" },
+        { word: "vowel", meaning: "nguyên âm" },
+        { word: "consonant", meaning: "phụ âm" },
+        { word: "mountain", meaning: "ngọn núi" },
+        { word: "syllable", meaning: "âm tiết" },
+        { word: "stress", meaning: "trọng âm" },
+        { word: "intonation", meaning: "ngữ điệu" },
+        { word: "accent", meaning: "giọng điệu" },
+        { word: "improve", meaning: "cải thiện" },
+        { word: "communicate", meaning: "giao tiếp" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20
+      const readingTextDay21 = "Good pronunciation is very important when you learn English. It is not just about having a perfect accent, but about communicating clearly so that others can understand you. English pronunciation consists of different vowel and consonant sounds. Some sounds might not exist in your native language, which makes them difficult to pronounce. For example, many learners struggle with the word 'mountain' or the 'th' sounds.\n\nTo improve your pronunciation, you should listen to native speakers as much as possible. You can watch English movies, listen to podcasts, or repeat after audio lessons. Pay attention to how they move their mouths and tongues. Moreover, word stress and intonation are also crucial. If you stress the wrong syllable, the word might mean something completely different.\n\nPracticing regularly is the key to success. You can record your own voice and compare it with a native speaker's voice. Don't be afraid of making mistakes. With time and practice, you will speak English more naturally and confidently.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) --- (Trọng tâm: Phát âm & Ngữ âm)
+        { type: 'mcq', question: '1. Choose the word whose underlined part differs in pronunciation: m\u0332o\u0332u\u0332ntain, h\u0332o\u0332u\u0332se, s\u0332o\u0332u\u0332nd, sh\u0332o\u0332u\u0332lder.', options: ['mountain', 'house', 'sound', 'shoulder'], correct: 'shoulder' },
+        { type: 'mcq', question: '2. Choose the word whose underlined part differs in pronunciation: w\u0332a\u0332ter, f\u0332a\u0332ther, m\u0332a\u0332tter, t\u0332a\u0332ll.', options: ['water', 'father', 'matter', 'tall'], correct: 'matter' },
+        { type: 'mcq', question: '3. Choose the word whose underlined part differs in pronunciation: mount\u0332a\u0332i\u0332n, capt\u0332a\u0332i\u0332n, cert\u0332a\u0332i\u0332n, maint\u0332a\u0332i\u0332n.', options: ['mountain', 'captain', 'certain', 'maintain'], correct: 'maintain' },
+        { type: 'mcq', question: '4. Choose the word whose underlined part differs in pronunciation (ending -ed): play\u0332e\u0332d\u0332, listen\u0332e\u0332d\u0332, want\u0332e\u0332d\u0332, clean\u0332e\u0332d\u0332.', options: ['played', 'listened', 'wanted', 'cleaned'], correct: 'wanted' },
+        { type: 'mcq', question: '5. Choose the word whose underlined part differs in pronunciation: \u0332t\u0332h\u0332ink, \u0332t\u0332h\u0332ick, \u0332t\u0332h\u0332at, \u0332t\u0332h\u0332in.', options: ['think', 'thick', 'that', 'thin'], correct: 'that' },
+        { type: 'mcq', question: '6. There are 5 ___ and 21 consonants in the English alphabet.', options: ['vowels', 'accents', 'stresses', 'syllables'], correct: 'vowels' },
+        { type: 'mcq', question: '7. You should pay attention to the word ___ to pronounce it correctly.', options: ['stress', 'letter', 'meaning', 'spelling'], correct: 'stress' },
+        { type: 'mcq', question: '8. Choose the word that has a different stress pattern:', options: ['vowel', 'accent', 'improve', 'mountain'], correct: 'improve' },
+        { type: 'mcq', question: '9. Choose the word that has a different stress pattern:', options: ['syllable', 'consonant', 'understand', 'difficult'], correct: 'understand' },
+        { type: 'mcq', question: '10. He has a very strong British ___.', options: ['voice', 'accent', 'sound', 'tongue'], correct: 'accent' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay21, question: '11. What is the main idea of the passage?', options: ['The history of the English language.', 'How to write an English essay.', 'The importance of good pronunciation and how to improve it.', 'Why native speakers talk fast.'], correct: 'The importance of good pronunciation and how to improve it.' },
+        { type: 'reading', text: readingTextDay21, question: '12. What is the main goal of good pronunciation according to the text?', options: ['To have a perfect accent.', 'To communicate clearly so others can understand you.', 'To sound like an actor.', 'To pass grammar tests.'], correct: 'To communicate clearly so others can understand you.' },
+        { type: 'reading', text: readingTextDay21, question: '13. What does English pronunciation consist of?', options: ['Only vowels.', 'Only consonants.', 'Different vowel and consonant sounds.', 'Only word stress.'], correct: 'Different vowel and consonant sounds.' },
+        { type: 'reading', text: readingTextDay21, question: '14. Why are some sounds difficult to pronounce?', options: ['Because they are too long.', 'Because they might not exist in your native language.', 'Because native speakers speak too fast.', 'Because they are spelled strangely.'], correct: 'Because they might not exist in your native language.' },
+        { type: 'reading', text: readingTextDay21, question: '15. Which word is mentioned as an example of a struggle for many learners?', options: ['language', 'communicate', 'mountain', 'success'], correct: 'mountain' },
+        { type: 'reading', text: readingTextDay21, question: '16. How can you improve your pronunciation?', options: ['By reading silently.', 'By writing more essays.', 'By listening to native speakers and repeating.', 'By sleeping more.'], correct: 'By listening to native speakers and repeating.' },
+        { type: 'reading', text: readingTextDay21, question: '17. What should you pay attention to when watching English movies?', options: ['The story.', 'How native speakers move their mouths and tongues.', 'The actors\' clothes.', 'The background music.'], correct: 'How native speakers move their mouths and tongues.' },
+        { type: 'reading', text: readingTextDay21, question: '18. What happens if you stress the wrong syllable?', options: ['The word becomes longer.', 'You sound smarter.', 'The word might mean something completely different.', 'Nothing happens.'], correct: 'The word might mean something completely different.' },
+        { type: 'reading', text: readingTextDay21, question: '19. What is a good way to practice regularly?', options: ['Record your own voice and compare it with a native speaker.', 'Talk to your pets.', 'Only read books.', 'Avoid speaking English.'], correct: 'Record your own voice and compare it with a native speaker.' },
+        { type: 'reading', text: readingTextDay21, question: '20. How will you speak English after practicing with time?', options: ['More nervously.', 'More slowly.', 'More naturally and confidently.', 'More quietly.'], correct: 'More naturally and confidently.' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: important / is / Good / very / pronunciation / .', correct: 'Good pronunciation is very important.' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: vowels / consists / English / of / consonants / and / .', correct: 'English consists of vowels and consonants.' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: word / mountain / difficult / The / pronounce / is / to / .', correct: 'The word mountain is difficult to pronounce.' },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: should / listen / native / speakers / You / to / .", correct: "You should listen to native speakers." },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: your / own / record / You / can / voice / .', correct: 'You can record your own voice.' }
+      ];
+    }
+    if (i === 22) {
+      dayData.videoUrl = "https://www.youtube.com/watch?v=7bQvDRzOp_s";
+      
+      // Từ vựng trích xuất và mở rộng cho bài học Ngày 22 (Trọng âm & Giao tiếp)
+      dayData.vocabulary = [
+        { word: "communication", meaning: "sự giao tiếp" },
+        { word: "media", meaning: "phương tiện truyền thông" },
+        { word: "internet", meaning: "mạng internet" },
+        { word: "connect", meaning: "kết nối" },
+        { word: "message", meaning: "tin nhắn" },
+        { word: "smartphone", meaning: "điện thoại thông minh" },
+        { word: "social", meaning: "thuộc về xã hội" },
+        { word: "information", meaning: "thông tin" },
+        { word: "interact", meaning: "tương tác" },
+        { word: "technology", meaning: "công nghệ" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20
+      const readingTextDay22 = "Communication has changed significantly over the years. In the past, people usually wrote letters to stay in touch with friends and family. It often took several days or even weeks to receive a reply. Today, thanks to the Internet and smartphones, communication is almost instant.\n\nSocial media platforms allow us to connect with people all over the world. We can easily share information, send messages, and post photos with just a few clicks. It is very convenient for both personal and professional interactions. Many students use these tools to discuss homework and learn new things together.\n\nHowever, while technology makes our lives easier, it also brings some disadvantages. Some people spend too much time looking at their screens and forget to talk to the people around them. Face-to-face interaction is still very important for building strong relationships. We should balance our online time and real-life conversations to stay happy and connected.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) --- (Trọng tâm: Trọng âm & Từ vựng Giao tiếp)
+        { type: 'mcq', question: '1. Choose the word that has a different stress pattern: A. message B. social C. connect D. picture', options: ['message', 'social', 'connect', 'picture'], correct: 'connect' },
+        { type: 'mcq', question: '2. Choose the word that has a different stress pattern: A. invent B. relax C. agree D. listen', options: ['invent', 'relax', 'agree', 'listen'], correct: 'listen' },
+        { type: 'mcq', question: '3. Choose the word that has a different stress pattern: A. information B. population C. exhibition D. technology', options: ['information', 'population', 'exhibition', 'technology'], correct: 'technology' },
+        { type: 'mcq', question: '4. Choose the word that has a different stress pattern: A. student B. teacher C. enjoy D. doctor', options: ['student', 'teacher', 'enjoy', 'doctor'], correct: 'enjoy' },
+        { type: 'mcq', question: '5. Choose the word that has a different stress pattern: A. internet B. media C. smartphone D. inventor', options: ['internet', 'media', 'smartphone', 'inventor'], correct: 'inventor' },
+        { type: 'mcq', question: '6. You can easily send a text ___ to your friends using a smartphone.', options: ['letter', 'message', 'information', 'social'], correct: 'message' },
+        { type: 'mcq', question: '7. The ___ has completely changed the way we communicate with each other.', options: ['Internet', 'book', 'newspaper', 'television'], correct: 'Internet' },
+        { type: 'mcq', question: '8. Many teenagers spend hours on ___ media every day.', options: ['social', 'connect', 'interact', 'technology'], correct: 'social' },
+        { type: 'mcq', question: '9. Face-to-face ___ is very important for building good relationships.', options: ['interact', 'interacting', 'interaction', 'interactive'], correct: 'interaction' },
+        { type: 'mcq', question: '10. Modern ___ makes our lives more convenient and comfortable.', options: ['technology', 'technique', 'technical', 'technician'], correct: 'technology' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay22, question: '11. What is the main idea of the passage?', options: ['The history of smartphones.', 'How communication has changed over time.', 'The dangers of social media.', 'How to write a letter.'], correct: 'How communication has changed over time.' },
+        { type: 'reading', text: readingTextDay22, question: '12. How did people usually communicate in the past?', options: ['By sending text messages.', 'By using social media.', 'By writing letters.', 'By making phone calls.'], correct: 'By writing letters.' },
+        { type: 'reading', text: readingTextDay22, question: '13. How long did it take to receive a reply in the past?', options: ['A few seconds.', 'Several minutes.', 'Several days or weeks.', 'A few hours.'], correct: 'Several days or weeks.' },
+        { type: 'reading', text: readingTextDay22, question: '14. What makes communication almost instant today?', options: ['The post office.', 'The Internet and smartphones.', 'Television and radio.', 'Airplanes.'], correct: 'The Internet and smartphones.' },
+        { type: 'reading', text: readingTextDay22, question: '15. What do social media platforms allow us to do?', options: ['Connect with people all over the world.', 'Travel around the world.', 'Avoid doing homework.', 'Stop talking to people.'], correct: 'Connect with people all over the world.' },
+        { type: 'reading', text: readingTextDay22, question: '16. What do many students use these tools for?', options: ['To play video games only.', 'To discuss homework and learn new things.', 'To buy new smartphones.', 'To watch movies.'], correct: 'To discuss homework and learn new things.' },
+        { type: 'reading', text: readingTextDay22, question: '17. What is a disadvantage of technology mentioned in the passage?', options: ['It is too expensive.', 'It is very slow.', 'People spend too much time on screens.', 'It causes headaches.'], correct: 'People spend too much time on screens.' },
+        { type: 'reading', text: readingTextDay22, question: '18. What do some people forget to do because of screens?', options: ['Eat their meals.', 'Do their homework.', 'Talk to the people around them.', 'Write letters.'], correct: 'Talk to the people around them.' },
+        { type: 'reading', text: readingTextDay22, question: '19. Why is face-to-face interaction still important?', options: ['Because it is cheap.', 'For building strong relationships.', 'Because the Internet is slow.', 'To learn how to use a smartphone.'], correct: 'For building strong relationships.' },
+        { type: 'reading', text: readingTextDay22, question: '20. What is the advice given in the last sentence?', options: ['Stop using the Internet.', 'Throw away your smartphone.', 'Balance online time and real-life conversations.', 'Only talk to people online.'], correct: 'Balance online time and real-life conversations.' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: has / The / changed / Internet / communication / .', correct: 'The Internet has changed communication.' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: usually / wrote / letters / people / past / the / In / .', correct: 'In the past people usually wrote letters.' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: media / Social / us / connect / helps / .', correct: 'Social media helps us connect.' },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: a / send / You / text / can / message / .", correct: "You can send a text message." },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: interaction / is / Face-to-face / important / very / .', correct: 'Face-to-face interaction is very important.' }
+      ];
+    }
     course.push(dayData);
   }
   return course;

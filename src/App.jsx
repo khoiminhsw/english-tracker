@@ -350,7 +350,7 @@ export default function App() {
       if (!w) return;
       const wordLower = String(w).toLowerCase();
       if (!newProgress[wordLower]) newProgress[wordLower] = 0;
-      if (newProgress[wordLower] < 3) newProgress[wordLower] += 1;
+      if (newProgress[wordLower] < 4) newProgress[wordLower] += 1;
     });
     setWordProgress(newProgress);
     await updateDoc(doc(db, 'users', user.uid), { wordProgress: newProgress });
@@ -613,7 +613,7 @@ export default function App() {
     return vocabPool.filter(v => {
        if (!v || !v.word) return false;
        const w = String(v.word).toLowerCase();
-       return (safeWP[w] || 0) < 3;
+       return (safeWP[w] || 0) < 4;
     });
   };
 
@@ -623,7 +623,7 @@ export default function App() {
   let masteredWordsList = [];
   try {
      const safeWP = (wordProgress && typeof wordProgress === 'object' && !Array.isArray(wordProgress)) ? wordProgress : {};
-     masteredWordsList = Object.entries(safeWP).filter(([w, c]) => typeof c === 'number' && c >= 3);
+     masteredWordsList = Object.entries(safeWP).filter(([w, c]) => typeof c === 'number' && c >= 4);
      wordsMasteredCount = masteredWordsList.length;
   } catch (err) {}
 
