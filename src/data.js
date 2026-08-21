@@ -1353,6 +1353,137 @@ if (i === 19) {
         { type: 'writing', question: '25. Sắp xếp các từ sau: interaction / is / Face-to-face / important / very / .', correct: 'Face-to-face interaction is very important.' }
       ];
     }
+    if (i === 23) {
+      dayData.videoUrl = "https://www.youtube.com/watch?v=qENljLq1KV4";
+      
+      // Từ vựng trích xuất và mở rộng cho bài học Ngày 23 (Từ để hỏi & Tìm kiếm thông tin)
+      dayData.vocabulary = [
+        { word: "information", meaning: "thông tin" },
+        { word: "reason", meaning: "lý do" },
+        { word: "distance", meaning: "khoảng cách" },
+        { word: "duration", meaning: "khoảng thời gian" },
+        { word: "direction", meaning: "phương hướng" },
+        { word: "price", meaning: "giá cả" },
+        { word: "quantity", meaning: "số lượng" },
+        { word: "quality", meaning: "chất lượng" },
+        { word: "describe", meaning: "miêu tả" },
+        { word: "discover", meaning: "khám phá" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20
+      const readingTextDay23 = "Today is Tom's first day at his new school. He doesn't know anyone, so he has to ask many questions to find his way around. First, he asks a teacher, \"Where is the science laboratory?\" The teacher smiles and points to the second floor. Then, he meets a friendly boy named Peter. Tom asks, \"How often do you have English classes?\" Peter answers that they have English three times a week.\n\nAt lunchtime, Tom goes to the school cafeteria. He asks the lunch lady, \"How much is a sandwich and a bottle of water?\" She tells him it is two dollars. In the afternoon, Tom wants to join a sports club because he loves playing football. He asks the physical education coach, \"When does the football team practice?\" The coach says they practice every Tuesday and Thursday at 4 PM.\n\nBy asking the right questions, Tom gets all the information he needs. He also makes some new friends on his very first day. Knowing how to ask questions is a very important skill in our daily lives.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) --- (Trọng tâm: Từ để hỏi)
+        { type: 'mcq', question: '1. ___ do you live? - I live in Ho Chi Minh City.', options: ['What', 'Where', 'When', 'Why'], correct: 'Where' },
+        { type: 'mcq', question: '2. ___ is your favorite subject at school? - It is Math.', options: ['Who', 'Where', 'What', 'How'], correct: 'What' },
+        { type: 'mcq', question: '3. ___ does it take to get to the school by bus? - About 15 minutes.', options: ['How long', 'How far', 'How much', 'How often'], correct: 'How long' },
+        { type: 'mcq', question: '4. ___ is that tall man? - He is my uncle.', options: ['Who', 'Whose', 'Which', 'What'], correct: 'Who' },
+        { type: 'mcq', question: '5. ___ do you go to the library? - Twice a week.', options: ['How long', 'How often', 'How many', 'How much'], correct: 'How often' },
+        { type: 'mcq', question: '6. ___ bag is this? - It belongs to Mary.', options: ['Who', 'Whom', 'Whose', 'Which'], correct: 'Whose' },
+        { type: 'mcq', question: '7. ___ are you crying? - Because I lost my keys.', options: ['What', 'When', 'Why', 'Where'], correct: 'Why' },
+        { type: 'mcq', question: '8. ___ much is this blue T-shirt? - It is 10 dollars.', options: ['What', 'How', 'Which', 'Why'], correct: 'How' },
+        { type: 'mcq', question: '9. ___ color do you prefer, red or blue? - I prefer blue.', options: ['Which', 'Where', 'Who', 'When'], correct: 'Which' },
+        { type: 'mcq', question: '10. ___ did you go last night? - I went to the cinema.', options: ['What', 'Why', 'When', 'Where'], correct: 'Where' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay23, question: '11. What is the main idea of the passage?', options: ['How to play football.', 'Tom\'s first day at a new school and how he asks for information.', 'The history of a school.', 'How to buy food in the cafeteria.'], correct: 'Tom\'s first day at a new school and how he asks for information.' },
+        { type: 'reading', text: readingTextDay23, question: '12. Why does Tom have to ask many questions?', options: ['Because he is a teacher.', 'Because he doesn\'t know anyone and needs to find his way.', 'Because he likes talking too much.', 'Because he lost his money.'], correct: 'Because he doesn\'t know anyone and needs to find his way.' },
+        { type: 'reading', text: readingTextDay23, question: '13. Who does Tom ask first?', options: ['A friendly boy.', 'The lunch lady.', 'The coach.', 'A teacher.'], correct: 'A teacher.' },
+        { type: 'reading', text: readingTextDay23, question: '14. Where is the science laboratory?', options: ['On the first floor.', 'On the second floor.', 'Next to the cafeteria.', 'Outside the school.'], correct: 'On the second floor.' },
+        { type: 'reading', text: readingTextDay23, question: '15. How often do they have English classes?', options: ['Once a week.', 'Twice a week.', 'Three times a week.', 'Every day.'], correct: 'Three times a week.' },
+        { type: 'reading', text: readingTextDay23, question: '16. Where does Tom go at lunchtime?', options: ['The library.', 'The science laboratory.', 'The school cafeteria.', 'The sports club.'], correct: 'The school cafeteria.' },
+        { type: 'reading', text: readingTextDay23, question: '17. How much does a sandwich and a bottle of water cost?', options: ['One dollar.', 'Two dollars.', 'Three dollars.', 'Four dollars.'], correct: 'Two dollars.' },
+        { type: 'reading', text: readingTextDay23, question: '18. Why does Tom want to join a sports club?', options: ['Because he wants to be a coach.', 'Because he loves playing football.', 'Because his teacher told him to.', 'Because he likes running.'], correct: 'Because he loves playing football.' },
+        { type: 'reading', text: readingTextDay23, question: '19. When does the football team practice?', options: ['Every Monday and Wednesday at 4 PM.', 'Every Tuesday and Thursday at 4 PM.', 'Every Friday at 5 PM.', 'Every weekend at 8 AM.'], correct: 'Every Tuesday and Thursday at 4 PM.' },
+        { type: 'reading', text: readingTextDay23, question: '20. What is a very important skill in our daily lives according to the passage?', options: ['Playing football.', 'Eating sandwiches.', 'Knowing how to ask questions.', 'Finding the science laboratory.'], correct: 'Knowing how to ask questions.' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: you / did / Where / go / yesterday / ?', correct: 'Where did you go yesterday?' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: take / it / does / long / How / ?', correct: 'How long does it take?' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: are / learning / Why / English / you / ?', correct: 'Why are you learning English?' },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: time / the / start / does / What / film / ?", correct: "What time does the film start?" },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: that / table / the / is / Whose / on / book / ?', correct: 'Whose book is that on the table?' }
+      ];
+    }
+    if (i === 24) {
+      dayData.isTest = true;
+      dayData.videoUrl = null; 
+      dayData.requiredScore = 40; // Đề thi thực tế có 40 câu
+      dayData.vocabulary = []; 
+
+      // Dữ liệu văn bản chung cho bài đọc hiểu
+      const readingTextDay24 = "What will our world look like in 2050? Many scientists predict that by the year 2050, we will have achieved many incredible technological advancements. First, our cities will become 'smart cities'. By that time, engineers will have built automated systems that control traffic, energy, and security. We won't have to worry about traffic jams anymore because flying cars and high-speed underground trains will be very common.\n\nFurthermore, education will change completely. Students might not need to go to traditional schools. Instead, they will use virtual reality headsets to attend online classes from anywhere in the world. By 2040, developers will have created highly intelligent robots that can assist teachers in grading and explaining difficult lessons.\n\nCommunication will also be much faster and easier. We will have developed devices that can translate any language instantly. Although some people worry that technology will replace human interactions, most experts believe these inventions will give us more free time to focus on our hobbies and creative arts.";
+      
+      // Dữ liệu văn bản chung cho bài đọc điền từ
+      const clozeTextDay24 = "Learning how to communicate effectively is very important. When you meet someone for the first time, you should know how to ask the right (33) ___. For example, asking 'Where are you from?' or 'What do you do?' helps you get basic (34) ___ about them. Moreover, good communication is not just about words; it also involves your (35) ___ and body language. If you speak clearly and politely, people (36) ___ understand you better. By the end of this communication course, you (37) ___ learned how to interact confidently in any situation.";
+
+      dayData.exercises = [
+        // I. BIỂN BÁO & THÔNG BÁO
+        { type: 'reading', text: "NOTICE\n- Art Exhibition opens next Monday.\n- Free entry for students.", question: "1. What does the notice say?", options: ["The art exhibition is closed on Monday.", "Students have to pay to enter the exhibition.", "The art exhibition will open next week and students can enter for free.", "Only students can visit the art exhibition."], correct: "The art exhibition will open next week and students can enter for free." },
+        { type: 'reading', text: "DEADLINE\n- Science Project Submission: Friday 5 PM.", question: "2. What does this notice mean?", options: ["You must submit your science project by Friday 5 PM.", "You will start your science project on Friday.", "The science class is at 5 PM on Friday.", "You can submit the project next weekend."], correct: "You must submit your science project by Friday 5 PM." },
+
+        // II. NGỮ ÂM (Trọng tâm: Phát âm)
+        { type: 'mcq', question: "3. Choose the word whose underlined part differs in pronunciation (th- sound):", options: ["\u0332t\u0332h\u0332ink", "\u0332t\u0332h\u0332at", "\u0332t\u0332h\u0332ick", "\u0332t\u0332h\u0332in"], correct: "\u0332t\u0332h\u0332at" },
+        { type: 'mcq', question: "4. Choose the word whose underlined part differs in pronunciation (vowel 'a'):", options: ["n\u0332a\u0332ture", "p\u0332a\u0332tience", "c\u0332a\u0332mera", "n\u0332a\u0332tive"], correct: "c\u0332a\u0332mera" },
+
+        // III. SẮP XẾP ĐOẠN VĂN
+        { type: 'reading', text: "a. Next, you will need to fill out this form.\nb. How can I register for the music club?\nc. Finally, you will receive a confirmation email.\nd. First, you should go to the school website.\ne. It is very simple to join.", question: "5. Choose the correct arrangement to make a meaningful paragraph:", options: ["b - e - d - a - c", "b - d - a - e - c", "d - a - c - b - e", "e - b - d - a - c"], correct: "b - e - d - a - c" },
+        { type: 'reading', text: "a. I will have finished all my exams by then.\nb. Dear Mary, how are you?\nc. See you soon.\nd. Will you come to my graduation party next Friday?\ne. We will have a lot of fun together.", question: "6. Choose the correct arrangement to make a meaningful letter:", options: ["b - a - d - e - c", "b - d - a - e - c", "d - a - b - e - c", "b - e - d - a - c"], correct: "b - d - a - e - c" },
+
+        // IV. NGỮ PHÁP & TỪ VỰNG (Tương lai đơn, TL Hoàn thành, Wh-questions)
+        { type: 'mcq', question: "7. I think robots ___ all the dangerous jobs in the future.", options: ["do", "will do", "have done", "did"], correct: "will do" },
+        { type: 'mcq', question: "8. By the end of this year, she ___ her university degree.", options: ["will finish", "finishes", "will have finished", "is finishing"], correct: "will have finished" },
+        { type: 'mcq', question: "9. ___ does it take to travel to the moon? - About three days.", options: ["How long", "How far", "How often", "How much"], correct: "How long" },
+        { type: 'mcq', question: "10. Don't worry, I ___ you with your presentation tomorrow.", options: ["help", "am helping", "will help", "have helped"], correct: "will help" },
+        { type: 'mcq', question: "11. ___ bag is this? - It belongs to the new teacher.", options: ["Who", "Whom", "Whose", "Which"], correct: "Whose" },
+        { type: 'mcq', question: "12. By 2030, scientists ___ a new planet that supports life.", options: ["will discover", "will have discovered", "discover", "discovered"], correct: "will have discovered" },
+        { type: 'mcq', question: "13. Could you please give me some ___ about the upcoming art exhibition?", options: ["information", "instrument", "audience", "technology"], correct: "information" },
+        { type: 'mcq', question: "14. The ___ clapped loudly when the musician finished playing the piano.", options: ["media", "audience", "communication", "syllable"], correct: "audience" },
+        { type: 'mcq', question: "15. ___ do you go to the English club? - Twice a week.", options: ["How long", "How often", "How far", "How much"], correct: "How often" },
+        { type: 'mcq', question: "16. Social ___ platforms allow us to connect with friends easily.", options: ["media", "internet", "message", "distance"], correct: "media" },
+        { type: 'mcq', question: "17. We ___ the project by 5 PM next Friday, so we can relax on the weekend.", options: ["will complete", "will have completed", "completed", "complete"], correct: "will have completed" },
+        { type: 'mcq', question: "18. ___ are you learning Spanish? - Because I want to travel to Spain.", options: ["What", "Where", "When", "Why"], correct: "Why" },
+
+        // V. SẮP XẾP TỪ THÀNH CÂU CHỌN ĐÁP ÁN ĐÚNG
+        { type: 'mcq', question: "19. Choose the correct sentence arranged from: By / next / year / I / have / graduated / will / .", options: ["By next year I have will graduated.", "By next year I will have graduated.", "I will graduated have by next year.", "By next year will I have graduated."], correct: "By next year I will have graduated." },
+        { type: 'mcq', question: "20. Choose the correct sentence arranged from: What / you / do / will / tomorrow / morning / ?", options: ["What you will do tomorrow morning?", "What will do you tomorrow morning?", "What will you do tomorrow morning?", "Tomorrow morning what you will do?"], correct: "What will you do tomorrow morning?" },
+
+        // VI. TÌNH HUỐNG GIAO TIẾP
+        { type: 'reading', text: "Tom is asking a stranger on the street.\nTom: \"Excuse me, where is the nearest science museum?\"\nStranger: \"___\"", question: "21. Choose the best response:", options: ["It takes about 10 minutes.", "It is on the second floor.", "Go straight and turn left. It's on your right.", "I will go to the museum tomorrow."], correct: "Go straight and turn left. It's on your right." },
+
+        // VII. VIẾT CÂU TỪ TỪ GỢI Ý CHỌN ĐÁP ÁN ĐÚNG
+        { type: 'mcq', question: "22. Make a sentence from: How often / you / practice / playing / guitar / ?", options: ["How often you practice playing the guitar?", "How often do you practice playing the guitar?", "How often are you practice playing the guitar?", "How often did you practicing playing guitar?"], correct: "How often do you practice playing the guitar?" },
+        { type: 'mcq', question: "23. Make a sentence from: By / time / you / arrive / we / have / finish / dinner /.", options: ["By the time you arrive, we will have finished dinner.", "By the time you arrive, we will finish dinner.", "By the time you arrive, we have finished dinner.", "By the time you arrived, we will have finished dinner."], correct: "By the time you arrive, we will have finished dinner." },
+
+        // VIII. ĐỌC HIỂU
+        { type: 'reading', text: readingTextDay24, question: "24. What is the main idea of the passage?", options: ["How to build an underground train.", "The dangers of virtual reality.", "Predictions about life and technology in 2050.", "How to learn a foreign language."], correct: "Predictions about life and technology in 2050." },
+        { type: 'reading', text: readingTextDay24, question: "25. By 2050, what will engineers have built in 'smart cities'?", options: ["Flying bicycles.", "Automated systems that control traffic, energy, and security.", "Traditional schools.", "Museums and parks."], correct: "Automated systems that control traffic, energy, and security." },
+        { type: 'reading', text: readingTextDay24, question: "26. How will students attend classes in the future?", options: ["By taking flying cars to school.", "By using virtual reality headsets from anywhere.", "By asking robots to study for them.", "By reading traditional books."], correct: "By using virtual reality headsets from anywhere." },
+        { type: 'reading', text: readingTextDay24, question: "27. What will robots be able to do by 2040?", options: ["Replace all human teachers.", "Assist teachers in grading and explaining lessons.", "Translate languages.", "Control the traffic."], correct: "Assist teachers in grading and explaining lessons." },
+        { type: 'reading', text: readingTextDay24, question: "28. What do most experts believe about future inventions?", options: ["They will make people lazy.", "They will destroy human interactions.", "They will give us more free time for hobbies and arts.", "They will be too expensive to use."], correct: "They will give us more free time for hobbies and arts." },
+
+        // IX. TÌM CÂU ĐỒNG NGHĨA
+        { type: 'mcq', question: "29. \"I promise to help you with your homework tonight.\" is closest in meaning to:", options: ["I will help you with your homework tonight.", "I am going to help you with your homework tonight.", "I have helped you with your homework tonight.", "I help you with your homework tonight."], correct: "I will help you with your homework tonight." },
+        { type: 'mcq', question: "30. \"What is the price of this traditional costume?\" is closest in meaning to:", options: ["How much is this traditional costume?", "How many is this traditional costume?", "How long is this traditional costume?", "How far is this traditional costume?"], correct: "How much is this traditional costume?" },
+        { type: 'mcq', question: "31. \"I plan to finish the project before 5 PM next Friday.\" is closest in meaning to:", options: ["I will finish the project at 5 PM next Friday.", "By 5 PM next Friday, I will have finished the project.", "I have finished the project since 5 PM next Friday.", "I am finishing the project before 5 PM next Friday."], correct: "By 5 PM next Friday, I will have finished the project." },
+        { type: 'mcq', question: "32. \"What is the distance between your house and the school?\" is closest in meaning to:", options: ["How long is it from your house to the school?", "How often is it from your house to the school?", "How far is it from your house to the school?", "Where is it from your house to the school?"], correct: "How far is it from your house to the school?" },
+
+        // X. ĐỌC ĐIỀN TỪ
+        { type: 'reading', text: clozeTextDay24, question: "33. Choose the best word for blank (33):", options: ["information", "questions", "distance", "messages"], correct: "questions" },
+        { type: 'reading', text: clozeTextDay24, question: "34. Choose the best word for blank (34):", options: ["information", "technology", "quality", "instrument"], correct: "information" },
+        { type: 'reading', text: clozeTextDay24, question: "35. Choose the best word for blank (35):", options: ["pronunciation", "vowel", "consonant", "career"], correct: "pronunciation" },
+        { type: 'reading', text: clozeTextDay24, question: "36. Choose the best word for blank (36):", options: ["did", "will", "have", "are"], correct: "will" },
+        { type: 'reading', text: clozeTextDay24, question: "37. Choose the best word for blank (37):", options: ["are", "will", "will have", "have"], correct: "will have" },
+
+        // XI. TRỌNG ÂM (Trọng tâm: Trọng âm từ 2-3 âm tiết)
+        { type: 'mcq', question: "38. Choose the word that differs from the other three in the position of primary stress:", options: ["'instrument", "'audience", "per'form", "'melody"], correct: "per'form" },
+        { type: 'mcq', question: "39. Choose the word that differs from the other three in the position of primary stress:", options: ["'internet", "con'nect", "'message", "'media"], correct: "con'nect" },
+
+        // XII. SẮP XẾP HỘI THOẠI
+        { type: 'reading', text: "a. Customer: How much does the ticket cost?\nb. Assistant: Good morning! How can I help you?\nc. Assistant: It is $15 for students.\nd. Customer: I want to buy a ticket for the art exhibition.", question: "40. Choose the correct arrangement to make a meaningful exchange:", options: ["b - d - a - c", "b - a - d - c", "d - b - a - c", "a - b - c - d"], correct: "b - d - a - c" }
+      ];
+    }
     course.push(dayData);
   }
   return course;
