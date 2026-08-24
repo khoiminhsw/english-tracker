@@ -1484,6 +1484,271 @@ if (i === 19) {
         { type: 'reading', text: "a. Customer: How much does the ticket cost?\nb. Assistant: Good morning! How can I help you?\nc. Assistant: It is $15 for students.\nd. Customer: I want to buy a ticket for the art exhibition.", question: "40. Choose the correct arrangement to make a meaningful exchange:", options: ["b - d - a - c", "b - a - d - c", "d - b - a - c", "a - b - c - d"], correct: "b - d - a - c" }
       ];
     }
+    if (i === 25) {
+      dayData.videoUrl = "https://www.youtube.com/watch?v=mNCDcakC8Qk";
+      
+      // Từ vựng trích xuất và mở rộng cho bài học Ngày 25 (Luyện nghe số và tên)
+      dayData.vocabulary = [
+        { word: "spell", meaning: "đánh vần" },
+        { word: "surname", meaning: "họ" },
+        { word: "first name", meaning: "tên chính" },
+        { word: "address", meaning: "địa chỉ" },
+        { word: "phone number", meaning: "số điện thoại" },
+        { word: "double", meaning: "gấp đôi / hai chữ cái, số giống nhau" },
+        { word: "zero / oh", meaning: "số không" },
+        { word: "alphabet", meaning: "bảng chữ cái" },
+        { word: "personal", meaning: "cá nhân" },
+        { word: "register", meaning: "đăng ký" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20
+      const readingTextDay25 = "Hello, I would like to register for the English Club. My first name is Thomas. That is T-H-O-M-A-S. My surname is Watson. Let me spell it for you, W-A-T-S-O-N. I am fifteen years old. My home address is 245 Baker Street. If you need to call me, my phone number is 098 554 3221. Oh, wait, the last four digits are three-double two-one (3221). For online contact, my email address is thomas.watson@email.com. Thank you for helping me with the registration.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) --- (Trọng tâm: Đánh vần tên, Đọc số điện thoại)
+        { type: 'mcq', question: '1. A: "How do you ___ your name?" - B: "It is M-A-R-Y."', options: ['spell', 'speak', 'say', 'call'], correct: 'spell' },
+        { type: 'mcq', question: '2. In English phone numbers, the number "0" is often pronounced as ___.', options: ['zero or oh', 'nothing', 'double', 'blank'], correct: 'zero or oh' },
+        { type: 'mcq', question: '3. What is the correct way to read the number "77" in a phone number?', options: ['seventy-seven', 'double seven', 'seven seven', 'Both A and B are correct in conversation, but B is common for phone numbers.'], correct: 'Both A and B are correct in conversation, but B is common for phone numbers.' },
+        { type: 'mcq', question: '4. If someone asks for your ___, you should tell them your family name (e.g., Smith, Nguyen).', options: ['first name', 'middle name', 'surname', 'nickname'], correct: 'surname' },
+        { type: 'mcq', question: '5. A: "What is your ___?" - B: "It is 123 Main Street."', options: ['phone number', 'email address', 'address', 'age'], correct: 'address' },
+        { type: 'mcq', question: '6. The word "BOOK" is spelled: B - ___ - O - K.', options: ['double O', 'two O', 'O O', 'double B'], correct: 'double O' },
+        { type: 'mcq', question: '7. A: "___ is your phone number?" - B: "It is 0123 456 789."', options: ['What', 'How', 'Where', 'Who'], correct: 'What' },
+        { type: 'mcq', question: '8. If the speaker says "H-E-L-E-N", what is the name?', options: ['Halen', 'Helen', 'Helan', 'Helin'], correct: 'Helen' },
+        { type: 'mcq', question: '9. "My email is john___gmail.com." What is the symbol "@" called in English?', options: ['at', 'dot', 'and', 'a'], correct: 'at' },
+        { type: 'mcq', question: '10. "My age is twenty-five." What number is this?', options: ['15', '20', '25', '35'], correct: '25' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay25, question: '11. What is the boy doing?', options: ['He is buying a book.', 'He is registering for the English Club.', 'He is talking to his teacher.', 'He is calling his friend.'], correct: 'He is registering for the English Club.' },
+        { type: 'reading', text: readingTextDay25, question: '12. What is his first name?', options: ['Watson', 'Thomas', 'Baker', 'John'], correct: 'Thomas' },
+        { type: 'reading', text: readingTextDay25, question: '13. How does he spell his first name?', options: ['T-O-M-A-S', 'T-H-O-M-A-S', 'T-H-O-M-S', 'T-H-A-M-O-S'], correct: 'T-H-O-M-A-S' },
+        { type: 'reading', text: readingTextDay25, question: '14. What is his surname?', options: ['Watson', 'Thomas', 'Baker', 'Smith'], correct: 'Watson' },
+        { type: 'reading', text: readingTextDay25, question: '15. How does he spell his surname?', options: ['W-A-T-S-E-N', 'W-A-T-S-O-N', 'W-A-S-T-O-N', 'W-H-A-T-S-O-N'], correct: 'W-A-T-S-O-N' },
+        { type: 'reading', text: readingTextDay25, question: '16. How old is Thomas?', options: ['5', '15', '50', '25'], correct: '15' },
+        { type: 'reading', text: readingTextDay25, question: '17. What is his home address?', options: ['245 Watson Street', '245 Baker Street', '3221 Baker Street', '098 Baker Street'], correct: '245 Baker Street' },
+        { type: 'reading', text: readingTextDay25, question: '18. What is his phone number?', options: ['098 554 3221', '098 554 3321', '089 554 3221', '098 545 3221'], correct: '098 554 3221' },
+        { type: 'reading', text: readingTextDay25, question: '19. How did he read the last four digits of his phone number?', options: ['three-two-two-one', 'three-double two-one', 'three-two-double one', 'thirty-two twenty-one'], correct: 'three-double two-one' },
+        { type: 'reading', text: readingTextDay25, question: '20. What is his email address?', options: ['thomas.watson@gmail.com', 'thomas@email.com', 'watson@email.com', 'thomas.watson@email.com'], correct: 'thomas.watson@email.com' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: your / is / What / number / phone / ?', correct: 'What is your phone number?' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: do / spell / How / you / name / your / ?', correct: 'How do you spell your name?' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: address / is / My / thomas@email.com / email / .', correct: 'My email address is thomas@email.com.' },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: can / you / repeat / please / that / , / ?", correct: "Can you repeat that, please?" },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: surname / My / Nguyen / is / .', correct: 'My surname is Nguyen.' }
+      ];
+    }
+    if (i === 26) {
+      dayData.videoUrl = "https://www.youtube.com/watch?v=vFmBNq3eedA";
+      
+      // Từ vựng trích xuất và mở rộng cho bài học Ngày 26 (Động từ khuyết thiếu)
+      dayData.vocabulary = [
+        { word: "ability", meaning: "khả năng" },
+        { word: "permission", meaning: "sự cho phép" },
+        { word: "advice", meaning: "lời khuyên" },
+        { word: "obligation", meaning: "nghĩa vụ, bổn phận" },
+        { word: "possibility", meaning: "khả năng (có thể xảy ra)" },
+        { word: "necessary", meaning: "cần thiết" },
+        { word: "prohibited", meaning: "bị cấm" },
+        { word: "compulsory", meaning: "bắt buộc" },
+        { word: "suggest", meaning: "gợi ý, đề nghị" },
+        { word: "achieve", meaning: "đạt được" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20
+      const readingTextDay26 = "NGUYỄN MINH KHÔI is a hardworking 9th-grade student. He has a big dream: he wants to become a data scientist or an AI engineer in the future. To achieve this goal, he knows that he must study computer science subjects very seriously. Right now, he can write basic code in C and Python. His teachers advise that he should also focus on advanced mathematics and algorithms.\n\nKhôi doesn't have to go to extra classes every day, but he must complete his homework on time. He usually uses online platforms to learn more. At school, students mustn't use smartphones during class, but they can use computers in the IT room. Next month, Khôi will lead a group project about 'Prompt Engineering'. He believes that if he works hard, he might create a popular AI community page called 'AI Enthusiast Vietnam' soon. Everyone thinks he can do it!";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) --- (Trọng tâm: Động từ khuyết thiếu)
+        { type: 'mcq', question: '1. You ___ wear a helmet when riding a motorbike. It is the law.', options: ['should', 'can', 'must', 'might'], correct: 'must' },
+        { type: 'mcq', question: '2. It\'s raining heavily. You ___ take an umbrella.', options: ['should', 'mustn\'t', 'cannot', 'could'], correct: 'should' },
+        { type: 'mcq', question: '3. ___ I borrow your pen for a moment, please?', options: ['Must', 'Should', 'May', 'Will'], correct: 'May' },
+        { type: 'mcq', question: '4. He ___ speak three languages fluently when he was ten.', options: ['can', 'could', 'should', 'must'], correct: 'could' },
+        { type: 'mcq', question: '5. You ___ smoke in the hospital. It is strictly prohibited.', options: ['don\'t have to', 'mustn\'t', 'needn\'t', 'shouldn\'t'], correct: 'mustn\'t' },
+        { type: 'mcq', question: '6. Tomorrow is Sunday, so we ___ wake up early.', options: ['mustn\'t', 'shouldn\'t', 'cannot', 'don\'t have to'], correct: 'don\'t have to' },
+        { type: 'mcq', question: '7. Look at those dark clouds! It ___ rain later this evening.', options: ['must', 'might', 'can', 'should'], correct: 'might' },
+        { type: 'mcq', question: '8. I ___ swim very well now, but I want to learn how to dive.', options: ['can', 'could', 'must', 'should'], correct: 'can' },
+        { type: 'mcq', question: '9. Students ___ be quiet during the examination.', options: ['can', 'might', 'must', 'could'], correct: 'must' },
+        { type: 'mcq', question: '10. You ___ eat too much junk food because it is not good for your health.', options: ['mustn\'t', 'shouldn\'t', 'cannot', 'needn\'t'], correct: 'shouldn\'t' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay26, question: '11. What is the main idea of the passage?', options: ['How to learn Python.', 'NGUYỄN MINH KHÔI\'s future dreams and his current efforts.', 'The rules of using smartphones at school.', 'How to build an AI community.'], correct: 'NGUYỄN MINH KHÔI\'s future dreams and his current efforts.' },
+        { type: 'reading', text: readingTextDay26, question: '12. What does NGUYỄN MINH KHÔI want to become in the future?', options: ['A math teacher.', 'A doctor.', 'A data scientist or an AI engineer.', 'A professional gamer.'], correct: 'A data scientist or an AI engineer.' },
+        { type: 'reading', text: readingTextDay26, question: '13. What can Khôi do right now?', options: ['He can speak three languages.', 'He can write basic code in C and Python.', 'He can build a robot.', 'He can create websites.'], correct: 'He can write basic code in C and Python.' },
+        { type: 'reading', text: readingTextDay26, question: '14. What should Khôi focus on according to his teachers?', options: ['Advanced mathematics and algorithms.', 'Chemistry and Biology.', 'History and Geography.', 'Literature and Arts.'], correct: 'Advanced mathematics and algorithms.' },
+        { type: 'reading', text: readingTextDay26, question: '15. Does Khôi have to go to extra classes every day?', options: ['Yes, he must.', 'No, he doesn\'t have to.', 'Yes, he should.', 'The passage doesn\'t mention.'], correct: 'No, he doesn\'t have to.' },
+        { type: 'reading', text: readingTextDay26, question: '16. What must Khôi do regarding his studies?', options: ['He must go to extra classes.', 'He must use his smartphone.', 'He must complete his homework on time.', 'He must learn how to design.'], correct: 'He must complete his homework on time.' },
+        { type: 'reading', text: readingTextDay26, question: '17. What mustn\'t students do at school?', options: ['They mustn\'t use computers in the IT room.', 'They mustn\'t do homework.', 'They mustn\'t use smartphones during class.', 'They mustn\'t work in groups.'], correct: 'They mustn\'t use smartphones during class.' },
+        { type: 'reading', text: readingTextDay26, question: '18. Where can students use computers?', options: ['In the classroom.', 'In the library.', 'In the IT room.', 'In the cafeteria.'], correct: 'In the IT room.' },
+        { type: 'reading', text: readingTextDay26, question: '19. What is the topic of the group project Khôi will lead?', options: ['Prompt Engineering.', 'Renewable Energy.', 'Global Warming.', 'English Pronunciation.'], correct: 'Prompt Engineering.' },
+        { type: 'reading', text: readingTextDay26, question: '20. What might Khôi create soon if he works hard?', options: ['A new smartphone.', 'A popular AI community page.', 'A new computer game.', 'A school club.'], correct: 'A popular AI community page.' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: must / You / homework / your / finish / .', correct: 'You must finish your homework.' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: shouldn\'t / too / late / We / up / stay / .', correct: 'We shouldn\'t stay up too late.' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: can / well / She / English / speak / very / .', correct: 'She can speak English very well.' },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: early / have / tomorrow / I / to / wake / don't / up / .", correct: "I don't have to wake up early tomorrow." },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: borrow / I / please / May / book / your / , / ?', correct: 'May I borrow your book, please?' }
+      ];
+    }
+    if (i === 27) {
+      dayData.videoUrl = "https://www.youtube.com/watch?v=CrhX8f2-V4s";
+      
+      // Từ vựng trích xuất và mở rộng cho bài học Ngày 27 (Liên từ & Đời sống học đường)
+      dayData.vocabulary = [
+        { word: "conjunction", meaning: "liên từ" },
+        { word: "addition", meaning: "sự thêm vào (and)" },
+        { word: "contrast", meaning: "sự tương phản (but)" },
+        { word: "choice", meaning: "sự lựa chọn (or)" },
+        { word: "reason", meaning: "lý do (because)" },
+        { word: "result", meaning: "kết quả (so)" },
+        { word: "balance", meaning: "cân bằng" },
+        { word: "energetic", meaning: "tràn đầy năng lượng" },
+        { word: "extracurricular", meaning: "ngoại khóa" },
+        { word: "grade", meaning: "điểm số, khối lớp" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20
+      const readingTextDay27 = "Jane is a 9th-grade student, and she has a very busy schedule. She loves playing basketball, but she also needs to study hard for her final exams. Every day after school, she can go to the sports club or stay in the library. She wants to get good grades, so she usually chooses to study first.\n\nYesterday, Jane couldn't play basketball because it rained heavily. She was a little sad, but she stayed at home and read a good book instead. She knows that she must balance her time because both health and education are very important. She tries to eat healthy food and sleep early, so she always feels energetic the next morning.\n\nNext week, Jane will have a big math test, so she is studying very hard right now. She believes that if she focuses on her studies and takes care of her health, she will achieve her goals.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) --- (Trọng tâm: Liên từ and, but, or, so, because)
+        { type: 'mcq', question: '1. I want to buy a new smartphone, ___ I don\'t have enough money.', options: ['and', 'but', 'so', 'because'], correct: 'but' },
+        { type: 'mcq', question: '2. She studies very hard, ___ she always gets good grades.', options: ['so', 'because', 'but', 'or'], correct: 'so' },
+        { type: 'mcq', question: '3. Would you like to drink milk ___ orange juice?', options: ['and', 'but', 'or', 'so'], correct: 'or' },
+        { type: 'mcq', question: '4. He stayed at home yesterday ___ he was sick.', options: ['because', 'so', 'and', 'but'], correct: 'because' },
+        { type: 'mcq', question: '5. My favorite sports are football ___ swimming.', options: ['or', 'but', 'so', 'and'], correct: 'and' },
+        { type: 'mcq', question: '6. It was raining heavily, ___ we didn\'t go to the park.', options: ['because', 'but', 'so', 'and'], correct: 'so' },
+        { type: 'mcq', question: '7. I didn\'t buy that jacket ___ it was too expensive.', options: ['so', 'because', 'but', 'or'], correct: 'because' },
+        { type: 'mcq', question: '8. You can take the bus, ___ you can walk to school.', options: ['but', 'or', 'so', 'because'], correct: 'or' },
+        { type: 'mcq', question: '9. Mary likes eating apples, ___ she hates bananas.', options: ['and', 'but', 'or', 'because'], correct: 'but' },
+        { type: 'mcq', question: '10. He woke up late this morning, ___ he missed the school bus.', options: ['because', 'so', 'but', 'or'], correct: 'so' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay27, question: '11. What is the main idea of the passage?', options: ['How to play basketball.', 'Jane\'s busy life and how she balances school and hobbies.', 'The benefits of reading books.', 'Why it rains in the afternoon.'], correct: 'Jane\'s busy life and how she balances school and hobbies.' },
+        { type: 'reading', text: readingTextDay27, question: '12. What does Jane love doing?', options: ['Reading comic books.', 'Playing basketball.', 'Sleeping late.', 'Eating fast food.'], correct: 'Playing basketball.' },
+        { type: 'reading', text: readingTextDay27, question: '13. What are Jane\'s choices after school?', options: ['Go to the cinema or sleep.', 'Go to the sports club or stay in the library.', 'Play basketball or go shopping.', 'Cook dinner or watch TV.'], correct: 'Go to the sports club or stay in the library.' },
+        { type: 'reading', text: readingTextDay27, question: '14. Why does she usually choose to study first?', options: ['Because she hates sports.', 'Because her mother forces her.', 'Because she wants to get good grades.', 'Because the sports club is closed.'], correct: 'Because she wants to get good grades.' },
+        { type: 'reading', text: readingTextDay27, question: '15. Why couldn\'t Jane play basketball yesterday?', options: ['Because she was sick.', 'Because she had a math test.', 'Because it rained heavily.', 'Because she lost her shoes.'], correct: 'Because it rained heavily.' },
+        { type: 'reading', text: readingTextDay27, question: '16. What did she do instead of playing basketball?', options: ['She watched television.', 'She read a good book.', 'She played video games.', 'She called her friends.'], correct: 'She read a good book.' },
+        { type: 'reading', text: readingTextDay27, question: '17. Why must Jane balance her time?', options: ['Because health and education are both important.', 'Because she wants to be famous.', 'Because she is lazy.', 'Because she has too much free time.'], correct: 'Because health and education are both important.' },
+        { type: 'reading', text: readingTextDay27, question: '18. Why does Jane always feel energetic the next morning?', options: ['Because she drinks coffee.', 'Because she plays basketball every night.', 'Because she tries to eat healthy food and sleep early.', 'Because she doesn\'t do homework.'], correct: 'Because she tries to eat healthy food and sleep early.' },
+        { type: 'reading', text: readingTextDay27, question: '19. Why is Jane studying very hard right now?', options: ['Because she wants to win a competition.', 'Because she will have a big math test next week.', 'Because she wants a new smartphone.', 'Because her teacher is strict.'], correct: 'Because she will have a big math test next week.' },
+        { type: 'reading', text: readingTextDay27, question: '20. Which conjunction is used to show a result in the passage?', options: ['and', 'but', 'so', 'because'], correct: 'so' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: tired / am / I / so / go / to / bed / will / early / I / .', correct: 'I am tired so I will go to bed early.' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: She / because / happy / is / she / passed / exam / the / .', correct: 'She is happy because she passed the exam.' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: Do / you / coffee / want / tea / or / ?', correct: 'Do you want coffee or tea?' },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: He / likes / dogs / but / he / cats / hates / .", correct: "He likes dogs but he hates cats." },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: bought / I / apples / some / oranges / and / .', correct: 'I bought some apples and oranges.' }
+      ];
+    }
+    if (i === 28) {
+      dayData.videoUrl = "https://www.youtube.com/watch?v=CrhX8f2-V4s";
+      
+      // Từ vựng trích xuất và mở rộng cho bài học Ngày 28 (Liên từ chỉ thời gian & Cắm trại)
+      dayData.vocabulary = [
+        { word: "when", meaning: "khi, vào lúc" },
+        { word: "while", meaning: "trong khi (đang làm gì)" },
+        { word: "before", meaning: "trước khi" },
+        { word: "after", meaning: "sau khi" },
+        { word: "until", meaning: "cho đến khi" },
+        { word: "as soon as", meaning: "ngay khi" },
+        { word: "camping trip", meaning: "chuyến đi cắm trại" },
+        { word: "pitch a tent", meaning: "dựng lều" },
+        { word: "explore", meaning: "khám phá" },
+        { word: "campfire", meaning: "lửa trại" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20 (Chủ đề: A School Camping Trip)
+      const readingTextDay28 = "Next weekend, our class is going on a camping trip to the national park. Before we leave, everyone must prepare their own backpacks carefully. We should pack warm clothes, flashlights, and some snacks. While we are traveling on the bus, our teacher will explain the safety rules for the trip.\n\nAs soon as we arrive at the campsite, we will work in teams to pitch our tents. After the tents are completely ready, we will hike through the forest to explore the beautiful nature and wildlife. We won't come back to the camp until the sun goes down. When it gets dark, everyone will gather around the campfire. We are going to sing traditional songs, roast marshmallows, and share scary stories. I am so excited, and I will take a lot of photos while we are having fun there.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) --- (Trọng tâm: Liên từ chỉ thời gian)
+        { type: 'mcq', question: '1. Please wash your hands ___ you eat your meal.', options: ['after', 'before', 'while', 'until'], correct: 'before' },
+        { type: 'mcq', question: '2. ___ I was walking to school, it started to rain heavily.', options: ['When', 'While', 'Until', 'After'], correct: 'While' },
+        { type: 'mcq', question: '3. I will call you ___ I arrive at the train station.', options: ['as soon as', 'while', 'until', 'before'], correct: 'as soon as' },
+        { type: 'mcq', question: '4. We will wait here ___ the bus comes.', options: ['until', 'when', 'before', 'while'], correct: 'until' },
+        { type: 'mcq', question: '5. ___ she finished her homework, she went to bed.', options: ['After', 'While', 'Until', 'Before'], correct: 'After' },
+        { type: 'mcq', question: '6. The phone rang ___ we were having dinner in the kitchen.', options: ['until', 'before', 'while', 'after'], correct: 'while' },
+        { type: 'mcq', question: '7. I usually brush my teeth ___ I go to sleep.', options: ['before', 'until', 'while', 'as soon as'], correct: 'before' },
+        { type: 'mcq', question: '8. They didn\'t leave the office ___ 7 PM yesterday.', options: ['when', 'while', 'until', 'after'], correct: 'until' },
+        { type: 'mcq', question: '9. ___ the teacher came into the classroom, the students stood up.', options: ['When', 'While', 'Until', 'Before'], correct: 'When' },
+        { type: 'mcq', question: '10. I will send you an email with the document ___ I get home.', options: ['as soon as', 'while', 'until', 'before'], correct: 'as soon as' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) --- (Câu hỏi dựa trên bài đọc mới)
+        { type: 'reading', text: readingTextDay28, question: '11. What is the main idea of the passage?', options: ['How to pitch a tent.', 'A school camping trip and its schedule.', 'The history of a national park.', 'How to sing traditional songs.'], correct: 'A school camping trip and its schedule.' },
+        { type: 'reading', text: readingTextDay28, question: '12. What must everyone do before leaving for the trip?', options: ['Pitch their tents.', 'Prepare their own backpacks carefully.', 'Gather around the campfire.', 'Take a lot of photos.'], correct: 'Prepare their own backpacks carefully.' },
+        { type: 'reading', text: readingTextDay28, question: '13. What will happen while the students are traveling on the bus?', options: ['They will eat snacks.', 'They will sing scary songs.', 'The teacher will explain the safety rules.', 'They will sleep.'], correct: 'The teacher will explain the safety rules.' },
+        { type: 'reading', text: readingTextDay28, question: '14. What will the students do as soon as they arrive at the campsite?', options: ['Work in teams to pitch their tents.', 'Hike through the forest.', 'Go to sleep.', 'Roast marshmallows.'], correct: 'Work in teams to pitch their tents.' },
+        { type: 'reading', text: readingTextDay28, question: '15. What will they do after the tents are completely ready?', options: ['They will return home.', 'They will hike through the forest.', 'They will wait for the bus.', 'They will cook dinner.'], correct: 'They will hike through the forest.' },
+        { type: 'reading', text: readingTextDay28, question: '16. Why will they hike through the forest?', options: ['To find a new campsite.', 'To explore beautiful nature and wildlife.', 'To run away from the teacher.', 'To buy food.'], correct: 'To explore beautiful nature and wildlife.' },
+        { type: 'reading', text: readingTextDay28, question: '17. How long will they stay in the forest before coming back to the camp?', options: ['Until the sun goes down.', 'Until midnight.', 'For only one hour.', 'Until it starts raining.'], correct: 'Until the sun goes down.' },
+        { type: 'reading', text: readingTextDay28, question: '18. What will they do when it gets dark?', options: ['They will go to sleep immediately.', 'They will gather around the campfire.', 'They will pack their bags.', 'They will hike again.'], correct: 'They will gather around the campfire.' },
+        { type: 'reading', text: readingTextDay28, question: '19. What will the writer do while everyone is having fun?', options: ['Sing sad songs.', 'Read a book.', 'Take a lot of photos.', 'Call their parents.'], correct: 'Take a lot of photos.' },
+        { type: 'reading', text: readingTextDay28, question: '20. Which conjunction in the passage means "immediately after"?', options: ['while', 'until', 'before', 'as soon as'], correct: 'as soon as' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: you / wash / must / your / hands / before / eat / you / .', correct: 'You must wash your hands before you eat.' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: I / reading / was / a / book / while / it / raining / was / .', correct: 'I was reading a book while it was raining.' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: We / wait / will / here / until / comes / the / bus / .', correct: 'We will wait here until the bus comes.' },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: I / will / call / you / as / soon / as / arrive / I / .", correct: "I will call you as soon as I arrive." },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: After / he / finished / homework / his / , / he / to / went / bed / .', correct: 'After he finished his homework, he went to bed.' }
+      ];
+    }
+    if (i === 29) {
+      dayData.videoUrl = "https://www.youtube.com/watch?v=8CMbEWmIgnI";
+      
+      // Từ vựng trích xuất và mở rộng cho bài học Ngày 29 (Liên từ chỉ sự đối lập & City Life)
+      dayData.vocabulary = [
+        { word: "although / even though", meaning: "mặc dù (+ Mệnh đề: S + V)" },
+        { word: "despite / in spite of", meaning: "mặc dù (+ Cụm danh từ / V-ing)" },
+        { word: "advantage", meaning: "thuận lợi, ưu điểm" },
+        { word: "disadvantage", meaning: "bất lợi, nhược điểm" },
+        { word: "facility", meaning: "cơ sở vật chất, tiện nghi" },
+        { word: "opportunity", meaning: "cơ hội" },
+        { word: "traffic jam", meaning: "sự tắc nghẽn giao thông" },
+        { word: "pollution", meaning: "sự ô nhiễm" },
+        { word: "overcome", meaning: "vượt qua (khó khăn)" },
+        { word: "stressful", meaning: "căng thẳng, áp lực" }
+      ];
+
+      // Bài Đọc Hiểu dùng chung cho câu 11-20
+      const readingTextDay29 = "Many people want to move to big cities to find better jobs and education. Although city life offers many great opportunities, it also has several disadvantages. In spite of the modern facilities and entertainment centers, living in a metropolitan area can be very stressful.\n\nFor example, traffic jams are a daily problem. Even though the government has built more roads and bridges, people still spend hours stuck in traffic during rush hours. Another serious issue is pollution. Despite the strict laws, air and noise pollution are getting worse because of the increasing number of vehicles and factories.\n\nHowever, many young students still prefer city life. Although it is expensive and noisy, they can access top-quality schools, modern hospitals, and diverse cultures. In spite of these daily challenges, if you learn how to overcome difficulties and balance your life, the city can be a wonderful place to live and grow.";
+
+      dayData.exercises = [
+        // --- PHẦN 1: MULTIPLE CHOICE (1-10) --- (Trọng tâm: Although/Even though vs Despite/In spite of)
+        { type: 'mcq', question: '1. ___ it was raining heavily, we still went to school on time.', options: ['Although', 'Despite', 'In spite of', 'Because'], correct: 'Although' },
+        { type: 'mcq', question: '2. ___ the bad weather, they decided to go camping in the forest.', options: ['Even though', 'Although', 'Despite', 'Because of'], correct: 'Despite' },
+        { type: 'mcq', question: '3. She passed the difficult exam ___ she didn\'t study hard.', options: ['in spite of', 'despite', 'because', 'even though'], correct: 'even though' },
+        { type: 'mcq', question: '4. ___ being very tired, he finished all his homework before going to bed.', options: ['Although', 'Though', 'In spite of', 'Because'], correct: 'In spite of' },
+        { type: 'mcq', question: '5. He is very friendly and humble ___ he is extremely rich.', options: ['despite', 'in spite of', 'though', 'so'], correct: 'though' },
+        { type: 'mcq', question: '6. ___ the heavy traffic jam, I arrived at the meeting on time.', options: ['Although', 'Despite', 'Even though', 'Because of'], correct: 'Despite' },
+        { type: 'mcq', question: '7. ___ he is young, he has a lot of experience in computer programming.', options: ['Although', 'Despite', 'In spite of', 'Because'], correct: 'Although' },
+        { type: 'mcq', question: '8. City life is exciting. However, it has some ___, such as noise and pollution.', options: ['opportunities', 'advantages', 'disadvantages', 'facilities'], correct: 'disadvantages' },
+        { type: 'mcq', question: '9. There are many modern ___ such as international schools and hospitals in the city.', options: ['facilities', 'problems', 'traffic jams', 'difficulties'], correct: 'facilities' },
+        { type: 'mcq', question: '10. They tried their best to ___ all the challenges and became successful.', options: ['stress', 'overcome', 'pollute', 'connect'], correct: 'overcome' },
+
+        // --- PHẦN 2: READING COMPREHENSION (11-20) ---
+        { type: 'reading', text: readingTextDay29, question: '11. What is the main idea of the passage?', options: ['The history of big cities.', 'How to avoid traffic jams.', 'The advantages and disadvantages of city life.', 'Why the countryside is better than the city.'], correct: 'The advantages and disadvantages of city life.' },
+        { type: 'reading', text: readingTextDay29, question: '12. Why do many people want to move to big cities?', options: ['To enjoy the fresh air.', 'To find better jobs and education.', 'To avoid modern facilities.', 'To sleep more.'], correct: 'To find better jobs and education.' },
+        { type: 'reading', text: readingTextDay29, question: '13. According to the text, living in a metropolitan area can be very ___.', options: ['peaceful', 'quiet', 'stressful', 'boring'], correct: 'stressful' },
+        { type: 'reading', text: readingTextDay29, question: '14. What is mentioned as a daily problem in the city?', options: ['Lack of entertainment.', 'Traffic jams.', 'No schools.', 'Heavy rain.'], correct: 'Traffic jams.' },
+        { type: 'reading', text: readingTextDay29, question: '15. Has the government built more roads and bridges?', options: ['Yes, but people still get stuck in traffic.', 'No, they haven\'t built anything.', 'Yes, and there are no more traffic jams.', 'The passage doesn\'t mention it.'], correct: 'Yes, but people still get stuck in traffic.' },
+        { type: 'reading', text: readingTextDay29, question: '16. Why is pollution getting worse despite strict laws?', options: ['Because people throw garbage in the river.', 'Because of the increasing number of vehicles and factories.', 'Because there are no trees.', 'Because the weather is too hot.'], correct: 'Because of the increasing number of vehicles and factories.' },
+        { type: 'reading', text: readingTextDay29, question: '17. What do many young students prefer?', options: ['Living in the countryside.', 'City life.', 'Working in factories.', 'Staying at home.'], correct: 'City life.' },
+        { type: 'reading', text: readingTextDay29, question: '18. Why do students like the city although it is noisy and expensive?', options: ['Because they like traffic jams.', 'Because they don\'t want to study.', 'Because they can access top-quality schools and modern hospitals.', 'Because the air is very clean.'], correct: 'Because they can access top-quality schools and modern hospitals.' },
+        { type: 'reading', text: readingTextDay29, question: '19. Which phrase correctly follows "Despite" in the second paragraph?', options: ['the government has built more roads', 'the strict laws', 'it is expensive and noisy', 'air and noise pollution'], correct: 'the strict laws' },
+        { type: 'reading', text: readingTextDay29, question: '20. According to the conclusion, the city can be a wonderful place if you ___.', options: ['learn how to overcome difficulties and balance your life', 'buy a new car', 'move to another country', 'stop going to school'], correct: 'learn how to overcome difficulties and balance your life' },
+
+        // --- PHẦN 3: SENTENCE REORDERING (21-25) ---
+        { type: 'writing', question: '21. Sắp xếp các từ sau: Although / it / rained / went / we / out / .', correct: 'Although it rained, we went out.' },
+        { type: 'writing', question: '22. Sắp xếp các từ sau: Despite / the / traffic / heavy / , / arrived / he / on / time / .', correct: 'Despite the heavy traffic, he arrived on time.' },
+        { type: 'writing', question: '23. Sắp xếp các từ sau: She / the / passed / exam / in / spite / of / being / sick / .', correct: 'She passed the exam in spite of being sick.' },
+        { type: 'writing', question: "24. Sắp xếp các từ sau: Even / though / tired / he / was / , / continued / he / working / .", correct: "Even though he was tired, he continued working." },
+        { type: 'writing', question: '25. Sắp xếp các từ sau: Many / people / like / life / city / despite / pollution / the / .', correct: 'Many people like city life despite the pollution.' }
+      ];
+    }
     course.push(dayData);
   }
   return course;

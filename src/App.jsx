@@ -350,7 +350,7 @@ export default function App() {
       if (!w) return;
       const wordLower = String(w).toLowerCase();
       if (!newProgress[wordLower]) newProgress[wordLower] = 0;
-      if (newProgress[wordLower] < 4) newProgress[wordLower] += 1;
+      if (newProgress[wordLower] < 6) newProgress[wordLower] += 1;
     });
     setWordProgress(newProgress);
     await updateDoc(doc(db, 'users', user.uid), { wordProgress: newProgress });
@@ -613,7 +613,7 @@ export default function App() {
     return vocabPool.filter(v => {
        if (!v || !v.word) return false;
        const w = String(v.word).toLowerCase();
-       return (safeWP[w] || 0) < 4;
+       return (safeWP[w] || 0) < 6;
     });
   };
 
@@ -623,7 +623,7 @@ export default function App() {
   let masteredWordsList = [];
   try {
      const safeWP = (wordProgress && typeof wordProgress === 'object' && !Array.isArray(wordProgress)) ? wordProgress : {};
-     masteredWordsList = Object.entries(safeWP).filter(([w, c]) => typeof c === 'number' && c >= 4);
+     masteredWordsList = Object.entries(safeWP).filter(([w, c]) => typeof c === 'number' && c >= 6);
      wordsMasteredCount = masteredWordsList.length;
   } catch (err) {}
 
@@ -1399,7 +1399,7 @@ export default function App() {
             </div>
             
             <div className="bg-fuchsia-50 p-4 border-b border-fuchsia-100 text-sm text-fuchsia-800 font-medium">
-              💡 <span className="font-bold">Quy tắc kỷ luật:</span> Hệ thống chỉ hiển thị những từ vựng bạn đã trả lời ĐÚNG ít nhất 3 lần. Những từ chưa đủ mốc 3 lần sẽ bị ẩn để bạn tập trung luyện thêm.
+              💡 <span className="font-bold">Quy tắc kỷ luật:</span> Hệ thống chỉ hiển thị những từ vựng bạn đã trả lời ĐÚNG ít nhất 6 lần. Những từ chưa đủ mốc 6 lần sẽ bị ẩn để bạn tập trung luyện thêm.
             </div>
 
             <div className="p-6 overflow-y-auto bg-gray-50 flex-1">
